@@ -12,6 +12,7 @@
 #include <bastlSamples/kick.h>
 #include <bastlSamples/snare.h> 
 #include <bastlSamples/hat.h> 
+#include <bastlSamples/CB.h> 
 //#include <samples/ride.h>
 //#include <bastlSamples/tom.h>
 
@@ -22,12 +23,12 @@
 
 unsigned char inputChannel;
 const char* WAVE_TABLES[]={
-  KICK_DATA, SNARE_DATA, HAT_DATA};//SQUARE_NO_ALIAS512_DATA};//HAT_DATA};//WHITENOISE2048_DATA};
+  KICK_DATA, SNARE_DATA, HAT_DATA, CB_DATA};//SQUARE_NO_ALIAS512_DATA};//HAT_DATA};//WHITENOISE2048_DATA};
 
 const unsigned int WAVE_TABLES_NUM_CELLS[]={
-  KICK_NUM_CELLS, SNARE_NUM_CELLS, HAT_NUM_CELLS};
+  KICK_NUM_CELLS, SNARE_NUM_CELLS, HAT_NUM_CELLS, CB_NUM_CELLS};
 
-#define NUMBER_OF_WAVETABLES 3
+#define NUMBER_OF_WAVETABLES 4
 
 #define NUMBER_OF_VOICES 3
 
