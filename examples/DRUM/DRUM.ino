@@ -13,7 +13,7 @@
 #include <bastlSamples/snare.h> 
 #include <bastlSamples/hat.h> 
 //#include <samples/ride.h>
-//#include <samples/tom.h>
+//#include <bastlSamples/tom.h>
 
 
 //#include <tables/whitenoise2048_int8.h>
@@ -47,7 +47,7 @@ Sample<AUDIO_RATE> aSample[NUMBER_OF_VOICES];
 trinityHW hw; // MOZZI or DEFAULT
 
 void setup() {
-  if(hw.factoryClear()) clearMemmory(),hw.factoryCleared();
+  
   // debug();
   hw.setFreezeType(UNFREEZE_EXTERNALY);
   hw.initialize(DEFAULT);
@@ -55,8 +55,8 @@ void setup() {
 
   animation();
   initMem();
-
   initMidi(getMidiChannel());
+  
   startMozzi(CONTROL_RATE);
 
   //adcReconnectAllDigitalIns();

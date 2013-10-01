@@ -33,8 +33,9 @@ unsigned char currentPreset;
 void initMem(){
 
   ShouldIClearMemory();
+  if(hw.factoryClear()) clearMemmory(),hw.factoryCleared();
+  hw.initialize(DEFAULT);
   loadPreset(0);
-
 }
 
 unsigned char getStep(unsigned char _INSTRUMENT, unsigned char _PATTERN,unsigned char _STEP){
@@ -81,7 +82,7 @@ void storePreset(unsigned char index) {
   }
 
   EEPROM.write(offset + TEMPO_BYTE,seq.getTempo());
-   EEPROM.write(offset + GROOVE_BYTE,seq.getGrooveAmount());
+  EEPROM.write(offset + GROOVE_BYTE,seq.getGrooveAmount());
   unsigned char _typeByte;
   for(int i=0;i<NUMBER_OF_INSTRUMENTS;i++) _typeByte=writeBits(_typeByte,2*i,2,instrumentType[i]);
   EEPROM.write(INSTRUMENT_TYPE_BYTE,_typeByte);
@@ -121,14 +122,14 @@ void clearMemmory(){
         }
       }
     }
-    
+
     seq.setTempo(120);
     seq.setGrooveAmount(0);
     for(int p=0;p<3;p++) instrumentType[p]=p;
     storePreset(x);
-   
+
   }
-  
+
 }
 
 
@@ -326,6 +327,7 @@ unsigned char bufferP[NUMBER_OF_BYTES];
  
  
  */
+
 
 
 

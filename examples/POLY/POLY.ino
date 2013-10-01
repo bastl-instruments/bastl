@@ -1,4 +1,4 @@
-// libraries
+ // libraries
 #include <MIDI.h>
 #include <EEPROM.h>
 #include <avr/pgmspace.h>
@@ -50,7 +50,7 @@ trinityHW hw; // MOZZI or DEFAULT
 
 void setup() {
   
-  if(hw.factoryClear()) clearMemmory(),hw.factoryCleared();
+  
   // debug();
   hw.setFreezeType(UNFREEZE_EXTERNALY);
   hw.initialize(DEFAULT);
@@ -59,6 +59,7 @@ void setup() {
   //for(int i=0;i<1024;i++) EEPROM.write(i,0);
   animation();
   initMem();
+  
   // setAllTables();
   initMidi(getMidiChannel());
   startMozzi(CONTROL_RATE);

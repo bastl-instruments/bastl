@@ -22,10 +22,9 @@ unsigned char outChannel[NUMBER_OF_INSTRUMENTS]={
 
 #define DEFAULT_VELOCITY 127 
 #define OFF_VELOCITY 0
+#define CLOCK_BORDER 2
 
 void UI(){
-
-  // hw.setColor(page+1);
 
   renderSmallButtons();
   renderCombo();
@@ -36,86 +35,75 @@ void UI(){
   renderSequencer();
   if(!seq.isPlaying()) showLeds();
 
-
-
-
 }
-void recordFromMidi(){
-  for(int j=0;j<3;j++){
-    switch(instrumentType[j]){
 
-    case MONOPHONIC:
-      /*
-      for(int i=0;i<3;i++){
-       if(midiNoteOn[j][i]){
-       hw.setSwitch(i,midiNoteOn[j][i]);
-       if(seq.clockCount()>3){
-       if(seq.getCurrentStep()==(seq.getNumberOfSteps()-1)) writeToStep(j,currentPattern[j],0,i,hw.switchState(i));
-       else writeToStep(j,currentPattern[j],seq.getCurrentStep()+1,i,hw.switchState(i));
-       }
-       else writeToStep(j,currentPattern[j],seq.getCurrentStep(),i,hw.switchState(i));)
-       midiNoteOn[j][i]=false;
-       }
-       }
-       */
-      break;
-
-    case POLYPHONIC:
-      for(int i=0;i<6;i++){
-        if(midiNoteOn[j][i]){
-          if(seq.clockCount()>3){
-            if(seq.getCurrentStep()==(seq.getNumberOfSteps()-1)) writeToStep(j,currentPattern[j],0,i,true);
-            else writeToStep(j,currentPattern[j],seq.getCurrentStep()+1,i,true);
-          }
-          else writeToStep(j,currentPattern[j],seq.getCurrentStep(),i,true);
-          midiNoteOn[j][i]=false;
-        }
-      }
-
-
-      break;
-
-    case POLYPHONIC_LEGATO:
-
-      for(int i=0;i<6;i++){
-        if(midiNoteOn[j][i]){
-          if(seq.clockCount()>3){
-            if(seq.getCurrentStep()==(seq.getNumberOfSteps()-1)) writeToStep(j,currentPattern[j],0,i,true);
-            else writeToStep(j,currentPattern[j],seq.getCurrentStep()+1,i,true);
-          }
-          else writeToStep(j,currentPattern[j],seq.getCurrentStep(),i,true);
-
-        }
-      }
-
-      break;
-
-    }
-  }
-}
 void renderSequencer(){
 
   seq.update(audioTicks());
   if(!slave) {
-    while(seq.clockReady()) seq.clockIn(), sendClock() ;
+    while(seq.clockReady()) seq.clockIn(), sendClock();
   } 
   while(seq.stepReady()) {
     seq.stepIn();
     if(jump) seq.jumpToStep(jumpStep);
     proceedStep(seq.getCurrentStep()); 
   }
-
+  sendGBclock();
 }
 
 
-void showLeds(){
+void proceedStep(unsigned char _step){
 
-  if(showType){
-    hw.setColor(instrumentType[page]+1);
+  showTempo(_step);
+  renderMetronome(_step);
+
+  for(int instrument;instrument<NUMBER_OF_INSTRUMENTS;instrument++){
+    unsigned char _STEP=getStep(instrument,currentPattern[instrument],_step);
+    interpretStep(instrument,_STEP);
+    if(instrument==page) showStep(instrument,_STEP);
   }
-  else hw.setColor(page+1);
 
 }
+
+
+
+void interpretStep(unsigned char instrument,unsigned char _step){
+
+  switch(instrumentType[instrument]){
+  case MONOPHONIC:
+    {
+
+      unsigned char _send;
+      for(int i=0;i<3;i++){
+        bitWrite(_send,i,bitRead(_step,i));
+      }
+      if(lastStep[instrument]!=_send){
+        MIDI.sendNoteOff(lastStep[instrument],OFF_VELOCITY,outChannel[instrument]);
+        MIDI.sendNoteOn(_send,DEFAULT_VELOCITY,outChannel[instrument]);
+      }
+      lastStep[instrument]=_send;
+      break;
+    }
+  case POLYPHONIC:
+
+    for(int i=0;i<NUMBER_OF_SOUNDS;i++){
+      if(bitRead(_step,i)) MIDI.sendNoteOff(i,OFF_VELOCITY,outChannel[instrument]), MIDI.sendNoteOn(i,DEFAULT_VELOCITY,outChannel[instrument]);
+    }
+    lastStep[instrument]=_step;
+    break;
+  case POLYPHONIC_LEGATO:
+
+    for(int i=0;i<NUMBER_OF_SOUNDS;i++){
+      if( !bitRead(_step,i) && bitRead(lastStep[instrument],i)) MIDI.sendNoteOff(i,OFF_VELOCITY,outChannel[instrument]);
+      if(bitRead(_step,i) && !bitRead(lastStep[instrument],i)) MIDI.sendNoteOn(i,DEFAULT_VELOCITY,outChannel[instrument]);
+    }
+
+    lastStep[instrument]=_step;
+    break;
+  } 
+
+}
+
 
 void renderSmallButtons(){
   shift=hw.buttonState(SMALL_BUTTON_1);
@@ -135,12 +123,13 @@ void renderBigButtons(){
     //RECORD
     if(record){
       //EREASE
-      if(lastClockCount!=seq.clockCount()){
-        if(erease){
+
+      if(erease){
+        if(lastClockCount!=seq.clockCount()){
           if(hw.buttonState(i)){
 
 
-            if(seq.clockCount()>3){
+            if(seq.clockCount()>CLOCK_BORDER){
               if(seq.getCurrentStep()==(seq.getNumberOfSteps()-1)) writeToStep(page,currentPattern[page],0,shift*3+i,false);
               else writeToStep(page,currentPattern[page],seq.getCurrentStep()+1,shift*3+i,false);
             }
@@ -159,7 +148,7 @@ void renderBigButtons(){
           if(hw.justPressed(i)) hw.flipSwitch(i);
 
           if(lastClockCount!=seq.clockCount()){
-            if(seq.clockCount()>3){
+            if(seq.clockCount()>CLOCK_BORDER){
               if(seq.getCurrentStep()==(seq.getNumberOfSteps()-1)) writeToStep(page,currentPattern[page],0,i,hw.switchState(i));
               else writeToStep(page,currentPattern[page],seq.getCurrentStep()+1,i,hw.switchState(i));
             }
@@ -171,7 +160,7 @@ void renderBigButtons(){
         case POLYPHONIC:
 
           if(hw.justPressed(i)){
-            if(seq.clockCount()>3){
+            if(seq.clockCount()>CLOCK_BORDER){
               if(seq.getCurrentStep()==(seq.getNumberOfSteps()-1)) writeToStep(page,currentPattern[page],0,shift*3+i,true);
               else writeToStep(page,currentPattern[page],seq.getCurrentStep()+1,shift*3+i,true);
             }
@@ -184,7 +173,7 @@ void renderBigButtons(){
           if(lastClockCount!=seq.clockCount()){
             if(hw.buttonState(i)){
 
-              if(seq.clockCount()>3){
+              if(seq.clockCount()>CLOCK_BORDER){
                 if(seq.getCurrentStep()==(seq.getNumberOfSteps()-1)) writeToStep(page,currentPattern[page],0,shift*3+i,true);
                 else writeToStep(page,currentPattern[page],seq.getCurrentStep()+1,shift*3+i,true);
               }
@@ -220,7 +209,7 @@ void renderBigButtons(){
       case POLYPHONIC:
         if(hw.justPressed(i)) MIDI.sendNoteOn(3*shift+i,DEFAULT_VELOCITY,outChannel[page]);
         if(hw.justReleased(i)) MIDI.sendNoteOff(3*shift+i,OFF_VELOCITY,outChannel[page]);
-        hw.setLed(i,hw.buttonState(i));
+        if(!seq.isPlaying()) hw.setLed(i,hw.buttonState(i));
         break;
       case POLYPHONIC_LEGATO:
         if(hw.justPressed(i)) MIDI.sendNoteOn(3*shift+i,DEFAULT_VELOCITY,outChannel[page]);
@@ -235,7 +224,62 @@ void renderBigButtons(){
   }
 }
 
+void recordFromMidi(){
+  for(int j=0;j<3;j++){
+    switch(instrumentType[j]){
 
+    case MONOPHONIC:
+      /*
+      for(int i=0;i<3;i++){
+       if(midiNoteOn[j][i]){
+       hw.setSwitch(i,midiNoteOn[j][i]);
+       if(seq.clockCount()>CLOCK_BORDER){
+       if(seq.getCurrentStep()==(seq.getNumberOfSteps()-1)) writeToStep(j,currentPattern[j],0,i,hw.switchState(i));
+       else writeToStep(j,currentPattern[j],seq.getCurrentStep()+1,i,hw.switchState(i));
+       }
+       else writeToStep(j,currentPattern[j],seq.getCurrentStep(),i,hw.switchState(i));)
+       midiNoteOn[j][i]=false;
+       }
+       }
+       */
+      break;
+
+    case POLYPHONIC:
+      for(int i=0;i<6;i++){
+        if(midiNoteOn[j][i]){
+          if(seq.clockCount()>CLOCK_BORDER){
+            if(seq.getCurrentStep()==(seq.getNumberOfSteps()-1)) writeToStep(j,currentPattern[j],0,i,true);
+            else writeToStep(j,currentPattern[j],seq.getCurrentStep()+1,i,true);
+          }
+          else writeToStep(j,currentPattern[j],seq.getCurrentStep(),i,true);
+          midiNoteOn[j][i]=false;
+        }
+      }
+
+
+      break;
+
+    case POLYPHONIC_LEGATO:
+
+      for(int i=0;i<6;i++){
+        if(midiNoteOn[j][i]){
+          if(seq.clockCount()>CLOCK_BORDER){
+            if(seq.getCurrentStep()==(seq.getNumberOfSteps()-1)) writeToStep(j,currentPattern[j],0,i,true);
+            else writeToStep(j,currentPattern[j],seq.getCurrentStep()+1,i,true);
+          }
+          else writeToStep(j,currentPattern[j],seq.getCurrentStep(),i,true);
+
+        }
+      }
+
+      break;
+
+    }
+  }
+}
+
+
+  
 void renderCombo(){
   // if(hw.buttonState(SMALL_BUTTON_2) && hw.justPressed(SMALL_BUTTON_1)) loadPreset(0), hw.freezeAllKnobs(), combo=true;
   for(int i=0;i<3;i++){
@@ -267,8 +311,7 @@ void renderCombo(){
   if(!seq.isPlaying()) record=false;
 
   if(hw.buttonState(SMALL_BUTTON_1) && hw.buttonState(EXTRA_BUTTON_1) && hw.justPressed(SMALL_BUTTON_2)) instrumentType[page]=increaseValue(instrumentType[page],2), combo=true;
-  if(hw.buttonState(SMALL_BUTTON_1) && hw.buttonState(EXTRA_BUTTON_1) && hw.justPressed(EXTRA_BUTTON_2)) clearPattern(page,currentPattern[page]); 
-  combo=true;
+  if(hw.buttonState(SMALL_BUTTON_1) && hw.buttonState(EXTRA_BUTTON_1) && hw.justPressed(EXTRA_BUTTON_2)) clearPattern(page,currentPattern[page]), combo=true;
 
   if(hw.buttonState(SMALL_BUTTON_1) && hw.buttonState(EXTRA_BUTTON_1)) showType=true;
   else showType=false;
@@ -329,16 +372,27 @@ void renderKnobs(){
 
 
 
-void proceedStep(unsigned char _step){
+// FEEDBACK
 
-  showTempo(_step);
-  renderMetronome(_step);
 
-  for(int instrument;instrument<NUMBER_OF_INSTRUMENTS;instrument++){
-    unsigned char _STEP=getStep(instrument,currentPattern[instrument],_step);
-    interpretStep(instrument,_STEP);
-    if(instrument==page) showStep(instrument,_STEP);
+void sendGBclock(){
+  
+  if(seq.isPlaying()){
+    if(lastClockCount!=seq.clockCount()){
+      if(seq.clockCount()%2==0) hw.setLed(LED_1,false); //hw.setLed(LED_1,false);
+      else hw.setLed(LED_1,true);
+    }
   }
+  else hw.setLed(LED_1,true);
+  
+}
+
+void showLeds(){
+
+  if(showType){
+    hw.setColor(instrumentType[page]+1);
+  }
+  else hw.setColor(page+1);
 
 }
 
@@ -363,8 +417,6 @@ void showTempo(unsigned char _step){
 
 }
 
-
-
 void renderMetronome(unsigned char _step){
 
   if(_step%4==0) aSample.setFreq(50), aSample.start();
@@ -382,48 +434,7 @@ void showStep(unsigned char instrument,unsigned char _step){
     }
   }
 
-
 }
-
-
-
-void interpretStep(unsigned char instrument,unsigned char _step){
-
-  switch(instrumentType[instrument]){
-  case MONOPHONIC:
-    {
-
-      unsigned char _send;
-      for(int i=0;i<3;i++){
-        bitWrite(_send,i,bitRead(_step,i));
-      }
-      if(lastStep[instrument]!=_send){
-        MIDI.sendNoteOff(lastStep[instrument],OFF_VELOCITY,outChannel[instrument]);
-        MIDI.sendNoteOn(_send,DEFAULT_VELOCITY,outChannel[instrument]);
-      }
-      lastStep[instrument]=_send;
-      break;
-    }
-  case POLYPHONIC:
-
-    for(int i=0;i<NUMBER_OF_SOUNDS;i++){
-      if(bitRead(_step,i)) MIDI.sendNoteOff(i,OFF_VELOCITY,outChannel[instrument]), MIDI.sendNoteOn(i,DEFAULT_VELOCITY,outChannel[instrument]);
-    }
-    lastStep[instrument]=_step;
-    break;
-  case POLYPHONIC_LEGATO:
-
-    for(int i=0;i<NUMBER_OF_SOUNDS;i++){
-      if( !bitRead(_step,i) && bitRead(lastStep[instrument],i)) MIDI.sendNoteOff(i,OFF_VELOCITY,outChannel[instrument]);
-      if(bitRead(_step,i) && !bitRead(lastStep[instrument],i)) MIDI.sendNoteOn(i,DEFAULT_VELOCITY,outChannel[instrument]);
-    }
-
-    lastStep[instrument]=_step;
-    break;
-  } 
-
-}
-
 
 // UTILITIES
 
@@ -499,6 +510,8 @@ void sendAllNoteOff(){
     } 
   }
 }
+
+
 
 
 

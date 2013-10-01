@@ -40,7 +40,7 @@ lfo LFO;
 trinityHW hw; // MOZZI or DEFAULT
 
 void setup() {
-  if(hw.factoryClear()) clearMemmory(),hw.factoryCleared();
+  
   // debug();
   hw.setFreezeType(UNFREEZE_EXTERNALY);
   hw.initialize(DEFAULT);

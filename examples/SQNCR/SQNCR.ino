@@ -18,7 +18,7 @@ sequencer seq(61); // set timeBase
 //Memory mem;
 
 void setup(){
-  if(hw.factoryClear()) clearMemmory(),hw.factoryCleared();
+  
   hw.setFreezeType(UNFREEZE_EXTERNALY);
   hw.initialize(DEFAULT);
 

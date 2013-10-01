@@ -2,6 +2,7 @@
 #define CONTROL_CHANGE_BITS 7
 #define CONTROL_CHANGE_OFFSET 102
 unsigned char midiSound;
+
 void HandleNoteOn(byte channel, byte note, byte velocity) { 
   if(channel==inputChannel){
     if (velocity == 0) {
@@ -71,11 +72,28 @@ void HandleStop(){
 
 }
 
+void indicateMidiChannel(unsigned char _channel){
+
+  boolean highChannel=false;
+  if(_channel>=10)   hw.setLed(LED_1,true), hw.setLed(LED_2,true), hw.setLed(LED_3,true), highChannel=true;
+  for(int i=0;i<3;i++){
+    hw.setLed(_channel-1-highChannel*9,false);
+    hw.update();
+    delay(150);
+    hw.setLed(_channel-1-highChannel*9,true);
+    hw.update();
+    delay(150);
+  }
+
+}
+
+
 void initMidi(unsigned char _channel){
 
   MIDI.begin(0);    
   inputChannel=_channel;
-
+  indicateMidiChannel(_channel);
+  
   MIDI.setHandleNoteOn(HandleNoteOn);
   MIDI.setHandleNoteOff(HandleNoteOff);
 
@@ -94,6 +112,7 @@ void initMidi(unsigned char _channel){
   MIDI.turnThruOn(Full);
   // MIDI.turnThruOff(); 
 }
+
 
 
 

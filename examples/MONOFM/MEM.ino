@@ -92,6 +92,15 @@ unsigned char variable[NUMBER_OF_SOUNDS][NUMBER_OF_BYTES];
 
 void initMem(){
 
+  calculateBitDepth();
+  ShouldIClearMemory();
+  if(hw.factoryClear()) clearMemmory(), hw.factoryCleared();
+  hw.initialize(DEFAULT);
+  loadPreset(0);
+
+}
+
+void calculateBitDepth(){
   for(int i=0;i<NUMBER_OF_VARIABLES;i++){ // calculate bitDepth according to the maximum value
     int x=0;
     while(maxVal(i)-pow(2,x)>=0) x++;
@@ -106,10 +115,6 @@ void initMem(){
     byteCoordinate[i]=sum/8;
     bitCoordinate[i]=sum%8;
   } 
-
-  ShouldIClearMemory();
-  loadPreset(0);
-
 }
 
 unsigned int getVar(unsigned char _SOUND, unsigned char _VARIABLE){

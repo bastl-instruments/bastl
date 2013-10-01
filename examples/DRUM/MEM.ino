@@ -1,7 +1,7 @@
 
 
-PROGMEM prog_uchar clearTo[]={
- 255,255,255, 0,0,255};
+PROGMEM prog_uint16_t clearTo[]={
+  370,64,255, 0,0,255};
 /*
 
  osc
@@ -51,7 +51,7 @@ PROGMEM prog_uchar clearTo[]={
 
 PROGMEM prog_uint16_t maxValue[]={
   1023,255,255, 7,255,255}; //const
-  
+
 
 #define NUMBER_OF_VARIABLES 6
 #define NUMBER_OF_BYTES 6
@@ -84,6 +84,15 @@ unsigned char variable[NUMBER_OF_SOUNDS][NUMBER_OF_BYTES];
 
 void initMem(){
 
+  calculateBitDepth();
+  ShouldIClearMemory();
+  if(hw.factoryClear()) clearMemmory(), hw.factoryCleared();
+  hw.initialize(DEFAULT);
+  loadPreset(0);
+
+}
+
+void calculateBitDepth(){
   for(int i=0;i<NUMBER_OF_VARIABLES;i++){ // calculate bitDepth according to the maximum value
     int x=0;
     while(maxVal(i)-pow(2,x)>=0) x++;
@@ -98,10 +107,6 @@ void initMem(){
     byteCoordinate[i]=sum/8;
     bitCoordinate[i]=sum%8;
   } 
-
-  ShouldIClearMemory();
-  loadPreset(0);
-
 }
 
 int getVar(unsigned char _SOUND, unsigned char _VARIABLE){
@@ -179,17 +184,24 @@ void loadPreset(unsigned char index) {
       variable[j][k]=EEPROM.read(offset + ((NUMBER_OF_BYTES * j) + k));
     }
   }
- 
+
 }
 
 
 
 void clearMemmory(){
+
   for(int x=0;x<NUMBER_OF_PRESETS;x++){
     loadPreset(x);
     for(int i=0;i<NUMBER_OF_SOUNDS;i++){
       for(int j=0;j<NUMBER_OF_VARIABLES;j++){
-        setVar(i,j, pgm_read_byte_near(clearTo+j));
+
+        if(j==SAMPLE)  setVar(i,j,i*3);
+        else if (j==RATE && i>=3) setVar(i,j, pgm_read_word_near(clearTo+j)+350);
+        else if (j==STRETCH && i>=3) setVar(i,j, pgm_read_word_near(clearTo+j)+64);
+        else setVar(i,j, pgm_read_word_near(clearTo+j));
+
+
       }
     }
     //  tempo=120;
@@ -221,7 +233,7 @@ boolean ConditionToClear(){
   else if(hw.buttonState(BIG_BUTTON_1)) setMidiChannel(1+9*hw.buttonState(SMALL_BUTTON_1));
   else if(hw.buttonState(BIG_BUTTON_2)) setMidiChannel(2+9*hw.buttonState(SMALL_BUTTON_1));
   else if(hw.buttonState(BIG_BUTTON_3)) setMidiChannel(3+9*hw.buttonState(SMALL_BUTTON_1));
-  
+
   return _shouldClear;
 }
 
@@ -230,7 +242,7 @@ void setMidiChannel(unsigned char _channel){
 }
 
 unsigned char getMidiChannel(){
- return EEPROM.read(CHANNEL_BYTE);
+  return EEPROM.read(CHANNEL_BYTE);
 }
 
 void IndicateClearing(boolean _start){
@@ -257,7 +269,7 @@ boolean inBetween(int val1,int val2,int inBet){
     if(inBet>=val1 && inBet<=val2) retVal=true;
     else retVal=false;
   }
- 
+
   return retVal;
 
 }
@@ -369,4 +381,6 @@ int scale(int _value, unsigned char _originalBits, unsigned char _endBits){
  }
  
  */
+
+
 
