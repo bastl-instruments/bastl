@@ -1,0 +1,157 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Bastl by bastl-instruments</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Bastl</h1>
+        <p>bastl library for bastl-instruments.com</p>
+
+        <p class="view"><a href="https://github.com/bastl-instruments/bastl">View the Project on GitHub <small>bastl-instruments/bastl</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/bastl-instruments/bastl/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/bastl-instruments/bastl/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/bastl-instruments/bastl">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <p>Bastl Instruments is new brand for electronic hand-made musical instrument which continues the instruments tradition set up by Standuino. We are the same people and we believe that by focusing on musical instruments only we are able to achieve higher quality and innovation. The word Bastl refers very often to DIY electronics in Czech language, but also includes different forms of funny DIY.</p>
+
+<p>[under construction --- this is simple information page - more information/pictures and videos are coming with the new website]</p>
+
+<p>Trinity is open musical instrument bringing the power of digital instruments and their development to wider Bastl public. It runs Atmega 328 chip reprogrammable by Arduino IDE and ready to run Mozzi library.</p>
+
+<p>Casing and graphic layout was designed by Anymade Studio</p>
+
+<p>Hackable!</p>
+
+<p>Trinity is open for any sort of hacks, and we will document them and make instructables for them. We are hoping to also implement some of the future hacks into the official Bastl softwares. You can hack the existing softwares or start your own synth software from scratch using the Mozzi library to output sound. Because Trinity is based on Arduino you can use the whole world of it to interface literally anything with it. It is hackable in hardware so you can connect sensors or motors to it or sync it to anything. The softwares and examples are written in structured form so they read and change them easily.</p>
+
+<p>Well crafted softwares to start with!</p>
+
+<p>We have crafted and designed already 4 different official softwares running on Trinity hardware and there are many more to come.</p>
+
+<p>Common features:</p>
+
+<p>simple interface
+expandability and hackable breakouts
+breakout for FTDi USB connectivity enabling the instrument to be uploaded with software writen in Arduino IDE
+Mozzi library compatible
+Bastl library for easy interface read-out, handling memory and sound utilities
+chain connectors to share power, audio and communication within more Trinity instruments (when being chained the audio signals are being passively mixed by the volume knob and the MIDI communication is thrued further)
+MIDI input and output by attachable connector
+Assembly Instructions</p>
+
+<p>instructables coming very very soon
+very nice video by Daniel Baum
+Poly Synth</p>
+
+<p>Features:</p>
+
+<p>subtractive or FM synthesis mode
+3 voice polyphony
+6 different sound for each preset
+3 presets
+in subtractive mode: oscillator + state variable filter with cutoff and resonance ( LP,HP,BP,notch )
+in FM mode: oscillator + modulation oscillator with selectable wavetables
+LFO with adjustable rate, resolution, amount, destination on different parameters and 8 different shapes
+ADSR with impact on volume and adjustable impact to other parameters
+precise setting of oscillator, LFO and ADSR features are accessed by adjusting character knob which goes thru all possible settings of routing and wavetables
+exchange sounds between more Poly Synths by SysEx message
+4 wavetables (sine, saw, distorted square, noise)
+3 note playback by MIDI - velocity sensitive
+multi-timbral MIDI mode (lowest octave)
+MIDI thru
+MIDI CC support
+Mono FM Synth</p>
+
+<p>Features:</p>
+
+<p>experimental monophonic FM synthesizer
+8 different sound for each preset
+3 presets
+1 carrier oscillator with pitch tuned in semitones
+3 modulation oscillators with adjustable harmonic multiple of carrier frequency, detune and amount of modulation
+8 algorithms of oscillator configuration
+3 wavetables for all oscillators (sine, saw, white noise)
+LFO with adjustable rate, resolution, amount, destination on different parameters and 8 different shapes
+exchange sounds between more Mono FM Synths by SysEx message
+MIDI thru
+MIDI CC support
+Drum</p>
+
+<p>Features:</p>
+
+<p>3 voice polyphonic drum sample player
+6 different sound for each preset
+3 presets
+4 samples - kick, snare, hat, cowbell
+for each sound you can adjust sample rate, time stretch, cut, distortion, volume and sample to be played
+drum samples can be changed by converting wave files into .h file included in the source code (by python script included in Mozzi library)
+exchange sounds between more Drums by SysEx message
+sounds can be triggered by MIDI - velocity sensitive
+MIDI thru
+MIDI CC support
+SQNCR</p>
+
+<p>Features:</p>
+
+<p>controlling 3 different Trinity instruments (polyphonic or monophonic)
+sending MIDI notes on 3 channels
+32 steps / pattern
+4 patterns for each instrument in one preset
+3 presets
+recording from buttons or MIDI
+erase single notes or clear whole pattern
+adjustable pattern length, groove and tempo
+tap tempo
+jump function (step repeater)
+auto quantize
+MIDI clock support master or slave
+Download</p>
+
+<p>Bastl library for Arduino, includes all instruments as examples in the library + more examples. The download includes the schematics, harware description and readme for easy setup of the library.
+Planned accesories</p>
+
+<p>MIDI input or output connector break out (prototype done) - via chain connectors
+KORG Volca sync connector break out - via chain connectors
+Audio Input connector for development of audio processing and effects
+Ideas and planned softwares for Trinity by Bastl Instruments</p>
+
+<p>xor synth 6 voice polyphonic synth playable by MIDI
+mystery drone synth
+magic table oscillator synth
+algorithm+random synth
+MIDI arpeggiator
+sequencer for single Trinity instrument
+automation sequencer / LFO
+...and many more...
+Already done hacks - documentation and instructables coming soon - many more to come</p>
+
+<p>sync sequencer with GameBoy Nanoloop
+trigger analog drum sounds from SQNCR or Drum
+randomizer
+photo resistor (LDR) controlling parameters of synth</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/bastl-instruments">bastl-instruments</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
