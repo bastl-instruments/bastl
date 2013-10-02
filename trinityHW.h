@@ -45,18 +45,18 @@ for Standuino wwww.standuino.eu
 #define LED_2_PIN 6
 #define LED_3_PIN 2
 
-/*	
+
 //TAYDA RGB
 #define LED_R_PIN 5
 #define LED_G_PIN 3
 #define LED_B_PIN 4
-*/
 
+/*
 //GME RGB
 #define LED_R_PIN 4
 #define LED_G_PIN 5
 #define LED_B_PIN 3
-//
+//*/
 
 #define SMALL_BUTTON_1_PIN 11
 #define SMALL_BUTTON_2_PIN 17 //18
