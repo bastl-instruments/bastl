@@ -62,8 +62,8 @@ trinityHW::trinityHW(){
 
 void trinityHW::initialize(unsigned char _HW_VERSION){ 
 
-	for(int i=0;i<NUMBER_OF_BUTTONS;i++) pinMode(pgm_read_word_near(buttonPins + i), INPUT_PULLUP);
-	for(int i=0;i<NUMBER_OF_LEDS;i++) pinMode(pgm_read_word_near(ledPins + i), OUTPUT);
+	for(int i=ZERO;i<NUMBER_OF_BUTTONS;i++) pinMode(pgm_read_word_near(buttonPins + i), INPUT_PULLUP);
+	for(int i=ZERO;i<NUMBER_OF_LEDS;i++) pinMode(pgm_read_word_near(ledPins + i), OUTPUT);
 	
 	freezeAllKnobs();
 	update();
@@ -94,8 +94,8 @@ void trinityHW::setFreezeType(unsigned char _TYPE){
 //update values and hashes of knobs
 void trinityHW::updateKnobs(){
 
- knobChangedHash = 0;
-  for (int i = 0; i < NUMBER_OF_KNOBS; i++) {
+ knobChangedHash = ZERO;
+  for (int i = ZERO; i < NUMBER_OF_KNOBS; i++) {
   
     short newValue = mozziAnalogRead(pgm_read_word_near(knobPins + i));
     short distance = abs(newValue - knobValues[i]); 
@@ -110,9 +110,14 @@ void trinityHW::updateKnobs(){
   	  } 
     }
     
-   	if (abs(newValue - knobValues[i]) > KNOB_TOLERANCE) {
-      bitWrite(knobChangedHash, i, false);
+   	if (abs(newValue - knobValues[i]) > KNOB_TOLERANCE) bitWrite(knobChangedHash, i, true), activity=ZERO;
+    else {
+    
+    if(activity>ACTIVITY_LIMIT) bitWrite(knobChangedHash, i, false);
+    else activity++;
+    
     }
+    
     lastKnobValues[i]=knobValues[i];
     knobValues[i] = newValue;
   }
@@ -125,16 +130,21 @@ boolean trinityHW::knobFreezed(unsigned char _KNOB){
 	return bitRead(knobFreezedHash,_KNOB);
 }
 
+//returns the freezing state of knob	
+boolean trinityHW::knobMoved(unsigned char _KNOB){ 
+	return bitRead(knobChangedHash,_KNOB);
+}
+
 // freeze all knobs
 void trinityHW::freezeAllKnobs(){ 
-	for(int i=0;i<NUMBER_OF_KNOBS;i++){
+	for(int i=ZERO;i<NUMBER_OF_KNOBS;i++){
 		bitWrite(knobFreezedHash,i,true);
 	}
 }
 
 // unfreeze all knobs
 void trinityHW::unfreezeAllKnobs(){ 
-	for(int i=0;i<NUMBER_OF_KNOBS;i++){
+	for(int i=ZERO;i<NUMBER_OF_KNOBS;i++){
 		bitWrite(knobFreezedHash,i,false);
 	}
 }
@@ -170,7 +180,7 @@ int trinityHW::lastKnobValue(unsigned char _KNOB){
 // write the values from the hash to the pins
 void trinityHW::writeToLeds(){ 
 
-	for(int i=0;i<NUMBER_OF_LEDS;i++){
+	for(int i=ZERO;i<NUMBER_OF_LEDS;i++){
 			//pinMode(pgm_read_word_near(ledPins + i), OUTPUT);
 			digitalWrite(pgm_read_word_near(ledPins + i), !bitRead(ledStateHash,i));	
 	}
@@ -203,7 +213,7 @@ boolean trinityHW::mozziDigitalRead(unsigned char _pin){
 // updates all button related hashes
 void trinityHW::updateButtons(){  
 
-	for(int i=0;i<NUMBER_OF_BUTTONS;i++){ // first read the buttons and update button states
+	for(int i=ZERO;i<NUMBER_OF_BUTTONS;i++){ // first read the buttons and update button states
 	
 		//	pinMode(pgm_read_word_near(buttonPins + i), INPUT_PULLUP);
 		bitWrite(buttonStateHash,i,!mozziDigitalRead(pgm_read_word_near(buttonPins + i)));
@@ -255,15 +265,15 @@ boolean trinityHW::switchState(unsigned char _SWITCH){
 
 //resetsSwitches
 void trinityHW::resetSwitches(){
-	for(int i=0;i<NUMBER_OF_BUTTONS;i++){
+	for(int i=ZERO;i<NUMBER_OF_BUTTONS;i++){
 		bitWrite(switchStateHash,i,false);
 	}
 }
 
 //use switch states as bits of one number - sound
 unsigned char trinityHW::soundFromSwitches(){
-	unsigned char val=0;
-	for(int i=0;i<4;i++){
+	unsigned char val=ZERO;
+	for(int i=ZERO;i<4;i++){
 		bitWrite(val,i,bitRead(switchStateHash,i));
 	}
 	return val;
@@ -272,25 +282,26 @@ unsigned char trinityHW::soundFromSwitches(){
 
 //use button states as bits of one number - sound
 unsigned char trinityHW::soundFromButtons(){
-	unsigned char val=0;
-	for(int i=0;i<4;i++){
+	unsigned char val=ZERO;
+	for(int i=ZERO;i<NUMBER_OF_BIG_BUTTONS;i++){
 		bitWrite(val,i,bitRead(buttonStateHash,i));
 	}
 	return val;
 }
 
 
-
+#define CLEAR_TIMES 8
+#define CLEAR_DELAY 50
 boolean trinityHW::factoryClear(){
 	
 	pinMode(FACTORY_CLEAR_PIN,INPUT_PULLUP);
 	pinMode(FACTORY_CLEAR_SIGNAL_PIN,OUTPUT);
 	if(!digitalRead(FACTORY_CLEAR_PIN)){	 
- 		for(int i=0;i<8;i++){
+ 		for(int i=ZERO;i<CLEAR_TIMES;i++){
 		  digitalWrite(FACTORY_CLEAR_SIGNAL_PIN,HIGH);
-		  delay(50);
+		  delay(CLEAR_DELAY);
 		 digitalWrite(FACTORY_CLEAR_SIGNAL_PIN,LOW);
-		  delay(50);
+		  delay(CLEAR_DELAY);
   		}
   	return true;
 	}
@@ -299,10 +310,10 @@ boolean trinityHW::factoryClear(){
 }
 
 void trinityHW::factoryCleared(){
-	for(int i=0;i<8;i++){
+	for(int i=ZERO;i<CLEAR_TIMES;i++){
 		  	digitalWrite(FACTORY_CLEAR_SIGNAL_PIN,HIGH);
-		  	delay(50);
+		  	delay(CLEAR_DELAY);
 	  		digitalWrite(FACTORY_CLEAR_SIGNAL_PIN,LOW);
-	  		delay(50);
+	  		delay(CLEAR_DELAY);
   		}
 }

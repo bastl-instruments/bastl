@@ -1,5 +1,7 @@
 
 long modulation[NUMBER_OF_MODULATORS];
+boolean gate=true;
+
 int updateAudio(){
 
   
@@ -81,7 +83,7 @@ int updateAudio(){
   }
 
   // long finalModulation=modulation[MOD_1]+modulation[MOD_2]+modulation[MOD_3];
-  return val;
+  return val*gate;
 
 }
 

@@ -18,7 +18,7 @@
 #include <tables/triangle2048_int8.h> // 
 #include <bastlTables/whitenoise2048_int8.h>
 unsigned char inputChannel;
-
+boolean test;
 const char* WAVE_TABLES[]={
   SIN2048_DATA, SAW2048_DATA, WHITENOISE2048_DATA};//TRIANGLE2048_DATA TRIANGLE_DIST_CUBED_2048_DATA};
 
@@ -60,10 +60,25 @@ void setup() {
 void updateControl(){
 
   while(MIDI.read(inputChannel)) MIDI.read(inputChannel);
+  MIDI.read(inputChannel);
+  MIDI.read(inputChannel);
+  MIDI.read(inputChannel);
+  MIDI.read(inputChannel);
+  MIDI.read(inputChannel);
   hw.update();
   while(MIDI.read(inputChannel)) MIDI.read(inputChannel);
+   MIDI.read(inputChannel);
+  MIDI.read(inputChannel);
+  MIDI.read(inputChannel);
+  MIDI.read(inputChannel);
+  MIDI.read(inputChannel);
   UI();
   while(MIDI.read(inputChannel)) MIDI.read(inputChannel);
+   MIDI.read(inputChannel);
+  MIDI.read(inputChannel);
+  MIDI.read(inputChannel);
+  MIDI.read(inputChannel);
+  MIDI.read(inputChannel);
 
 }
 

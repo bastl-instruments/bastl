@@ -2,16 +2,19 @@
 
 #define CONTROL_CHANGE_BITS 7
 #define CONTROL_CHANGE_OFFSET 102
+
 unsigned char midiSound;
 
 #define POLYPHONY NUMBER_OF_VOICES
-unsigned char notesInBuffer=0;
+unsigned char notesInBuffer=ZERO;
 boolean thereIsNoteToPlay;
 
 #define BUFFER_SIZE 16
 unsigned char midiBuffer[BUFFER_SIZE];
+#define DEFAULT_VOICE_USE 255
+
 unsigned char voiceUse[NUMBER_OF_VOICES]={
-  255,255,255};
+  DEFAULT_VOICE_USE,DEFAULT_VOICE_USE,DEFAULT_VOICE_USE};
 
 unsigned char fromBuffer;
 boolean ping;
@@ -24,7 +27,7 @@ void shiftBufferLeft(unsigned char from){
 }
 
 void shiftBufferRight(){
-  for(int i=notesInBuffer;i>0;i--){
+  for(int i=notesInBuffer;i>ZERO;i--){
     midiBuffer[i]=midiBuffer[i-1]; 
   }
 }
@@ -41,7 +44,7 @@ unsigned char noteToPlay(){
 unsigned char freeVoice(unsigned char note){
 
   unsigned char use=255;
-  for(int i=0;i<NUMBER_OF_VOICES;i++){
+  for(int i=ZERO;i<NUMBER_OF_VOICES;i++){
     if(voiceUse[i]==note){
       voiceUse[i]=255, use=i;
       break;
@@ -54,7 +57,7 @@ unsigned char freeVoice(unsigned char note){
 unsigned char getFreeVoice(unsigned char note){
 
   unsigned char use=255;
-  for(int i=0;i<NUMBER_OF_VOICES;i++){
+  for(int i=ZERO;i<NUMBER_OF_VOICES;i++){
     if(voiceUse[i]==255) {
       voiceUse[i]=note, use=i;
       break; 
@@ -71,15 +74,15 @@ void putNoteIn(unsigned char note){
 
   // check if the note is already in the buffer if yes put it to the first position
   if(notesInBuffer<BUFFER_SIZE){
-    if(notesInBuffer>0){ 
+    if(notesInBuffer>ZERO){ 
       shiftBufferRight();
     }
 
-    midiBuffer[0]=note; // put the last note to the first place 
+    midiBuffer[ZERO]=note; // put the last note to the first place 
     notesInBuffer++;
     if(notesInBuffer>POLYPHONY-1) freeVoice(midiBuffer[POLYPHONY]);
     thereIsNoteToPlay=true;
-    fromBuffer=0;
+    fromBuffer=ZERO;
   }
 }
 
@@ -87,18 +90,18 @@ void putNoteIn(unsigned char note){
 
 unsigned char putNoteOut(unsigned char note){
 
-  if(notesInBuffer>0){ 
+  if(notesInBuffer>ZERO){ 
     unsigned char takenOut;
-    boolean takeOut=0;
+    boolean takeOut=ZERO;
 
-    for(int i=0;i<notesInBuffer;i++){
+    for(int i=ZERO;i<notesInBuffer;i++){
       if(midiBuffer[i]==note) takeOut=true, takenOut=i;
     } 
 
     if(takeOut){
       shiftBufferLeft(takenOut);
       notesInBuffer--;
-      for(int i=notesInBuffer;i<BUFFER_SIZE;i++) midiBuffer[i]=0;
+      for(int i=notesInBuffer;i<BUFFER_SIZE;i++) midiBuffer[i]=ZERO;
       if(takenOut<POLYPHONY && notesInBuffer>=POLYPHONY) {
         thereIsNoteToPlay=true, fromBuffer=POLYPHONY-1;
       }
@@ -117,7 +120,7 @@ unsigned char putNoteOut(unsigned char note){
 
 void HandleNoteOn(byte channel, byte note, byte velocity) { 
   if(channel==inputChannel){
-    if (velocity == 0) {
+    if (velocity == ZERO) {
       HandleNoteOff(channel,note,velocity);
 
     }
@@ -186,6 +189,13 @@ void HandleControlChange(byte channel, byte number, byte value){
     }
   }
 
+  if(number==SWITCH_BYTE){
+    for(int i=ZERO;i<3;i++) hw.setSwitch(i,bitRead(value,i));
+  }
+  else if(number==PAGE_BYTE){
+    page=value;
+  }
+
 }
 
 void HandleProgramChange(byte channel, byte number  ){
@@ -215,7 +225,7 @@ void HandleStop(){
 
 void initMidi(unsigned char _channel){
 
-  MIDI.begin(0);    
+  MIDI.begin(ZERO);    
   inputChannel=_channel;
   indicateMidiChannel(_channel);
 
@@ -238,21 +248,22 @@ void initMidi(unsigned char _channel){
   // MIDI.turnThruOff();  
 }
 
-
+#define SECOND_LAYER_CHANNEL 10
 void indicateMidiChannel(unsigned char _channel){
 
   boolean highChannel=false;
-  if(_channel>=10)   hw.setLed(LED_1,true), hw.setLed(LED_2,true), hw.setLed(LED_3,true), highChannel=true;
-  for(int i=0;i<3;i++){
+  if(_channel>=SECOND_LAYER_CHANNEL)   hw.setLed(LED_1,true), hw.setLed(LED_2,true), hw.setLed(LED_3,true), highChannel=true;
+  for(int i=ZERO;i<NUMBER_OF_KNOBS;i++){
     hw.setLed(_channel-1-highChannel*9,false);
     hw.update();
-    delay(150);
+    delay(ANIMATION_DELAY);
     hw.setLed(_channel-1-highChannel*9,true);
     hw.update();
-    delay(150);
+    delay(ANIMATION_DELAY);
   }
 
 }
+
 
 
 

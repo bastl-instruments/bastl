@@ -8,11 +8,17 @@
 #include <mozzi_analog.h>
 //#include <LowPassFilter.h>
 #include <bastlSample.h>
-
-#include <bastlSamples/kick.h>
-#include <bastlSamples/snare.h> 
-#include <bastlSamples/hat.h> 
-#include <bastlSamples/CB.h> 
+boolean test;
+//#include <bastlSamples/kick.h>
+#include <bastlSamples/KICK2.h>
+#include <bastlSamples/SNARE2.h> 
+//#include <bastlSamples/snare.h> 
+//#include <bastlSamples/hat.h> 
+#include <bastlSamples/HAT2.h> 
+#include <bastlTables/haluz2048_int8.h> 
+//#include <bastlSamples/CB.h> 
+#include <bastlSamples/CB3.h> 
+#include <bastlSamples/RIDE.h> 
 //#include <samples/ride.h>
 //#include <bastlSamples/tom.h>
 
@@ -23,12 +29,12 @@
 
 unsigned char inputChannel;
 const char* WAVE_TABLES[]={
-  KICK_DATA, SNARE_DATA, HAT_DATA, CB_DATA};//SQUARE_NO_ALIAS512_DATA};//HAT_DATA};//WHITENOISE2048_DATA};
+  KICK2_DATA, SNARE2_DATA, HAT2_DATA,CB3_DATA,RIDE_DATA, HALUZ2048_DATA};//, };//SQUARE_NO_ALIAS512_DATA};//HAT_DATA};//WHITENOISE2048_DATA};
 
 const unsigned int WAVE_TABLES_NUM_CELLS[]={
-  KICK_NUM_CELLS, SNARE_NUM_CELLS, HAT_NUM_CELLS, CB_NUM_CELLS};
+  KICK2_NUM_CELLS, SNARE2_NUM_CELLS, HAT2_NUM_CELLS, CB3_NUM_CELLS,RIDE_NUM_CELLS,HALUZ2048_NUM_CELLS};//, CB_NUM_CELLS};
 
-#define NUMBER_OF_WAVETABLES 4
+#define NUMBER_OF_WAVETABLES 6
 
 #define NUMBER_OF_VOICES 3
 
@@ -46,7 +52,7 @@ Sample<AUDIO_RATE> aSample[NUMBER_OF_VOICES];
 
 
 trinityHW hw; // MOZZI or DEFAULT
-
+boolean bootShift=false;
 void setup() {
   
   // debug();
@@ -65,14 +71,26 @@ void setup() {
   for(int i=0;i<NUMBER_OF_VOICES;i++) aSample[i].setTable(WAVE_TABLES[i],WAVE_TABLES_NUM_CELLS[i]), aSample[i].setTimeStretchOn(), aSample[i].setTimeStretch(5);
   hw.update();
   hw.update();
+  bootShift=hw.buttonState(SMALL_BUTTON_1);
 }
 
 void updateControl(){
 
   while(MIDI.read(inputChannel)) MIDI.read(inputChannel);
+   MIDI.read();
+   MIDI.read();
+   MIDI.read();
+   MIDI.read();
+   MIDI.read();
+
   hw.update();
   UI();
   while(MIDI.read(inputChannel)) MIDI.read(inputChannel);
+   MIDI.read();
+   MIDI.read();
+   MIDI.read();
+   MIDI.read();
+   MIDI.read();
 
 }
 

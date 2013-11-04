@@ -3,8 +3,24 @@
 
 #define CONTROL_CHANGE_BITS 7
 #define CONTROL_CHANGE_OFFSET 102
+
+
+
+#define SWITCH_BYTE 14
+#define PAGE_BYTE 13
+
+#define BASTL_BYTE 0x7D
+#define CHANNEL_BYTE 0x00
+#define INSTRUMENT_BYTE 0X01 // poly 1.0
+#define TEST_BYTE 0x0A
+#define NUMBER_OF_MESSAGE_BYTES 2
+
+
 unsigned char midiSound;
 
+#define NUMBER_OF_MESSAGE_BYTES 16
+#define NUMBER_OF_SYSEX_BYTES 14
+unsigned char sysExArray[NUMBER_OF_SYSEX_BYTES];
 
 void HandleNoteOn(byte channel, byte note, byte velocity) { 
   if(channel==inputChannel){
@@ -37,9 +53,22 @@ void HandleControlChange(byte channel, byte number, byte value){
       setVar(midiSound,number-CONTROL_CHANGE_OFFSET,scale(value,CONTROL_CHANGE_BITS,variableDepth[number-CONTROL_CHANGE_OFFSET]));  
       hw.freezeAllKnobs();
     }
+
+  }
+
+  if(number==SWITCH_BYTE){
+    for(int i=0;i<3;i++) hw.setSwitch(i,bitRead(value,i));
+  }
+  else if(number==PAGE_BYTE){
+    page=value;
   }
 
 }
+
+
+
+
+
 
 void HandleProgramChange(byte channel, byte number  ){
   // implement preset change
@@ -110,18 +139,15 @@ void indicateMidiChannel(unsigned char _channel){
 
 
 
-#define NUMBER_OF_MESSAGE_BYTES 16
-#define NUMBER_OF_SYSEX_BYTES 14
-unsigned char sysExArray[NUMBER_OF_SYSEX_BYTES];
 
-#define BASTL_BYTE 0x7D
-#define CHANNEL_BYTE 0x00
-#define INSTRUMENT_BYTE 0X01 // poly 1.0
+
+
+
 
 void HandleSystemExclusive(byte *array, byte size){
 
   if(array[1]==BASTL_BYTE){ 
-    
+
     if(array[2]==CHANNEL_BYTE){
       inputChannel=array[2]; 
       array[2]++;
@@ -134,8 +160,10 @@ void HandleSystemExclusive(byte *array, byte size){
       extractSysExArray(sound);
       hw.freezeAllKnobs();
     }
+    else if(array[2]==TEST_BYTE) test=true, MIDI.turnThruOff(), MIDI.sendSysEx(NUMBER_OF_MESSAGE_BYTES,array,false);
   }
 }
+
 
 
 
@@ -174,6 +202,8 @@ void extractSysExArray(unsigned char _sound){
     setVar(_sound,i,writeTo);
   } 
 }
+
+
 
 
 

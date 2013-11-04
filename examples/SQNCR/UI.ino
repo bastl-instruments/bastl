@@ -9,6 +9,7 @@ unsigned char page;
 #define NUMBER_OF_PAGES 3
 boolean lastClockCount;
 unsigned char currentPattern[NUMBER_OF_INSTRUMENTS];
+unsigned char lastPattern[NUMBER_OF_INSTRUMENTS];
 unsigned char midiNoteOn[NUMBER_OF_INSTRUMENTS][6];
 unsigned char lastStep[NUMBER_OF_INSTRUMENTS];
 unsigned char outChannel[NUMBER_OF_INSTRUMENTS]={
@@ -25,15 +26,18 @@ unsigned char outChannel[NUMBER_OF_INSTRUMENTS]={
 #define CLOCK_BORDER 2
 
 void UI(){
+  if(test==true) testMode();
+  else{
+    renderSmallButtons();
+    renderCombo();
+    if(!combo) renderBigButtons();
+    if(lastClockCount!=seq.clockCount()) recordFromMidi();
+    lastClockCount=seq.clockCount();
+    renderKnobs();
+    renderSequencer();
+    if(!seq.isPlaying()) showLeds();
 
-  renderSmallButtons();
-  renderCombo();
-  if(!combo) renderBigButtons();
-  if(lastClockCount!=seq.clockCount()) recordFromMidi();
-  lastClockCount=seq.clockCount();
-  renderKnobs();
-  renderSequencer();
-  if(!seq.isPlaying()) showLeds();
+  }
 
 }
 
@@ -48,7 +52,7 @@ void renderSequencer(){
     if(jump) seq.jumpToStep(jumpStep);
     proceedStep(seq.getCurrentStep()); 
   }
-  sendGBclock();
+  //  sendGBclock();
 }
 
 
@@ -279,7 +283,7 @@ void recordFromMidi(){
 }
 
 
-  
+
 void renderCombo(){
   // if(hw.buttonState(SMALL_BUTTON_2) && hw.justPressed(SMALL_BUTTON_1)) loadPreset(0), hw.freezeAllKnobs(), combo=true;
   for(int i=0;i<3;i++){
@@ -352,20 +356,26 @@ void renderKnobs(){
 
   }
   else{
+    lastPattern[1]=currentPattern[1];
     if(hw.knobFreezed(KNOB_TOP)) {
       if(inBetween( hw.knobValue(KNOB_TOP)>>8,hw.lastKnobValue(KNOB_TOP)>>8,currentPattern[1]  )) hw.unfreezeKnob(KNOB_TOP); //external unfreez
     }
-    else currentPattern[1]=hw.knobValue(KNOB_TOP)>>8;    
+    else currentPattern[1]=hw.knobValue(KNOB_TOP)>>8; 
+ if(lastPattern[1]!=currentPattern[1]) sendAllNoteOff(1);   
 
+    lastPattern[0]=currentPattern[0];
     if(hw.knobFreezed(KNOB_LEFT)) {
       if(inBetween( hw.knobValue(KNOB_LEFT)>>8,hw.lastKnobValue(KNOB_LEFT)>>8,currentPattern[0]  )) hw.unfreezeKnob(KNOB_LEFT); //external unfreez
     }
     else currentPattern[0]=hw.knobValue(KNOB_LEFT)>>8;   
+    if(lastPattern[0]!=currentPattern[0]) sendAllNoteOff(0);  
 
+    lastPattern[2]=currentPattern[2];
     if(hw.knobFreezed(KNOB_RIGHT)) {
       if(inBetween( hw.knobValue(KNOB_RIGHT)>>8,hw.lastKnobValue(KNOB_RIGHT)>>8,currentPattern[2]  )) hw.unfreezeKnob(KNOB_RIGHT); //external unfreez
     }
-    else currentPattern[2]=hw.knobValue(KNOB_RIGHT)>>8;      
+    else currentPattern[2]=hw.knobValue(KNOB_RIGHT)>>8;     
+   if(lastPattern[2]!=currentPattern[2]) sendAllNoteOff(2);   
   }
 
 }
@@ -376,7 +386,7 @@ void renderKnobs(){
 
 
 void sendGBclock(){
-  
+
   if(seq.isPlaying()){
     if(lastClockCount!=seq.clockCount()){
       if(seq.clockCount()%2==0) hw.setLed(LED_1,false); //hw.setLed(LED_1,false);
@@ -384,7 +394,7 @@ void sendGBclock(){
     }
   }
   else hw.setLed(LED_1,true);
-  
+
 }
 
 void showLeds(){
@@ -510,6 +520,24 @@ void sendAllNoteOff(){
     } 
   }
 }
+
+
+void sendAllNoteOff(unsigned char _instrument){
+
+    switch(instrumentType[_instrument]){
+
+    case MONOPHONIC:
+      MIDI.sendNoteOn(hw.soundFromSwitches(),DEFAULT_VELOCITY,outChannel[_instrument]);
+      break;
+    default:
+      for(int j=0;j<6;j++){
+        MIDI.sendNoteOff(j,OFF_VELOCITY,outChannel[_instrument]);
+      }
+      break;
+    } 
+  
+}
+
 
 
 

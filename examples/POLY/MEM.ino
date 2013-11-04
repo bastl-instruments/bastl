@@ -64,7 +64,7 @@ PROGMEM prog_uint16_t maxValue[]={
 
 #define NUMBER_OF_VARIABLES 12
 #define NUMBER_OF_BYTES 10
-#define NUMBER_OF_PRESETS 3
+#define NUMBER_OF_PRESETS 6
 
 #define PRESET_SIZE 60
 
@@ -205,7 +205,7 @@ void clearMemmory(){
     loadPreset(x);
     for(int i=0;i<NUMBER_OF_SOUNDS;i++){
       for(int j=0;j<NUMBER_OF_VARIABLES;j++){
-        setVar(i,j, pgm_read_byte_near(clearTo+j));
+        setVar(i,j, rand(maxValue[j]));
       }
     }
     //  tempo=120;

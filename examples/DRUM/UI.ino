@@ -14,19 +14,21 @@ unsigned char currentSound[NUMBER_OF_VOICES];
 
 
 void UI(){
-  
-  hw.setColor(page+2);
-  renderSmallButtons();
-  renderCombo();
-  renderBigButtons();
-  renderKnobs();
-  renderTweaking(page);
-  renderTimeStretch();
+  if(test) testMode();
+  else{
+    hw.setColor(page+2);
+    renderSmallButtons();
+    renderCombo();
+    renderBigButtons();
+    renderKnobs();
+    renderTweaking(page);
+    renderTimeStretch();
+  }
 
 }
 
 
-
+#define VOLUME_COMPENSATION 100
 void playSound(unsigned char _SOUND, unsigned char _VELOCITY){
   unsigned char voice=_SOUND%3;
   currentSound[voice]=_SOUND;
@@ -35,7 +37,7 @@ void playSound(unsigned char _SOUND, unsigned char _VELOCITY){
   aSample[voice].setFreq((float)(getVar(_SOUND,RATE)+1)/16);
   aSample[voice].setTimeStretch((getVar(_SOUND,STRETCH)<<2)+1);
   aSample[voice].setEnd(map(getVar(_SOUND,CUT),0,255,16,aSample[voice].getLength()));
-  volume[voice]=(getVar(_SOUND,VOLUME)*_VELOCITY)>>7;
+  volume[voice]=(getVar(_SOUND,VOLUME)*(_VELOCITY))>>7;
   crush[voice]=getVar(_SOUND,CRUSH);
 
   aSample[voice].start();
@@ -86,7 +88,7 @@ void renderSmallButtons(){
   } 
 
   if(hw.justPressed(SMALL_BUTTON_1)) shift=!shift;
-  if(hw.justReleased(SMALL_BUTTON_1)) shift=!shift;
+  if(hw.justReleased(SMALL_BUTTON_1) && !bootShift) shift=!shift;
   if(hw.justPressed(EXTRA_BUTTON_1)) shift=!shift;
 
 
@@ -97,8 +99,8 @@ void renderCombo(){
   // if(hw.buttonState(SMALL_BUTTON_2) && hw.justPressed(SMALL_BUTTON_1)) loadPreset(0), hw.freezeAllKnobs(), combo=true;
   for(int i=0;i<3;i++){
     if(hw.buttonState(EXTRA_BUTTON_2) && hw.justPressed(i)) randomize(i+3*shift); // randomize 
-    if(hw.buttonState(SMALL_BUTTON_1) && hw.buttonState(SMALL_BUTTON_2) && hw.justPressed(i)) storePreset(currentPreset), loadPreset(i), hw.freezeAllKnobs(), combo=true; // save&load
-    if(hw.buttonState(SMALL_BUTTON_2) && hw.justPressed(i)) loadPreset(i), hw.freezeAllKnobs(), combo=true; // load
+    if(hw.buttonState(SMALL_BUTTON_1) && hw.buttonState(SMALL_BUTTON_2) && hw.justPressed(i)) storePreset(currentPreset), loadPreset(i+3*hw.buttonState(EXTRA_BUTTON_2)), hw.freezeAllKnobs(), combo=true; // save&load
+    if(hw.buttonState(SMALL_BUTTON_2) && hw.justPressed(i)) loadPreset(i+3*hw.buttonState(EXTRA_BUTTON_2)), hw.freezeAllKnobs(), combo=true; // load
   }
 
   if(combo){
@@ -198,6 +200,7 @@ void animation(){
   hw.update();
 
 }
+
 
 
 

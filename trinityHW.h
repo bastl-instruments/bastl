@@ -26,6 +26,7 @@ for Standuino wwww.standuino.eu
 #define TRUE 1
 
 #define NUMBER_OF_KNOBS 3
+#define NUMBER_OF_BIG_BUTTONS 3
 #define NUMBER_OF_BUTTONS 7
 #define NUMBER_OF_LEDS 6
 
@@ -56,7 +57,10 @@ for Standuino wwww.standuino.eu
 #define LED_R_PIN 4
 #define LED_G_PIN 5
 #define LED_B_PIN 3
-//*/
+//
+*/
+
+#define ZERO 0
 
 #define SMALL_BUTTON_1_PIN 11
 #define SMALL_BUTTON_2_PIN 17 //18
@@ -69,7 +73,8 @@ for Standuino wwww.standuino.eu
 
 // logic definitions //
 
-#define KNOB_TOLERANCE 0
+#define KNOB_TOLERANCE 2
+#define ACTIVITY_LIMIT 25
 #define KNOB_FREEZE_DISTANCE 32
 
 #define KNOB_1 0
@@ -154,6 +159,7 @@ class trinityHW
 	boolean justReleased(unsigned char _BUTTON);
 	
 	boolean knobFreezed(unsigned char _KNOB);
+	boolean knobMoved(unsigned char _KNOB);
 	void freezeAllKnobs();
 	void unfreezeAllKnobs();
 	void freezeKnob(unsigned char _KNOB);
@@ -177,7 +183,7 @@ class trinityHW
 
 
   private: 
- 
+ 	unsigned char activity;
 	int buttonStateHash;
 	int lastButtonStateHash;
 	int switchStateHash;

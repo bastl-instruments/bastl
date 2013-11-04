@@ -9,7 +9,8 @@ long lastTicks;
 boolean combo;
 
 void UI(){
-  if(pokemon) pokemonMode();
+  if(test) testMode();
+ else if(pokemon) pokemonMode();
 
   else{
     if(page<4) hw.setColor(page);
@@ -108,8 +109,8 @@ void renderCombo(){
 
   for(int i=0;i<3;i++){
     if(hw.buttonState(EXTRA_BUTTON_2) && hw.justPressed(i)) randomize(hw.soundFromSwitches()); // randomize 
-    if(hw.buttonState(SMALL_BUTTON_1) && hw.buttonState(SMALL_BUTTON_2) && hw.justPressed(i)) storeSound(sound),storePreset(currentPreset), loadPreset(i), hw.freezeAllKnobs(), loadSound(sound),combo=true; // save&load
-    if(hw.buttonState(SMALL_BUTTON_2) && hw.justPressed(i)) loadPreset(i), hw.freezeAllKnobs(), loadSound(sound),combo=true; // load
+    if(hw.buttonState(SMALL_BUTTON_1) && hw.buttonState(SMALL_BUTTON_2) && hw.justPressed(i)) storeSound(sound),storePreset(currentPreset), loadPreset(i+3*hw.buttonState(EXTRA_BUTTON_2)), hw.freezeAllKnobs(), loadSound(sound),combo=true; // save&load
+    if(hw.buttonState(SMALL_BUTTON_2) && hw.justPressed(i)) loadPreset(i+3*hw.buttonState(EXTRA_BUTTON_2)), hw.freezeAllKnobs(), loadSound(sound),combo=true; // load
   }
 
 

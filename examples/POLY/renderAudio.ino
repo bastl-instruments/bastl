@@ -2,7 +2,7 @@
 
 int updateAudio(){
 
-  long modulation[NUMBER_OF_VOICES];
+  unsigned int modulation[NUMBER_OF_VOICES]; //int?
   long output=0;
 
   for(int voice=0;voice<NUMBER_OF_VOICES;voice++){

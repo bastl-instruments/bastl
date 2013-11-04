@@ -1,7 +1,7 @@
 
 
 PROGMEM prog_uint16_t clearTo[]={
-  370,64,255, 0,0,255};
+  370,64,255, 0,0,200};
 /*
 
  osc
@@ -55,7 +55,7 @@ PROGMEM prog_uint16_t maxValue[]={
 
 #define NUMBER_OF_VARIABLES 6
 #define NUMBER_OF_BYTES 6
-#define NUMBER_OF_PRESETS 3
+#define NUMBER_OF_PRESETS 6
 
 #define PRESET_SIZE 36
 
@@ -196,7 +196,7 @@ void clearMemmory(){
     for(int i=0;i<NUMBER_OF_SOUNDS;i++){
       for(int j=0;j<NUMBER_OF_VARIABLES;j++){
 
-        if(j==SAMPLE)  setVar(i,j,i*3);
+        if(j==SAMPLE)  setVar(i,j,i*6);
         else if (j==RATE && i>=3) setVar(i,j, pgm_read_word_near(clearTo+j)+350);
         else if (j==STRETCH && i>=3) setVar(i,j, pgm_read_word_near(clearTo+j)+64);
         else setVar(i,j, pgm_read_word_near(clearTo+j));

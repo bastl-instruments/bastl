@@ -1,6 +1,7 @@
 
 
-boolean pokemon=false;
+
+
 unsigned char page;
 unsigned char sound,lastSound;
 boolean midiNote;
@@ -18,26 +19,33 @@ unsigned char destination[NUMBER_OF_VOICES];
 unsigned char ADSRAmt[NUMBER_OF_VOICES];
 boolean ADSRDest[NUMBER_OF_VOICES];
 unsigned char currentSound[NUMBER_OF_VOICES];
-long lastTicks;
+//long lastTicks;
+
 
 void UI(){
-  
-  if(pokemon) pokemonMode();
+
+  if(test && pokemon) MIDI.sendControlChange(1,2,3);
+  else if(test==true) testMode();
+  else if(pokemon==true) pokemonMode();
 
   else{
+    //  MIDI.sendControlChange(1,2,3);
+
+
     if(page<3) hw.setColor(page+1);
     else hw.setColor(WHITE);
-
     renderSmallButtons();
     renderCombo();
-    renderBigButtons();
     renderKnobs();
+    renderBigButtons();
     renderEnvelope();
     renderTweaking(page);
     renderLfo();
 
+
+
   }
-  
+
 }
 
 void setAllValues(unsigned char _SOUND,unsigned char voice){
@@ -80,13 +88,13 @@ void setAllValues(unsigned char _SOUND,unsigned char voice){
   ADSR[voice].setAttack(scale(getVar(_SOUND,ATTACK),variableDepth[ATTACK],ADSR_BITS));
 
   if(getVar(_SOUND,SUSTAIN)==0){
-    ADSR[voice].setDecay(scale(getVar(_SOUND,RELEASE),variableDepth[RELEASE],ADSR_BITS)); 
+    ADSR[voice].setDecay(scale(getVar(_SOUND,RELEASE),variableDepth[RELEASE],SUSTAIN_BITS)); 
   }
   else{
     ADSR[voice].setDecay(scale(getBits(getVar(_SOUND,ADSR_CHAR),5,3),3,ADSR_BITS));
   }
   ADSR[voice].setSustain(scale(getVar(_SOUND,SUSTAIN),variableDepth[SUSTAIN],SUSTAIN_BITS));
-  ADSR[voice].setRelease(scale(getVar(_SOUND,RELEASE),variableDepth[RELEASE],ADSR_BITS)); // playDec
+  ADSR[voice].setRelease(scale(getVar(_SOUND,RELEASE),variableDepth[RELEASE],SUSTAIN_BITS)); // playDec
   ADSRDest[voice]=getBits(getVar(_SOUND,ADSR_CHAR),0,1);
   ADSRAmt[voice]=getBits(getVar(_SOUND,ADSR_CHAR),1,4)<<4;
 
@@ -214,7 +222,7 @@ void renderSmallButtons(){
   } 
 
   if(hw.justPressed(SMALL_BUTTON_1)) shift=!shift;
-  if(hw.justReleased(SMALL_BUTTON_1)) shift=!shift;
+  if(hw.justReleased(SMALL_BUTTON_1) && !bootShift) shift=!shift;
   if(hw.justPressed(EXTRA_BUTTON_1)) shift=!shift;
 
 
@@ -225,8 +233,8 @@ void renderCombo(){
   // if(hw.buttonState(SMALL_BUTTON_2) && hw.justPressed(SMALL_BUTTON_1)) loadPreset(0), hw.freezeAllKnobs(), combo=true;
   for(int i=0;i<3;i++){
     if(hw.buttonState(EXTRA_BUTTON_2) && hw.justPressed(i)) randomize(i+3*shift); // randomize 
-    if(hw.buttonState(SMALL_BUTTON_1) && hw.buttonState(SMALL_BUTTON_2) && hw.justPressed(i)) storePreset(currentPreset), loadPreset(i), hw.freezeAllKnobs(), combo=true; // save&load
-    if(hw.buttonState(SMALL_BUTTON_2) && hw.justPressed(i)) loadPreset(i), hw.freezeAllKnobs(), combo=true; // load
+    if(hw.buttonState(SMALL_BUTTON_1) && hw.buttonState(SMALL_BUTTON_2) && hw.justPressed(i)) storePreset(currentPreset), loadPreset(i+3*hw.buttonState(EXTRA_BUTTON_2)), hw.freezeAllKnobs(), combo=true; // save&load
+    if(hw.buttonState(SMALL_BUTTON_2) && hw.justPressed(i)) loadPreset(i+3*hw.buttonState(EXTRA_BUTTON_2)), hw.freezeAllKnobs(), combo=true; // load
   }
 
   if(combo){
@@ -245,12 +253,12 @@ void randomize(unsigned char _sound){
 }
 void renderBigButtons(){
 
-  for(int i=0;i<3;i++){
+  for(int i=0;i<NUMBER_OF_BIG_BUTTONS;i++){
     //if(voiceUse[i]<255) hw.setLed(i,true);
     // else hw.setLed(i,false);
 
     if(shift){
-      if(currentSound[i]==i+3 && ADSR[i].active()) hw.setLed(i,true);
+      if(currentSound[i]==i+NUMBER_OF_BIG_BUTTONS && ADSR[i].active()) hw.setLed(i,true);
       else hw.setLed(i,false);
 
     }
@@ -267,7 +275,7 @@ void renderBigButtons(){
 
       if(hw.justPressed(i)) {
         if(!shift) sound=i, playSound(sound,DEFAULT_VELOCITY);
-        else sound=i+3, playSound(sound,DEFAULT_VELOCITY);
+        else sound=i+NUMBER_OF_BIG_BUTTONS, playSound(sound,DEFAULT_VELOCITY);
       }
       if(hw.justReleased(i))  ADSR[i].noteOff();
     };
@@ -322,24 +330,24 @@ unsigned char getBits(unsigned char _val, unsigned char _offset, unsigned char _
   }
   return  returnVal;
 }
-
+#define ANIMATION_DELAY 150
 void animation(){
 
   hw.setLed(LED_1,true);
   hw.update();
-  delay(150);
+  delay(ANIMATION_DELAY);
   hw.setLed(LED_3,true);
   hw.update();
-  delay(150);
+  delay(ANIMATION_DELAY);
   hw.setLed(LED_2,true);
   hw.update();
-  delay(150);
+  delay(ANIMATION_DELAY);
   hw.setColor(BLUE);
   hw.update();
-  delay(150);
+  delay(ANIMATION_DELAY);
   hw.setColor(WHITE);
   hw.update();
-  delay(150);
+  delay(ANIMATION_DELAY);
   hw.setColor(BLACK);
   hw.setLed(LED_1,false);
   hw.setLed(LED_2,false);
@@ -353,38 +361,18 @@ void animation(){
 
 
 
-void pokemonMode(){
 
-  if(audioTicks()-lastTicks>4000) lastTicks=audioTicks(), page=increaseValue(page,7);
-  hw.setColor(page);
-  shift=hw.buttonState(SMALL_BUTTON_1);
-  if(hw.buttonState(SMALL_BUTTON_1) && hw.justPressed(SMALL_BUTTON_2)) makeSysExArray(sound), sendSysExArray();
-  for(int i=0;i<3;i++) if(hw.buttonState(SMALL_BUTTON_2) && hw.justPressed(i)) loadPreset(i);
-
-  renderBigButtons();
-  renderEnvelope();
-  renderLfo(); 
-}
-
-
-
-
-
-
-void checkForPokemon(){
-  if(hw.buttonState(SMALL_BUTTON_1) && hw.buttonState(SMALL_BUTTON_2)) pokemon=true; 
-
-}
-
-
-
-#define NUMBER_OF_MESSAGE_BYTES 16
-#define NUMBER_OF_SYSEX_BYTES 14
+#define NUMBER_OF_MESSAGE_BYTES 6
+#define NUMBER_OF_SYSEX_BYTES 4
 unsigned char sysExArray[NUMBER_OF_SYSEX_BYTES];
+
+#define SWITCH_BYTE 14
+#define PAGE_BYTE 13
 
 #define BASTL_BYTE 0x7D
 #define CHANNEL_BYTE 0x00
 #define INSTRUMENT_BYTE 0X01 // poly 1.0
+#define TEST_BYTE 0x0A
 
 void makeSysExArray(unsigned char _sound){
   unsigned char _bit=0;
@@ -411,7 +399,7 @@ void sendSysExArray(){
 void HandleSystemExclusive(byte *array, byte size){
 
   if(array[1]==BASTL_BYTE){ 
-    
+
     if(array[2]==CHANNEL_BYTE){
       inputChannel=array[2]; 
       array[2]++;
@@ -424,7 +412,9 @@ void HandleSystemExclusive(byte *array, byte size){
       extractSysExArray(sound);
       hw.freezeAllKnobs();
     }
+    else if(array[2]==TEST_BYTE) test=true, MIDI.turnThruOff(), MIDI.sendSysEx(NUMBER_OF_MESSAGE_BYTES,array,false);
   }
+
 }
 
 
@@ -446,6 +436,12 @@ void extractSysExArray(unsigned char _sound){
     setVar(_sound,i,writeTo);
   } 
 }
+
+
+
+
+
+
 
 
 

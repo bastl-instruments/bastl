@@ -16,9 +16,9 @@ FraAngelicoHW library example
 trinityHW hw; // MOZZI or DEFAULT
 sequencer seq(61); // set timeBase
 //Memory mem;
-
+boolean test=false;
 void setup(){
-  
+test=false;
   hw.setFreezeType(UNFREEZE_EXTERNALY);
   hw.initialize(DEFAULT);
 
@@ -35,6 +35,8 @@ void setup(){
   seq.setGrooveOn();
   hw.update();
   hw.update();
+//  hack
+   pinMode(0,INPUT_PULLUP);
 }
 
 void loop(){
