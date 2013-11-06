@@ -1,3 +1,15 @@
+
+###############***************###############
+Licence:
+Bastl Library by Vaclav Pelousek http://pelousek.eu
+for Bastl Instruments http://www.bastl-instruments.com/
+based on Mozzi Library http://sensorium.github.io/Mozzi/
+
+This work is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported License. 
+To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/3.0/deed.en_US.
+###############***************###############
+
+
 Bastl library for Arduino includes utilities for joining the Mozzi library, 
 includes necessary files to make the source code compile for Bastl Instruments softwares.
 
@@ -12,6 +24,10 @@ unpack it, rename folder name simply to "bastl" and copy it to "libraries"
 folder of your Arduino IDE. You also need to install the Mozzi and the 
 MIDI library for Arduino.
 
+For more information about uploading software to Trinity see: 
+http://www.instructables.com/id/Upload-new-software-to-Trinity-using-Arduino-Jak-n/
+ 
+ 
 Bastl Instruments
 
 is new brand for electronic hand-made musical instrument which continues the instruments 
