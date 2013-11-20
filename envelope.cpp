@@ -47,6 +47,9 @@ void envelope::update(){
 				value=releaseFrom-counter*releaseStep;
 				if(value<=MIN_VALUE) phase=END_PHASE, counter=0, _active=false, value=0;
 			break;
+			case END_PHASE:
+			_active=false, value=0;
+			break;
 		
 		}
 	}
