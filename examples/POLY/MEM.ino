@@ -201,6 +201,7 @@ void loadPreset(unsigned char index) {
 
 
 void clearMemmory(){
+//  randSeed();
   for(int x=0;x<NUMBER_OF_PRESETS;x++){
     loadPreset(x);
     for(int i=0;i<NUMBER_OF_SOUNDS;i++){

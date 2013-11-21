@@ -10,7 +10,7 @@ boolean combo;
 
 void UI(){
   if(test) testMode();
- else if(pokemon) pokemonMode();
+  else if(pokemon) pokemonMode();
 
   else{
     if(page<4) hw.setColor(page);
@@ -105,29 +105,58 @@ void randomize(unsigned char _sound){
   for(int i=0;i<NUMBER_OF_VARIABLES;i++) setVar(_sound,i,rand(maxValue[i])), hw.freezeAllKnobs(),loadSound(_sound);
 }
 
+
+#define LONG_THRESHOLD 40
+boolean countLong, longPress;
+int longCount;
+
+
 void renderCombo(){
+
+  if(countLong) {
+    longCount++;
+    if(longCount>LONG_THRESHOLD) longPress=true;
+  }
 
   for(int i=0;i<3;i++){
     if(hw.buttonState(EXTRA_BUTTON_2) && hw.justPressed(i)) randomize(hw.soundFromSwitches()); // randomize 
-    if(hw.buttonState(SMALL_BUTTON_1) && hw.buttonState(SMALL_BUTTON_2) && hw.justPressed(i)) storeSound(sound),storePreset(currentPreset), loadPreset(i+3*hw.buttonState(EXTRA_BUTTON_2)), hw.freezeAllKnobs(), loadSound(sound),combo=true; // save&load
-    if(hw.buttonState(SMALL_BUTTON_2) && hw.justPressed(i)) loadPreset(i+3*hw.buttonState(EXTRA_BUTTON_2)), hw.freezeAllKnobs(), loadSound(sound),combo=true; // load
+
+    if(hw.buttonState(SMALL_BUTTON_1) && hw.buttonState(SMALL_BUTTON_2) && hw.justPressed(i)) countLong=true,longCount=0, combo=true; // save&load
+    if(hw.buttonState(SMALL_BUTTON_1) && hw.buttonState(SMALL_BUTTON_2) && hw.justReleased(i)){
+      if(longPress) storeSound(sound), storePreset(currentPreset),loadPreset(i+3), hw.freezeAllKnobs(), loadSound(sound),combo=true; // save&load
+      else storeSound(sound), storePreset(currentPreset), loadPreset(i+3*hw.buttonState(EXTRA_BUTTON_2)), hw.freezeAllKnobs(), loadSound(sound),combo=true;
+      // countLong=false, longCount=0,longPress=false;
+    }
+
+    if(hw.buttonState(SMALL_BUTTON_2) && hw.justPressed(i)) countLong=true,longCount=0, combo=true; // load
+    if(hw.buttonState(SMALL_BUTTON_2) && hw.justReleased(i)){
+      if(longPress) loadPreset(i+3), hw.freezeAllKnobs(),loadSound(sound);
+      else loadPreset(i+3*hw.buttonState(EXTRA_BUTTON_2)), hw.freezeAllKnobs(),loadSound(sound);
+      // countLong=false, longCount=0, longPress=false;
+    }
+
+    if(longPress) hw.setLed(i,true), hw.setColor(WHITE);
   }
 
 
   if(combo){
-
+/*
     hw.setLed(LED_1,true); //indicate combo
     hw.setLed(LED_2,true);
     hw.setLed(LED_3,true); 
-
+*/
     //turn off combo when all buttons are released 
     unsigned char _count=0; 
     for(int i=0;i<NUMBER_OF_BUTTONS;i++)  _count+=hw.buttonState(i); // if(!hw.buttonState(i)) combo=false;
-    if(_count==0) combo=false;
+    if(_count==0) combo=false,countLong=false, longCount=0,longPress=false;
     //else combo=true;
 
   }
 }
+
+
+
+
 
 int lfoNow;
 
@@ -247,14 +276,14 @@ void pokemonMode(){
   if(hw.buttonState(SMALL_BUTTON_1) && hw.justPressed(SMALL_BUTTON_2)) makeSysExArray(sound), sendSysExArray();
   for(int i=0;i<3;i++) if(hw.buttonState(SMALL_BUTTON_2) && hw.justPressed(i)) loadPreset(i);
 
- //  renderSmallButtons();
-    renderBigButtons();
+  //  renderSmallButtons();
+  renderBigButtons();
   //  renderKnobs();
-   // renderCombo();
-    //RENDER SOUND
-    loadSound(sound);
-    renderLfo();
-    setValues();  
+  // renderCombo();
+  //RENDER SOUND
+  loadSound(sound);
+  renderLfo();
+  setValues();  
 }
 
 void checkForPokemon(){
@@ -275,4 +304,6 @@ int decreaseValue(int _VALUE, int _OVERFLOW, int _INCREMENT){
   if(_VALUE > _OVERFLOW) _VALUE-=_INCREMENT;
   return _VALUE;
 }
+
+
 

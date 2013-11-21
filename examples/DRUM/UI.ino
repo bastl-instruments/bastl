@@ -93,21 +93,40 @@ void renderSmallButtons(){
 
 
 }
-void renderCombo(){
 
+#define LONG_THRESHOLD 40
+boolean countLong, longPress;
+int longCount;
+void renderCombo(){
+  
+  if(countLong) {
+    longCount++;
+    if(longCount>LONG_THRESHOLD) longPress=true;
+  }
   //loading saving presets
   // if(hw.buttonState(SMALL_BUTTON_2) && hw.justPressed(SMALL_BUTTON_1)) loadPreset(0), hw.freezeAllKnobs(), combo=true;
   for(int i=0;i<3;i++){
     if(hw.buttonState(EXTRA_BUTTON_2) && hw.justPressed(i)) randomize(i+3*shift); // randomize 
-    if(hw.buttonState(SMALL_BUTTON_1) && hw.buttonState(SMALL_BUTTON_2) && hw.justPressed(i)) storePreset(currentPreset), loadPreset(i+3*hw.buttonState(EXTRA_BUTTON_2)), hw.freezeAllKnobs(), combo=true; // save&load
-    if(hw.buttonState(SMALL_BUTTON_2) && hw.justPressed(i)) loadPreset(i+3*hw.buttonState(EXTRA_BUTTON_2)), hw.freezeAllKnobs(), combo=true; // load
+    if(hw.buttonState(SMALL_BUTTON_1) && hw.buttonState(SMALL_BUTTON_2) && hw.justPressed(i)) countLong=true,longCount=0, combo=true; // save&load
+    if(hw.buttonState(SMALL_BUTTON_1) && hw.buttonState(SMALL_BUTTON_2) && hw.justReleased(i)){
+      if(longPress) storePreset(currentPreset),loadPreset(i+3), hw.freezeAllKnobs(), combo=true; // save&load
+      else storePreset(currentPreset), loadPreset(i+3*hw.buttonState(EXTRA_BUTTON_2)), hw.freezeAllKnobs(), combo=true;
+      // countLong=false, longCount=0,longPress=false;
+    }
+
+    if(hw.buttonState(SMALL_BUTTON_2) && hw.justPressed(i)) countLong=true,longCount=0, combo=true; // load
+    if(hw.buttonState(SMALL_BUTTON_2) && hw.justReleased(i)){
+      if(longPress) loadPreset(i+3), hw.freezeAllKnobs();
+      else loadPreset(i+3*hw.buttonState(EXTRA_BUTTON_2)), hw.freezeAllKnobs();
+      // countLong=false, longCount=0, longPress=false;
+    }
   }
 
   if(combo){
     //turn off combo when all buttons are released 
     unsigned char _count=0; 
     for(int i=0;i<NUMBER_OF_BUTTONS;i++)  _count+=hw.buttonState(i); // if(!hw.buttonState(i)) combo=false;
-    if(_count==0) combo=false;
+    if(_count==0) combo=false,countLong=false, longCount=0,longPress=false;
     //else combo=true;
   } 
 
@@ -122,6 +141,7 @@ void renderBigButtons(){
   if(!combo){
     for(int i=BIG_BUTTON_1;i<=BIG_BUTTON_3;i++) {
       hw.setLed(i,hw.buttonState(i));
+      if(longPress) hw.setLed(i,true);
       if(hw.justPressed(i)) {
         if(!shift) sound=i, playSound(sound,DEFAULT_VELOCITY), shiftSpeed=0;
         else sound=i+3, playSound(sound,DEFAULT_VELOCITY);
@@ -131,6 +151,10 @@ void renderBigButtons(){
     if(sound!=lastSound)  hw.freezeAllKnobs();
     lastSound=sound;
   } 
+
+  for(int i=BIG_BUTTON_1;i<=BIG_BUTTON_3;i++){
+    if(longPress) hw.setLed(i,true);
+  }
 
 }
 void renderKnobs(){
@@ -200,6 +224,8 @@ void animation(){
   hw.update();
 
 }
+
+
 
 
 
