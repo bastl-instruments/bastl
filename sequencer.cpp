@@ -142,7 +142,7 @@ void sequencer::tapIn(long _time){
 void sequencer::play(){ // midiPlayCommand - nachysta a resetuje sequencer a na dalsi clock in zacne hrat od 1. doby
 	playing=true;
 	stepCounter=-1;
-	clockCounter=5;
+	clockCounter=clockDivider-1;
 	stepsReady=0;
 }
 

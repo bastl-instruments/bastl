@@ -62,6 +62,7 @@ class envelope
 	unsigned char sustain;
 	unsigned char activeSustain;
 	unsigned char release;
+	unsigned char velocity;
 	
 	unsigned char attackStep;
 	unsigned char decayStep;

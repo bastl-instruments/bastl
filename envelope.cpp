@@ -39,7 +39,8 @@ void envelope::update(){
 			
 			break;
 			case SUSTAIN_PHASE:
-			if(activeSustain==0) phase=END_PHASE, _active=false, counter=0, value=0;
+				value=activeSustain;
+				if(activeSustain==0) phase=END_PHASE, _active=false, counter=0, value=0;
 			break;
 			
 			case RELEASE_PHASE:
@@ -74,6 +75,7 @@ void envelope::setDecay(unsigned char _DECAY){
 }
 void envelope::setSustain(unsigned char _SUSTAIN){
 	sustain=_SUSTAIN;
+	if(phase==SUSTAIN_PHASE) activeSustain=(sustain*velocity)>>7;
 }
 void envelope::setRelease(unsigned char _RELEASE){
 	release=_RELEASE;
@@ -90,12 +92,14 @@ void envelope::noteOn(){
 }
 
 void envelope::noteOn(unsigned char _VELOCITY){
+	velocity=_VELOCITY;
 	value=0;
 	counter=0;
 	phase=ATTACK_PHASE;
 	_active=true;
-	MAX_VALUE=_VELOCITY<<1;
-	activeSustain=(sustain*_VELOCITY)>>7;
+	MAX_VALUE=velocity<<1;
+	activeSustain=(sustain*velocity)>>7;
+	decayStep=(255-activeSustain)/decay;
 	
 }
 void envelope::noteOff(){
