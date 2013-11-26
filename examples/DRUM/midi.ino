@@ -1,6 +1,6 @@
 
 #define CONTROL_CHANGE_BITS 7
-#define CONTROL_CHANGE_OFFSET 102
+#define CONTROL_CHANGE_OFFSET 3
 unsigned char midiSound;
 
 #define SWITCH_BYTE 14
@@ -43,11 +43,27 @@ void HandleNoteOff(byte channel, byte note, byte velocity){
 void HandleControlChange(byte channel, byte number, byte value){
   // implement knob movement
   if(channel==inputChannel){
-    if((number-CONTROL_CHANGE_OFFSET )<NUMBER_OF_VARIABLES){
-      setVar(midiSound,number-CONTROL_CHANGE_OFFSET,scale(value,CONTROL_CHANGE_BITS,variableDepth[number-CONTROL_CHANGE_OFFSET]));  
+    if((number>=CONTROL_CHANGE_OFFSET && number<76){
+    number=number-CONTROL_CHANGE_OFFSET;
+    midiSound=number/NUMBER_OF_VARIABLES;
+    number=number%NUMBER_OF_VARIABLES;
+    
+    setVar(midiSound,number,scale(value,CONTROL_CHANGE_BITS,variableDepth[number]));  
+    hw.freezeAllKnobs();
+    renderTweaking((number)/VARIABLES_PER_PAGE);
+      
+    /*
+    if((number<NUMBER_OF_VARIABLES){
+      setVar(midiSound,number,scale(value,CONTROL_CHANGE_BITS,variableDepth[number]));  
       hw.freezeAllKnobs();
-      renderTweaking((number-CONTROL_CHANGE_OFFSET)/VARIABLES_PER_PAGE);
+      renderTweaking((number)/VARIABLES_PER_PAGE);
     }
+    */
+    }
+    else if(number==PRESET_BY_CC_BYTE)
+    else if(number==SUSTAIN_PEDAL_BYTE) sustainPedal=value>>6;
+    else if(number==RANDOMIZE_BYTE)
+    
   }
   
   if(number==SWITCH_BYTE){

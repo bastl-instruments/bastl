@@ -1,7 +1,6 @@
 
 
-#define CONTROL_CHANGE_BITS 7
-#define CONTROL_CHANGE_OFFSET 102
+
 
 unsigned char midiSound;
 
@@ -179,21 +178,45 @@ void HandleNoteOff(byte channel, byte note, byte velocity){
   }
 }
 
+#define MOD_WHEELL_BYTE 1
+#define SUSTAIN_PEDAL_BYTE 64
+#define PRESET_BY_CC_BYTE 0
+#define RANDOMIZE_BYTE 127
+
+#define CONTROL_CHANGE_BITS 7
+#define CONTROL_CHANGE_OFFSET 3
+#define CONTROL_CHANGE_OFFSET_2 102
+
+boolean sustainPedal;
+//#define SUSTAIN_PEDAL_BYTE 64
+//#define NUMBER_OF_REAL_VARIABLES 20
+
 void HandleControlChange(byte channel, byte number, byte value){
   // implement knob movement
   if(channel==inputChannel){
-    if((number-CONTROL_CHANGE_OFFSET )<NUMBER_OF_VARIABLES){
-      setVar(midiSound,number-CONTROL_CHANGE_OFFSET,scale(value,CONTROL_CHANGE_BITS,variableDepth[number-CONTROL_CHANGE_OFFSET]));  
-      hw.freezeAllKnobs();
-      renderTweaking((number-CONTROL_CHANGE_OFFSET)/VARIABLES_PER_PAGE);
-    }
-  }
 
-  if(number==SWITCH_BYTE){
-    for(int i=ZERO;i<3;i++) hw.setSwitch(i,bitRead(value,i));
-  }
-  else if(number==PAGE_BYTE){
-    page=value;
+    if(number==PRESET_BY_CC_BYTE) loadPreset(map(value,0,128,0,NUMBER_OF_PRESETS)), hw.freezeAllKnobs();
+    else if(number==SUSTAIN_PEDAL_BYTE) sustainPedal=value>>6;
+    else if(number==RANDOMIZE_BYTE) randomize(midiSound);
+    
+    else if(number>=CONTROL_CHANGE_OFFSET && number<76){
+      number=number-CONTROL_CHANGE_OFFSET;
+      if(number>64) number--;
+      number=number-CONTROL_CHANGE_OFFSET;
+      midiSound=number/NUMBER_OF_VARIABLES;
+      number=number%NUMBER_OF_VARIABLES;
+      setVar(midiSound,number,scale(value,CONTROL_CHANGE_BITS,variableDepth[number]));  
+      hw.freezeAllKnobs();
+      renderTweaking((number)/VARIABLES_PER_PAGE);
+    }
+    
+    else if(number>=CONTROL_CHANGE_OFFSET_2 && number<=(CONTROL_CHANGE_OFFSET_2+NUMBER_OF_VARIABLES)){
+      number=number-CONTROL_CHANGE_OFFSET_2;
+      setVar(midiSound,number,scale(value,CONTROL_CHANGE_BITS,variableDepth[number]));  
+      hw.freezeAllKnobs();
+      renderTweaking((number)/VARIABLES_PER_PAGE);
+    }
+
   }
 
 }
@@ -263,6 +286,11 @@ void indicateMidiChannel(unsigned char _channel){
   }
 
 }
+
+
+
+
+
 
 
 

@@ -66,6 +66,7 @@ void setAllValues(unsigned char _SOUND,unsigned char voice){
     modDepth[voice]=var[voice][MOD_AMT];
 
   }
+  
   else{
 
     var[voice][MOD_FREQ]=getVar(_SOUND,MOD_FREQ);
