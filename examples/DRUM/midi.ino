@@ -43,7 +43,7 @@ void HandleNoteOff(byte channel, byte note, byte velocity){
 void HandleControlChange(byte channel, byte number, byte value){
   // implement knob movement
   if(channel==inputChannel){
-    if((number>=CONTROL_CHANGE_OFFSET && number<76){
+    if((number>=CONTROL_CHANGE_OFFSET && number<76)){
     number=number-CONTROL_CHANGE_OFFSET;
     midiSound=number/NUMBER_OF_VARIABLES;
     number=number%NUMBER_OF_VARIABLES;
@@ -60,10 +60,11 @@ void HandleControlChange(byte channel, byte number, byte value){
     }
     */
     }
+    /*
     else if(number==PRESET_BY_CC_BYTE)
     else if(number==SUSTAIN_PEDAL_BYTE) sustainPedal=value>>6;
     else if(number==RANDOMIZE_BYTE)
-    
+    */
   }
   
   if(number==SWITCH_BYTE){
