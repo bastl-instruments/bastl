@@ -80,6 +80,7 @@ void setup() {
 void updateControl(){
 
   while(MIDI.read(inputChannel)) MIDI.read(inputChannel);
+  while(MIDI.read()) MIDI.read();
   MIDI.read();
   MIDI.read();
   MIDI.read();
@@ -87,6 +88,7 @@ void updateControl(){
   MIDI.read();
   hw.update();
   while(MIDI.read(inputChannel)) MIDI.read(inputChannel);
+  while(MIDI.read()) MIDI.read();
   MIDI.read();
   MIDI.read();
   MIDI.read();
@@ -94,11 +96,12 @@ void updateControl(){
   MIDI.read();
   UI();
   while(MIDI.read(inputChannel)) MIDI.read(inputChannel);
-  MIDI.read(inputChannel);
-  MIDI.read(inputChannel);
-  MIDI.read(inputChannel);
-  MIDI.read(inputChannel);
-  MIDI.read(inputChannel);
+  while(MIDI.read()) MIDI.read();
+  MIDI.read();
+  MIDI.read();
+  MIDI.read();
+  MIDI.read();
+  MIDI.read();
 
 
 }
@@ -106,6 +109,7 @@ void updateControl(){
 void loop() {
   audioHook();
 }
+
 
 
 

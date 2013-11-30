@@ -54,7 +54,7 @@ Sample<AUDIO_RATE> aSample[NUMBER_OF_VOICES];
 trinityHW hw; // MOZZI or DEFAULT
 boolean bootShift=false;
 void setup() {
-  
+
   // debug();
   hw.setFreezeType(UNFREEZE_EXTERNALY);
   hw.initialize(DEFAULT);
@@ -63,7 +63,7 @@ void setup() {
   animation();
   initMem();
   initMidi(getMidiChannel());
-  
+
   startMozzi(CONTROL_RATE);
 
   //adcReconnectAllDigitalIns();
@@ -77,26 +77,29 @@ void setup() {
 void updateControl(){
 
   while(MIDI.read(inputChannel)) MIDI.read(inputChannel);
-   MIDI.read();
-   MIDI.read();
-   MIDI.read();
-   MIDI.read();
-   MIDI.read();
+  while(MIDI.read()) MIDI.read();
+  MIDI.read();
+  MIDI.read();
+  MIDI.read();
+  MIDI.read();
+  MIDI.read();
 
   hw.update();
   UI();
   while(MIDI.read(inputChannel)) MIDI.read(inputChannel);
-   MIDI.read();
-   MIDI.read();
-   MIDI.read();
-   MIDI.read();
-   MIDI.read();
+  while(MIDI.read()) MIDI.read();
+  MIDI.read();
+  MIDI.read();
+  MIDI.read();
+  MIDI.read();
+  MIDI.read();
 
 }
 
 void loop() {
   audioHook();
 }
+
 
 
 

@@ -18,7 +18,7 @@ sequencer seq(61); // set timeBase
 //Memory mem;
 boolean test=false;
 void setup(){
-test=false;
+  test=false;
   hw.setFreezeType(UNFREEZE_EXTERNALY);
   hw.initialize(DEFAULT);
 
@@ -35,8 +35,8 @@ test=false;
   seq.setGrooveOn();
   hw.update();
   hw.update();
-//  hack
-   pinMode(0,INPUT_PULLUP);
+  //  hack
+  pinMode(0,INPUT_PULLUP);
 }
 
 void loop(){
@@ -45,11 +45,12 @@ void loop(){
 
 void updateControl(){
 
-  MIDI.read();
+  while(MIDI.read()) MIDI.read();
   hw.update();
   UI();
-
+  while(MIDI.read()) MIDI.read();
 }
+
 
 
 
