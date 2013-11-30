@@ -196,9 +196,11 @@ void HandleControlChange(byte channel, byte number, byte value){
   if(channel==inputChannel){
 
     if(number==PRESET_BY_CC_BYTE) loadPreset(map(value,0,128,0,NUMBER_OF_PRESETS)), hw.freezeAllKnobs();
-    else if(number==SUSTAIN_PEDAL_BYTE) sustainPedal=value>>6;
+    
     else if(number==RANDOMIZE_BYTE) randomize(midiSound);
     
+    else if(number==SUSTAIN_PEDAL_BYTE) sustainPedal=value>>6;
+
     else if(number>=CONTROL_CHANGE_OFFSET && number<76){
       number=number-CONTROL_CHANGE_OFFSET;
       if(number>64) number--;
@@ -209,7 +211,7 @@ void HandleControlChange(byte channel, byte number, byte value){
       hw.freezeAllKnobs();
       renderTweaking((number)/VARIABLES_PER_PAGE);
     }
-    
+
     else if(number>=CONTROL_CHANGE_OFFSET_2 && number<=(CONTROL_CHANGE_OFFSET_2+NUMBER_OF_VARIABLES)){
       number=number-CONTROL_CHANGE_OFFSET_2;
       setVar(midiSound,number,scale(value,CONTROL_CHANGE_BITS,variableDepth[number]));  
@@ -217,6 +219,16 @@ void HandleControlChange(byte channel, byte number, byte value){
       renderTweaking((number)/VARIABLES_PER_PAGE);
     }
 
+  }
+
+  //testMode
+  if(test){
+    if(number==SWITCH_BYTE){
+      for(int i=0;i<3;i++) hw.setSwitch(i,bitRead(value,i));
+    }
+    else if(number==PAGE_BYTE){
+      page=value;
+    }
   }
 
 }
@@ -286,6 +298,7 @@ void indicateMidiChannel(unsigned char _channel){
   }
 
 }
+
 
 
 

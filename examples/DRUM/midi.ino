@@ -14,6 +14,10 @@ unsigned char midiSound;
 
 #define NUMBER_OF_MESSAGE_BYTES 16
 #define NUMBER_OF_SYSEX_BYTES 14
+
+#define PRESET_BY_CC_BYTE 0
+#define RANDOMIZE_BYTE 127
+
 unsigned char sysExArray[NUMBER_OF_SYSEX_BYTES];
 
 void HandleNoteOn(byte channel, byte note, byte velocity) { 
@@ -43,37 +47,41 @@ void HandleNoteOff(byte channel, byte note, byte velocity){
 void HandleControlChange(byte channel, byte number, byte value){
   // implement knob movement
   if(channel==inputChannel){
-    if((number>=CONTROL_CHANGE_OFFSET && number<76)){
-    number=number-CONTROL_CHANGE_OFFSET;
-    midiSound=number/NUMBER_OF_VARIABLES;
-    number=number%NUMBER_OF_VARIABLES;
-    
-    setVar(midiSound,number,scale(value,CONTROL_CHANGE_BITS,variableDepth[number]));  
-    hw.freezeAllKnobs();
-    renderTweaking((number)/VARIABLES_PER_PAGE);
-      
-    /*
-    if((number<NUMBER_OF_VARIABLES){
+    if(number==PRESET_BY_CC_BYTE) loadPreset(map(value,0,128,0,NUMBER_OF_PRESETS)), hw.freezeAllKnobs();
+
+    else if(number==RANDOMIZE_BYTE) randomize(midiSound);
+
+    else if((number>=CONTROL_CHANGE_OFFSET && number<39)){
+      number=number-CONTROL_CHANGE_OFFSET;
+      midiSound=number/NUMBER_OF_VARIABLES;
+      number=number%NUMBER_OF_VARIABLES;
+
       setVar(midiSound,number,scale(value,CONTROL_CHANGE_BITS,variableDepth[number]));  
       hw.freezeAllKnobs();
       renderTweaking((number)/VARIABLES_PER_PAGE);
-    }
-    */
+
+      /*
+    if((number<NUMBER_OF_VARIABLES){
+       setVar(midiSound,number,scale(value,CONTROL_CHANGE_BITS,variableDepth[number]));  
+       hw.freezeAllKnobs();
+       renderTweaking((number)/VARIABLES_PER_PAGE);
+       }
+       */
     }
     /*
     else if(number==PRESET_BY_CC_BYTE)
-    else if(number==SUSTAIN_PEDAL_BYTE) sustainPedal=value>>6;
-    else if(number==RANDOMIZE_BYTE)
-    */
+     else if(number==SUSTAIN_PEDAL_BYTE) sustainPedal=value>>6;
+     else if(number==RANDOMIZE_BYTE)
+     */
   }
-  
-  if(number==SWITCH_BYTE){
-    for(int i=0;i<3;i++) hw.setSwitch(i,bitRead(value,i));
+  if(test){
+    if(number==SWITCH_BYTE){
+      for(int i=0;i<3;i++) hw.setSwitch(i,bitRead(value,i));
+    }
+    else if(number==PAGE_BYTE){
+      page=value;
+    }
   }
-  else if(number==PAGE_BYTE){
-    page=value;
-  }
-
 }
 
 void HandleProgramChange(byte channel, byte number  ){
@@ -143,7 +151,7 @@ void initMidi(unsigned char _channel){
   MIDI.begin(0);    
   inputChannel=_channel;
   indicateMidiChannel(_channel);
-  
+
   MIDI.setHandleNoteOn(HandleNoteOn);
   MIDI.setHandleNoteOff(HandleNoteOff);
 
@@ -202,6 +210,8 @@ void extractSysExArray(unsigned char _sound){
     setVar(_sound,i,writeTo);
   } 
 }
+
+
 
 
 

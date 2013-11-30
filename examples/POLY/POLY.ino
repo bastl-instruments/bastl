@@ -52,8 +52,8 @@ boolean test=false;
 boolean pokemon=false;
 boolean bootShift=false;
 void setup() {
-test=false;
-pokemon=false;
+  test=false;
+  pokemon=false;
 
   // debug();
   hw.setFreezeType(UNFREEZE_EXTERNALY);
@@ -80,21 +80,21 @@ pokemon=false;
 void updateControl(){
 
   while(MIDI.read(inputChannel)) MIDI.read(inputChannel);
-   MIDI.read(inputChannel);
-  MIDI.read(inputChannel);
-  MIDI.read(inputChannel);
-  MIDI.read(inputChannel);
-  MIDI.read(inputChannel);
+  MIDI.read();
+  MIDI.read();
+  MIDI.read();
+  MIDI.read();
+  MIDI.read();
   hw.update();
   while(MIDI.read(inputChannel)) MIDI.read(inputChannel);
-   MIDI.read(inputChannel);
-  MIDI.read(inputChannel);
-  MIDI.read(inputChannel);
-  MIDI.read(inputChannel);
-  MIDI.read(inputChannel);
+  MIDI.read();
+  MIDI.read();
+  MIDI.read();
+  MIDI.read();
+  MIDI.read();
   UI();
   while(MIDI.read(inputChannel)) MIDI.read(inputChannel);
-   MIDI.read(inputChannel);
+  MIDI.read(inputChannel);
   MIDI.read(inputChannel);
   MIDI.read(inputChannel);
   MIDI.read(inputChannel);
@@ -106,6 +106,7 @@ void updateControl(){
 void loop() {
   audioHook();
 }
+
 
 
 

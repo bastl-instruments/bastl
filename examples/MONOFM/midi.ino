@@ -46,10 +46,16 @@ void HandleNoteOff(byte channel, byte note, byte velocity){
   }
 }
 
+#define PRESET_BY_CC_BYTE 0
+#define RANDOMIZE_BYTE 127
+
 void HandleControlChange(byte channel, byte number, byte value){
   // implement knob movement
   if(channel==inputChannel){
-    if((number-CONTROL_CHANGE_OFFSET )<NUMBER_OF_VARIABLES){
+     if(number==PRESET_BY_CC_BYTE) storeSound(sound),loadPreset(map(value,0,128,0,NUMBER_OF_PRESETS)), loadSound(sound),hw.freezeAllKnobs();
+
+    else if(number==RANDOMIZE_BYTE) randomize(sound);
+    else if((number-CONTROL_CHANGE_OFFSET )<NUMBER_OF_VARIABLES){
       setVar(midiSound,number-CONTROL_CHANGE_OFFSET,scale(value,CONTROL_CHANGE_BITS,variableDepth[number-CONTROL_CHANGE_OFFSET]));  
       hw.freezeAllKnobs();
     }
