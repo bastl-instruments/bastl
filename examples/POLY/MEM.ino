@@ -208,6 +208,9 @@ void clearMemmory(){
       for(int j=0;j<NUMBER_OF_VARIABLES;j++){
         setVar(i,j, rand(maxValue[j]));
       }
+      setVar(i,SUSTAIN,63);
+      setVar(i,ATTACK,0);
+      setVar(i,RELEASE,0);
     }
     //  tempo=120;
 
