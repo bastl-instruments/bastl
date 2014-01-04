@@ -11,11 +11,12 @@ for Standuino wwww.standuino.eu
 
 */
 
-
+#include "lfo.h"
 #include "Arduino.h"
 #include <avr/pgmspace.h>
 #include <mozzi_rand.h>
-#include "lfo.h"
+
+
 
 #define UP_DOWN 0
 #define UP 1
