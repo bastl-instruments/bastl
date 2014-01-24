@@ -347,24 +347,26 @@ public:
 	
 	inline 
 	void setTimeStretch(unsigned long _shift){
+	 //stretch=_shift;
+	
 		shift=_shift<<SAMPLE_F_BITS;
 	}
-	
+	/*
 	inline
 	void setTimeStretchOn(){
 		stretch=true;
 	}
-	/*
+	
 	inline
 	void setTimeStretchLoop(unsigned int _loop){
 		STRETCH_LOOP=_loop<<SAMPLE_F_BITS;
 	}
-	*/
+	
 	inline
 	void setTimeStretchOff(){
 		stretch=false;
 	}
-	
+	*/
 	
 	inline
 	long getPhase(){
@@ -382,10 +384,12 @@ public:
 	}
 	inline
 	void timeStretchUpdate(){
+	//if(stretch){
 		//if((phase_fractional-lastPhase_fractional)>(STRETCH_LOOP)){
 				phase_fractional=lastPhase_fractional+shift;
 				lastPhase_fractional=phase_fractional;
 		//	}
+	//	}
 	}
 
 private:
