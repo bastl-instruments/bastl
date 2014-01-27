@@ -56,6 +56,7 @@ BLACK_BITS, RED_BITS,GREEN_BITS,BLUE_BITS,YELLOW_BITS,MAGENTA_BITS,CIAN_BITS,WHI
 };
 
 trinityHW::trinityHW(){
+	KNOB_TOLERANCE=2;
 }
 
 //############# ROUTINE FUNCTIONS #############
@@ -124,6 +125,9 @@ void trinityHW::updateKnobs(){
   
 }
 
+void trinityHW::setKnobTolerance(unsigned char _tolerance){
+	KNOB_TOLERANCE=_tolerance;
+}
 
 //returns the freezing state of knob	
 boolean trinityHW::knobFreezed(unsigned char _KNOB){ 

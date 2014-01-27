@@ -81,6 +81,7 @@ Sample<AUDIO_RATE> aSample[NUMBER_OF_VOICES];
 sequencer seq(61);
 trinityHW hw; // MOZZI or DEFAULT
 //boolean bootShift=false;
+#define DEFAULT_KNOB_TOLERANCE 15
 
 void setup() {
 
@@ -108,8 +109,9 @@ void setup() {
   // aMetro.setTable(SNARE2_DATA,SNARE2_NUM_CELLS);
   //aSample[5].setTable(GB_SNARE_DATA,GB_SNARE_NUM_CELLS);
   // aSample[5].setTable(SNARE2_DATA,SNARE2_NUM_CELLS);
-hw.freezeAllKnobs();
+  hw.freezeAllKnobs();
   loadPreset(0);
+  hw.setKnobTolerance(DEFAULT_KNOB_TOLERANCE);
 }
 
 void updateControl(){
@@ -137,6 +139,7 @@ void updateControl(){
 void loop() {
   audioHook();
 }
+
 
 
 

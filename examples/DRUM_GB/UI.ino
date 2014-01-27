@@ -107,7 +107,7 @@ void renderTweaking(unsigned char _page){
     if(aSample[voice].isPlaying()){
       switch(_page){
       case PAGE_G:
-        if(global){
+        if(global && seq.isPlaying()){
           if(!hw.knobFreezed(TOP_KNOB)) aSample[voice].setFreq((float)(globalPitch+1)/16);
           if(!hw.knobFreezed(LEFT_KNOB)){
 
@@ -135,7 +135,7 @@ void renderTweaking(unsigned char _page){
         break;
 
       case PAGE_B:
-        if(global){    
+        if(global&& seq.isPlaying()){    
           if(!hw.knobFreezed(RIGHT_KNOB)) volume[voice]=globalVolume;
           if(!hw.knobFreezed(LEFT_KNOB))  crush[voice]=globalCrush;
         }
@@ -261,7 +261,7 @@ void renderCombo(){
   if(hw.buttonState(PAGE) && hw.justPressed(EREASE)){
     seq.playStop(), combo=true; 
     if(seq.isPlaying() && !slave) MIDI.sendRealTime(Start);
-    else if(!slave) MIDI.sendRealTime(Stop),record=false,global=false;//, sendAllNoteOff();
+    else if(!slave) MIDI.sendRealTime(Stop),record=false;//,global=false;//, sendAllNoteOff();
     hw.freezeAllKnobs();
   }
 
@@ -334,7 +334,7 @@ void renderBigButtons(){
 
   if(!combo){
     for(int i=BIG_BUTTON_1;i<=BIG_BUTTON_3;i++) {
-      if(global){
+      if(global&& seq.isPlaying()){
 
         if(page==0){
           if(i==currentPattern || i==currentPattern-3) hw.setLed(i,true);
@@ -365,7 +365,7 @@ void renderBigButtons(){
         if(longPress) hw.setLed(i,true);
 
 
-        if(seq.isPlaying() && erease){
+        if(seq.isPlaying() && erease){
 
           if(lastClockCount!=seq.clockCount()){
             if(hw.buttonState(i)){
@@ -443,7 +443,7 @@ void renderKnobs(){
     else seq.setGrooveAmount(hw.knobValue(KNOB_RIGHT)>>2); 
 
   }
-  else if(global){
+  else if(global && seq.isPlaying()){
     if(page==0){
 
       if(hw.knobFreezed(KNOB_TOP)) {

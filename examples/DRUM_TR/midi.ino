@@ -44,6 +44,11 @@ void HandleNoteOff(byte channel, byte note, byte velocity){
    */
 }
 
+#define TEMPO_BYTE 109
+#define NUMBER_OF_STEPS_BYTE 110
+#define GROOVE_BYTE 111
+#define PATTERN_BYTE 108
+
 void HandleControlChange(byte channel, byte number, byte value){
   // implement knob movement
   if(channel==inputChannel){
@@ -59,28 +64,12 @@ void HandleControlChange(byte channel, byte number, byte value){
       setVar(midiSound,number,scale(value,CONTROL_CHANGE_BITS,variableDepth[number]));  
       hw.freezeAllKnobs();
       renderTweaking((number)/VARIABLES_PER_PAGE);
+    }
 
-      /*
-    if((number<NUMBER_OF_VARIABLES){
-       setVar(midiSound,number,scale(value,CONTROL_CHANGE_BITS,variableDepth[number]));  
-       hw.freezeAllKnobs();
-       renderTweaking((number)/VARIABLES_PER_PAGE);
-       }
-       */
-    }
-    /*
-    else if(number==PRESET_BY_CC_BYTE)
-     else if(number==SUSTAIN_PEDAL_BYTE) sustainPedal=value>>6;
-     else if(number==RANDOMIZE_BYTE)
-     */
-  }
-  if(test){
-    if(number==SWITCH_BYTE){
-      for(int i=0;i<3;i++) hw.setSwitch(i,bitRead(value,i));
-    }
-    else if(number==PAGE_BYTE){
-      page=value;
-    }
+    if(number==PATTERN_BYTE) currentPattern=map(value,0,128,0,NUMBER_OF_PATTERNS);
+    if(number==TEMPO_BYTE) seq.setTempo(20+value<<1);
+    if(number==NUMBER_OF_STEPS_BYTE) seq.setNumberOfSteps(1+value>>2);   
+    if(number==GROOVE_BYTE) seq.setGrooveAmount(value<<1); 
   }
 }
 
@@ -132,7 +121,7 @@ void HandleContinue(){
 }
 void HandleStop(){
   seq.stop();
- // sendAllNoteOff();  
+  // sendAllNoteOff();  
 }
 
 void turnToSlave(){
@@ -164,7 +153,7 @@ void initMidi(unsigned char _channel){
   MIDI.setHandleNoteOn(HandleNoteOn);
   MIDI.setHandleNoteOff(HandleNoteOff);
 
- // MIDI.setHandlePitchBend(HandlePitchBend);
+  // MIDI.setHandlePitchBend(HandlePitchBend);
 
   MIDI.setHandleControlChange(HandleControlChange);
   MIDI.setHandleProgramChange(HandleProgramChange);
@@ -219,4 +208,5 @@ void extractSysExArray(unsigned char _sound){
     setVar(_sound,i,writeTo);
   } 
 }
+
 

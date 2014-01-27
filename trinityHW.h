@@ -73,7 +73,7 @@ for Standuino wwww.standuino.eu
 
 // logic definitions //
 
-#define KNOB_TOLERANCE 2
+
 #define ACTIVITY_LIMIT 25
 #define KNOB_FREEZE_DISTANCE 32
 
@@ -168,6 +168,8 @@ class trinityHW
 	int lastKnobValue(unsigned char _KNOB);
 	void setFreezeType(unsigned char _TYPE);
 	
+	void setKnobTolerance(unsigned char _tolerance);
+	
 	
 	void flipSwitch(unsigned char _SWITCH);
 	void setSwitch(unsigned char _SWITCH, boolean _STATE);
@@ -183,6 +185,7 @@ class trinityHW
 
 
   private: 
+  unsigned char KNOB_TOLERANCE;
  	unsigned char activity;
 	int buttonStateHash;
 	int lastButtonStateHash;
