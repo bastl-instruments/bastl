@@ -13,7 +13,7 @@ SoftwareSerial mySerial(0, 6); // RX, TX
 
 boolean cvState;
 
-unsigned char cvPin=1;
+unsigned char cvPin=1; 
 unsigned char speedPin=4;
 unsigned char dinCVPin=3;
 
@@ -27,21 +27,21 @@ void setup()
   // Open serial communications and wait for port to open:
   mySerial.begin(31250);
   pinMode(cvPin,OUTPUT);
-  
-  
+
+
   pinMode(speedPin,INPUT);
   digitalWrite(speedPin,HIGH);
   pinMode(dinCVPin,INPUT);
   digitalWrite(dinCVPin,HIGH);
 
   if(!digitalRead(dinCVPin)){
-    if(digitalRead(speedPin)) divider=2;
-    else divider=12;
+    if(digitalRead(speedPin)) divider=2; // gb
+    else divider=12; // korg
     doubleClock=false;
   }
   else{
-    if(digitalRead(speedPin))  multiplier=4;
-    else multiplier=2;
+    if(digitalRead(speedPin))  multiplier=4; // 48
+    else multiplier=2; // 24
     doubleClock=true;
     //2
   }
@@ -59,8 +59,8 @@ void loop() // run over and over
     if(time-subTime>=quarterClockTime){
       subTime=time; 
       if(render){
-       cvState=!cvState;
-       digitalWrite(cvPin,cvState);
+        cvState=!cvState;
+        digitalWrite(cvPin,cvState);
       } 
     }
   }
@@ -74,12 +74,12 @@ void loop() // run over and over
 
     if(incomingByte==0xF8){ //clock
       if(doubleClock){
-       long time=micros();
+        long time=micros();
         clockTime=time-lastTime;
         quarterClockTime=clockTime/multiplier;
         lastTime=time;
       }
-     
+
       else{
         counter++;
         if(counter>=divider) cvState=true, counter=0;
@@ -89,16 +89,25 @@ void loop() // run over and over
       }
     }
     else if(incomingByte==0xFA){ //start
+      if(doubleSpeed){
+        pinMode(cvPin,OUTPUT);
+        digitalWrite(cvPin,HIGH); 
+      }
       render=true;
       counter=divider-1;
       // startPressed=true;
     }
     else if(incomingByte==0xFC){ //stop
+      if(doubleSpeed){
+        pinMode(cvPin,OUTPUT);
+        digitalWrite(cvPin,LOW); 
+      }
       render=false;
     }
   }
 
 }
+
 
 
 
