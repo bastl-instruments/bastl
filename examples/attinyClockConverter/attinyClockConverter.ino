@@ -89,7 +89,7 @@ void loop() // run over and over
       }
     }
     else if(incomingByte==0xFA){ //start
-      if(doubleSpeed){
+      if(doubleClock){
         pinMode(cvPin,OUTPUT);
         digitalWrite(cvPin,HIGH); 
       }
@@ -98,7 +98,7 @@ void loop() // run over and over
       // startPressed=true;
     }
     else if(incomingByte==0xFC){ //stop
-      if(doubleSpeed){
+      if(doubleClock){
         pinMode(cvPin,OUTPUT);
         digitalWrite(cvPin,LOW); 
       }
