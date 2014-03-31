@@ -277,7 +277,7 @@ void trinityHW::resetSwitches(){
 //use switch states as bits of one number - sound
 unsigned char trinityHW::soundFromSwitches(){
 	unsigned char val=ZERO;
-	for(int i=ZERO;i<4;i++){
+	for(int i=ZERO;i<3;i++){
 		bitWrite(val,i,bitRead(switchStateHash,i));
 	}
 	return val;

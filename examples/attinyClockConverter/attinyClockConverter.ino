@@ -16,7 +16,7 @@ boolean cvState;
 unsigned char cvPin=1; 
 unsigned char speedPin=4;
 unsigned char dinCVPin=3;
-
+unsigned char startPin=3;
 unsigned char divider;
 
 boolean doubleClock;
@@ -45,6 +45,13 @@ void setup()
     doubleClock=true;
     //2
   }
+  pinMode(speedPin,OUTPUT);
+  for(int i=0;i<4;i++){
+   digitalWrite(speedPin,cvState);
+   cvState=!cvState;
+   delay(100);
+  }
+   pinMode(speedPin,INPUT_PULLUP);
 }
 
 
@@ -54,10 +61,10 @@ boolean render;
 void loop() // run over and over
 {
   if(doubleClock){
-    long time=micros();
+    long _time=micros();
 
-    if(time-subTime>=quarterClockTime){
-      subTime=time; 
+    if((_time-subTime)>=quarterClockTime){
+      subTime=_time; 
       if(render){
         cvState=!cvState;
         digitalWrite(cvPin,cvState);
@@ -78,6 +85,10 @@ void loop() // run over and over
         clockTime=time-lastTime;
         quarterClockTime=clockTime/multiplier;
         lastTime=time;
+        cvState=true;
+        digitalWrite(cvPin,HIGH);
+        subTime=time;
+        //event=0;
       }
 
       else{
@@ -90,8 +101,8 @@ void loop() // run over and over
     }
     else if(incomingByte==0xFA){ //start
       if(doubleClock){
-        pinMode(cvPin,OUTPUT);
-        digitalWrite(cvPin,HIGH); 
+        pinMode(startPin,OUTPUT);
+        digitalWrite(startPin,HIGH); 
       }
       render=true;
       counter=divider-1;
@@ -99,8 +110,8 @@ void loop() // run over and over
     }
     else if(incomingByte==0xFC){ //stop
       if(doubleClock){
-        pinMode(cvPin,OUTPUT);
-        digitalWrite(cvPin,LOW); 
+        pinMode(startPin,OUTPUT);
+        digitalWrite(startPin,LOW); 
       }
       render=false;
     }
