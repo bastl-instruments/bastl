@@ -68,7 +68,7 @@ void setup() {
 
   //adcReconnectAllDigitalIns();
   //yhw.initialize(DEFAULT);
-  for(int i=0;i<NUMBER_OF_VOICES;i++) aSample[i].setTable(WAVE_TABLES[i],WAVE_TABLES_NUM_CELLS[i]), aSample[i].setTimeStretchOn(), aSample[i].setTimeStretch(5);
+  for(int i=0;i<NUMBER_OF_VOICES;i++) aSample[i].setTable(WAVE_TABLES[i],WAVE_TABLES_NUM_CELLS[i]), aSample[i].setTimeStretch(5);
   hw.update();
   hw.update();
   bootShift=hw.buttonState(SMALL_BUTTON_1);

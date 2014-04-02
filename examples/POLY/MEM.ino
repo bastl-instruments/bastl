@@ -75,7 +75,7 @@ PROGMEM prog_uint16_t maxValue[]={
 
 #define CHANNEL_BYTE 1023
 
-unsigned char variableDepth[NUMBER_OF_VARIABLES];//={1,2,3,6,4,8,2,3,1,5,3,7,8,6,7};
+const unsigned char variableDepth[NUMBER_OF_VARIABLES]={7,8,8, 8,6,7, 6,6,6, 5,5,8};//={1,2,3,6,4,8,2,3,1,5,3,7,8,6,7};
 
 
 
@@ -104,12 +104,13 @@ void initMem(){
 }
 
 void calculateBitDepth(){
+/*
   for(int i=0;i<NUMBER_OF_VARIABLES;i++){ // calculate bitDepth according to the maximum value
     int x=0;
     while(maxVal(i)-pow(2,x)>=0) x++;
     variableDepth[i]=x ;
   }
-
+*/
   for(int i=0;i<NUMBER_OF_VARIABLES;i++){
     int sum=0;
     for(int j=0;j<i;j++){
@@ -208,9 +209,6 @@ void clearMemmory(){
       for(int j=0;j<NUMBER_OF_VARIABLES;j++){
         setVar(i,j, rand(maxValue[j]));
       }
-      setVar(i,SUSTAIN,63);
-      setVar(i,ATTACK,0);
-      setVar(i,RELEASE,0);
     }
     //  tempo=120;
 

@@ -12,62 +12,10 @@
 boolean test;
 unsigned char inputChannel;
 
-
-/*
-// START
- #include <bastlSamples/TR_KICK.h>
- #include <bastlSamples/TR_SNARE.h> 
- #include <bastlSamples/TR_HH.h> 
- #include <bastlSamples/TR_CB.h> 
- #include <bastlSamples/TR_TOM.h> 
- #include <bastlSamples/TR_CLAP.h> 
- 
- #include <bastlTables/haluz2048_int8.h> 
- 
- const char* WAVE_TABLES[]={
- TR_KICK_DATA, TR_SNARE_DATA, TR_HH_DATA,   TR_CB_DATA, TR_CLAP_DATA , TR_TOM_DATA}; //TR_OH_DATA, // TR_RIM_DATA,
- 
- const unsigned int WAVE_TABLES_NUM_CELLS[]={
- TR_KICK_NUM_CELLS, TR_SNARE_NUM_CELLS, TR_HH_NUM_CELLS,   TR_CB_NUM_CELLS, TR_CLAP_NUM_CELLS , TR_TOM_NUM_CELLS};//TR_OH_NUM_CELLS, //, TR_TOM_NUM_CELLS TR_RIM_NUM_CELLS,
- #define NUMBER_OF_WAVETABLES 6
- //END
- */
-
-// START
-#include <bastlSamples/KICK2.h>
-#include <bastlSamples/SNARE2.h> 
-#include <bastlSamples/HAT2.h> 
-#include <bastlSamples/CB4.h> 
-#include <bastlTables/haluz2048_int8.h> 
-
-const char* WAVE_TABLES[]={
-  KICK2_DATA, SNARE2_DATA, HAT2_DATA,CB4_DATA,HALUZ2048_DATA};
-
-const unsigned int WAVE_TABLES_NUM_CELLS[]={
-  KICK2_NUM_CELLS, SNARE2_NUM_CELLS, HAT2_NUM_CELLS, CB4_NUM_CELLS,HALUZ2048_NUM_CELLS};
-#define NUMBER_OF_WAVETABLES 6
-//END
-
-
-
-/*
-  // START
- #include <bastlSamples/GB_KICK.h>
- #include <bastlSamples/GB_SNARE.h> 
- #include <bastlSamples/GB_HH.h> 
- #include <bastlSamples/GB_TUI.h> 
- #include <bastlTables/haluz2048_int8.h> 
- //#include <bastlSamples/GB_BLIP.h> 
- //#include <bastlSamples/GB_BZZ.h> 
- 
- const char* WAVE_TABLES[]={
- GB_KICK_DATA, GB_SNARE_DATA, GB_HH_DATA,GB_TUI_DATA,HALUZ2048_DATA};//,GB_BZZ_DATA};
- 
- const unsigned int WAVE_TABLES_NUM_CELLS[]={
- GB_KICK_NUM_CELLS, GB_SNARE_NUM_CELLS, GB_HH_NUM_CELLS,GB_TUI_NUM_CELLS,HALUZ2048_NUM_CELLS};//,GB_BZZ_NUM_CELLS};
- #define NUMBER_OF_WAVETABLES 5
- //END
- */
+//#include <drumkit_TR.h>
+ #include <drumkit_CL.h>
+// #include <drumkit_GB.h>
+// #include <drumkit_GL.h>
 
 
 
@@ -82,6 +30,7 @@ sequencer seq(61);
 trinityHW hw; // MOZZI or DEFAULT
 //boolean bootShift=false;
 #define DEFAULT_KNOB_TOLERANCE 15
+
 void setup() {
 
   // debug();

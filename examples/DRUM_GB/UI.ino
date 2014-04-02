@@ -345,11 +345,21 @@ void renderBigButtons(){
         }
         else if(page==1){
 
-          if(hw.buttonState(i)){     
+          if(hw.buttonState(i)){    
+           
+           if(seq.clockCount()<=CLOCK_BORDER) jumpStep=(i*4+shift*16); 
+           /*{
+                if(seq.getCurrentStep()==(seq.getNumberOfSteps()-1))jumpStep=0;// writeToStep(currentPattern,0,shift*3+i,false);
+                else jumpStep=(i*4+shift*16+1);//writeToStep(currentPattern,seq.getCurrentStep()+1,shift*3+i,false);
+              }
+              else jumpStep=(i*4+shift*16);//writeToStep(currentPattern,seq.getCurrentStep(),shift*3+i,false) ;
+             */
+         // jumpStep=(i*4+shift*16);
             jump=true;
-            jumpStep=(i*4+shift*16);
+            
             //  combo=true;
           }
+         // else jump=false;
           // else jump=false;
 
 
@@ -365,7 +375,7 @@ void renderBigButtons(){
         if(longPress) hw.setLed(i,true);
 
 
-        if(seq.isPlaying() && erease){
+        if(seq.isPlaying() && erease){
 
           if(lastClockCount!=seq.clockCount()){
             if(hw.buttonState(i)){

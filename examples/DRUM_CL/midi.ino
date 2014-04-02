@@ -3,7 +3,8 @@
 #define CONTROL_CHANGE_OFFSET 3
 unsigned char midiSound;
 
-
+#define SWITCH_BYTE 14
+#define PAGE_BYTE 13
 
 #define BASTL_BYTE 0x7D
 #define CHANNEL_BYTE 0x00
@@ -43,14 +44,11 @@ void HandleNoteOff(byte channel, byte note, byte velocity){
    */
 }
 
-#define SWITCH_BYTE 14
-#define PAGE_BYTE 13
-
-
 #define TEMPO_BYTE 109
 #define NUMBER_OF_STEPS_BYTE 110
 #define GROOVE_BYTE 111
 #define PATTERN_BYTE 108
+
 void HandleControlChange(byte channel, byte number, byte value){
   // implement knob movement
   if(channel==inputChannel){
@@ -122,6 +120,7 @@ void HandleContinue(){
 
 }
 void HandleStop(){
+  record=false;
   seq.stop();
   // sendAllNoteOff();  
 }

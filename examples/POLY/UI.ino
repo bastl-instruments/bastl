@@ -85,24 +85,17 @@ void setAllValues(unsigned char _SOUND,unsigned char voice){
   LFO[voice].reset();
 
 
-//ADSR[voice].setADSR(scale(getVar(_SOUND,ATTACK),variableDepth[ATTACK],ADSR_BITS),dec,sus,scale(getVar(_SOUND,RELEASE),variableDepth[RELEASE],SUSTAIN_BITS));
-  //ADSR[voice].setAttack(scale(getVar(_SOUND,ATTACK),variableDepth[ATTACK],ADSR_BITS));
-  unsigned char sus=getVar(_SOUND,SUSTAIN)<<2;
-//ADSR[voice].setSustain(sus);
-  unsigned char dec;
-  if(sus==0){
-    dec=scale(getVar(_SOUND,RELEASE),variableDepth[RELEASE],SUSTAIN_BITS);
-   // ADSR[voice].setDecay(scale(getVar(_SOUND,RELEASE),variableDepth[RELEASE],SUSTAIN_BITS)); 
+
+  ADSR[voice].setAttack(scale(getVar(_SOUND,ATTACK),variableDepth[ATTACK],ADSR_BITS));
+
+  if(getVar(_SOUND,SUSTAIN)==0){
+    ADSR[voice].setDecay(scale(getVar(_SOUND,RELEASE),variableDepth[RELEASE],SUSTAIN_BITS)); 
   }
   else{
-    dec=scale(getBits(getVar(_SOUND,ADSR_CHAR),5,3),3,ADSR_BITS);
-   // ADSR[voice].setDecay(scale(getBits(getVar(_SOUND,ADSR_CHAR),5,3),3,ADSR_BITS));
+    ADSR[voice].setDecay(scale(getBits(getVar(_SOUND,ADSR_CHAR),5,3),3,ADSR_BITS));
   }
- // ADSR[voice].setSustain(scale(getVar(_SOUND,SUSTAIN),variableDepth[SUSTAIN],SUSTAIN_BITS));
- // ADSR[voice].setRelease(scale(getVar(_SOUND,RELEASE),variableDepth[RELEASE],SUSTAIN_BITS)); // playDec
-  
-ADSR[voice].setADSR(scale(getVar(_SOUND,ATTACK),variableDepth[ATTACK],ADSR_BITS),dec,sus,scale(getVar(_SOUND,RELEASE),variableDepth[RELEASE],SUSTAIN_BITS));
- 
+  ADSR[voice].setSustain(scale(getVar(_SOUND,SUSTAIN),variableDepth[SUSTAIN],SUSTAIN_BITS));
+  ADSR[voice].setRelease(scale(getVar(_SOUND,RELEASE),variableDepth[RELEASE],SUSTAIN_BITS)); // playDec
   ADSRDest[voice]=getBits(getVar(_SOUND,ADSR_CHAR),0,1);
   ADSRAmt[voice]=getBits(getVar(_SOUND,ADSR_CHAR),1,4)<<4;
 
@@ -279,19 +272,7 @@ void renderCombo(){
 
 
 void randomize(unsigned char _sound){
-  for(int i=0;i<NUMBER_OF_VARIABLES;i++) setVar(_sound,i,rand(maxValue[i]));
-  setVar(_sound,SUSTAIN,rand(63));
-  setVar(_sound,RELEASE,rand(63));
-  
-  //hw.freezeAllKnobs();
-  //unsigned char voice=_sound%3;
-  //currentSound[voice]=_sound;
-  //setAllValues(_sound,voice);
-  /*
-  midiNote=false;
-  ADSR[voice].noteOff();
-  ADSR[voice].noteOn(_VELOCITY);
-  */
+  for(int i=0;i<NUMBER_OF_VARIABLES;i++) setVar(_sound,i,rand(maxValue[i])), hw.freezeAllKnobs();
 }
 void renderBigButtons(){
 

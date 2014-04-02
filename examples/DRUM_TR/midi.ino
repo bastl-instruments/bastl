@@ -120,6 +120,7 @@ void HandleContinue(){
 
 }
 void HandleStop(){
+  record=false;
   seq.stop();
   // sendAllNoteOff();  
 }

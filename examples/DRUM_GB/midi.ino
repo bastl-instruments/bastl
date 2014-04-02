@@ -48,6 +48,7 @@ void HandleNoteOff(byte channel, byte note, byte velocity){
 #define NUMBER_OF_STEPS_BYTE 110
 #define GROOVE_BYTE 111
 #define PATTERN_BYTE 108
+
 void HandleControlChange(byte channel, byte number, byte value){
   // implement knob movement
   if(channel==inputChannel){
@@ -119,6 +120,7 @@ void HandleContinue(){
 
 }
 void HandleStop(){
+  record=false;
   seq.stop();
   // sendAllNoteOff();  
 }

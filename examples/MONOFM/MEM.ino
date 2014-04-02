@@ -48,7 +48,7 @@ PROGMEM prog_uchar clearTo[]={
 // page RGB
 
 PROGMEM prog_uint16_t maxValue[]={
-  127,255,7,3,255 ,255,15,3,255,255,15,3,255,255,15,3,255,255,255,7}; //const
+  127,255,7,3,255 ,255,15,3,255, 255,15,3,255, 255,15,3,255, 255,255,7}; //const
 
 //  10+8+3+2+7+8+4+2+7+8+4+2+7+8+4+2+8+8+8+2 = 115
 //107 /8 = 14.34 => 15 bytes
@@ -72,7 +72,7 @@ PROGMEM prog_uint16_t maxValue[]={
 //unsigned char pattern[NUMBER_OF_PATTERNS][NUMBER_OF_STEPS];
 
 
-unsigned char variableDepth[NUMBER_OF_VARIABLES];//={1,2,3,6,4,8,2,3,1,5,3,7,8,6,7};
+const unsigned char variableDepth[NUMBER_OF_VARIABLES]={7,8,3,2,8, 8,4,2,8, 8,4,2,8, 8,4,2,8, 8,8,3};//={1,2,3,6,4,8,2,3,1,5,3,7,8,6,7};
 unsigned int var[NUMBER_OF_VARIABLES];
 
 
@@ -101,12 +101,13 @@ void initMem(){
 }
 
 void calculateBitDepth(){
+  /*
   for(int i=0;i<NUMBER_OF_VARIABLES;i++){ // calculate bitDepth according to the maximum value
     int x=0;
     while(maxVal(i)-pow(2,x)>=0) x++;
     variableDepth[i]=x ;
   }
-
+*/
   for(int i=0;i<NUMBER_OF_VARIABLES;i++){
     int sum=0;
     for(int j=0;j<i;j++){

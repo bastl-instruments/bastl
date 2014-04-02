@@ -108,14 +108,35 @@ void interpretStep(unsigned char instrument,unsigned char _step){
 
 }
 
-
+boolean lastShift;
 void renderSmallButtons(){
+  lastShift=shift;
   shift=hw.buttonState(SMALL_BUTTON_1);
+
+  if(lastShift!=shift){ //noteOff for shift
+    for(int i=0;i<3;i++){
+      if(hw.buttonState(i)){
+        MIDI.sendNoteOff(3*!shift+i,OFF_VELOCITY,outChannel[page]);
+
+      }
+    }
+  }
+
+
   if(hw.justPressed(SMALL_BUTTON_1) || hw.justReleased(SMALL_BUTTON_1)) hw.freezeAllKnobs();
 
   erease=hw.buttonState(EXTRA_BUTTON_2);
   //if(hw.justPressed(SMALL_BUTTON_1)) seq.tapIn(audioTicks()); 
-  if(hw.justReleased(SMALL_BUTTON_2) && !combo) page=increaseValue(page,NUMBER_OF_PAGES-1);
+  if(hw.justReleased(SMALL_BUTTON_2) && !combo){
+
+    for(int i=0;i<3;i++){
+      if(hw.buttonState(i)){
+        MIDI.sendNoteOff(3*shift+i,OFF_VELOCITY,outChannel[page]);
+
+      }
+    } 
+    page=increaseValue(page,NUMBER_OF_PAGES-1);
+  }
 }
 
 
@@ -361,7 +382,7 @@ void renderKnobs(){
       if(inBetween( hw.knobValue(KNOB_TOP)>>8,hw.lastKnobValue(KNOB_TOP)>>8,currentPattern[1]  )) hw.unfreezeKnob(KNOB_TOP); //external unfreez
     }
     else currentPattern[1]=hw.knobValue(KNOB_TOP)>>8; 
- if(lastPattern[1]!=currentPattern[1]) sendAllNoteOff(1);   
+    if(lastPattern[1]!=currentPattern[1]) sendAllNoteOff(1);   
 
     lastPattern[0]=currentPattern[0];
     if(hw.knobFreezed(KNOB_LEFT)) {
@@ -375,7 +396,7 @@ void renderKnobs(){
       if(inBetween( hw.knobValue(KNOB_RIGHT)>>8,hw.lastKnobValue(KNOB_RIGHT)>>8,currentPattern[2]  )) hw.unfreezeKnob(KNOB_RIGHT); //external unfreez
     }
     else currentPattern[2]=hw.knobValue(KNOB_RIGHT)>>8;     
-   if(lastPattern[2]!=currentPattern[2]) sendAllNoteOff(2);   
+    if(lastPattern[2]!=currentPattern[2]) sendAllNoteOff(2);   
   }
 
 }
@@ -524,19 +545,20 @@ void sendAllNoteOff(){
 
 void sendAllNoteOff(unsigned char _instrument){
 
-    switch(instrumentType[_instrument]){
+  switch(instrumentType[_instrument]){
 
-    case MONOPHONIC:
-      MIDI.sendNoteOn(hw.soundFromSwitches(),DEFAULT_VELOCITY,outChannel[_instrument]);
-      break;
-    default:
-      for(int j=0;j<6;j++){
-        MIDI.sendNoteOff(j,OFF_VELOCITY,outChannel[_instrument]);
-      }
-      break;
-    } 
-  
+  case MONOPHONIC:
+    MIDI.sendNoteOn(hw.soundFromSwitches(),DEFAULT_VELOCITY,outChannel[_instrument]);
+    break;
+  default:
+    for(int j=0;j<6;j++){
+      MIDI.sendNoteOff(j,OFF_VELOCITY,outChannel[_instrument]);
+    }
+    break;
+  } 
+
 }
+
 
 
 
