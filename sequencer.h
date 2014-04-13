@@ -58,6 +58,7 @@ class sequencer
   	
 	int timeBase;
 	int tempo;
+	long fixedClockLength;
 	unsigned char grooveAmt;
 	unsigned char stepCounter;
 	unsigned char clockCounter;
@@ -72,6 +73,7 @@ class sequencer
 	long lastTime;
 	long clockLenght(unsigned char _clockCounter,unsigned char _stepCounter);
 	long clockLenght();
+	long calculateClockLenght();
 	
 	int getGrooveCompensation(unsigned char _clockCounter,unsigned char _stepCounter);
 	boolean grooveOn;

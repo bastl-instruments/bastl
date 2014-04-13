@@ -73,7 +73,7 @@ PROGMEM prog_uint16_t maxValue[]={
 
 #define CHANNEL_BYTE 1023
 
-unsigned char variableDepth[NUMBER_OF_VARIABLES]={7,7,4,4, 7,7,5,3, 7,7,7,3};//={1,2,3,6,4,8,2,3,1,5,3,7,8,6,7};
+const unsigned char variableDepth[NUMBER_OF_VARIABLES]={7,7,4,4, 7,7,5,3, 7,7,7,3};//={1,2,3,6,4,8,2,3,1,5,3,7,8,6,7};
 
 
 

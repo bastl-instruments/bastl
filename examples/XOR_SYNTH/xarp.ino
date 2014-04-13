@@ -1,4 +1,5 @@
 
+#include <midi_Defs.h>
 
 
 #define GATE_ARP_0 0
@@ -51,7 +52,7 @@ void renderArp(){
   // sendGBclock();
 
 }
-
+//#define CLOCK 8
 void sendClock(){
   MIDI.sendRealTime(Clock);
 }
@@ -231,6 +232,7 @@ void orderBuffer(){
   notesInOrderedBuffer=notesInBuffer;
 
 }
+
 
 
 

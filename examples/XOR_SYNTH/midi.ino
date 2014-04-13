@@ -9,7 +9,6 @@
 unsigned char midiSound;
 
 #define POLYPHONY NUMBER_OF_VOICES
-unsigned char notesInBuffer=0;
 boolean thereIsNoteToPlay;
 
 #define BUFFER_SIZE 16
@@ -111,8 +110,8 @@ void playNotesFromBuffer(){
 }
 
 
-void putNoteIn(unsigned char note){
-
+void putNoteIn(unsigned char note){ 
+  putNoteOut(note);
   // check if the note is already in the buffer if yes put it to the first position
   if(notesInBuffer<BUFFER_SIZE){
     if(notesInBuffer>0){ 
@@ -130,10 +129,10 @@ void putNoteIn(unsigned char note){
 
 
 unsigned char putNoteOut(unsigned char note){
-
+unsigned char takenOut=0;
+    boolean takeOut=false;
   if(notesInBuffer>0){ 
-    unsigned char takenOut;
-    boolean takeOut=0;
+    
 
     for(int i=0;i<notesInBuffer;i++){
       if(midiBuffer[i]==note) takeOut=true, takenOut=i;

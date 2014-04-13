@@ -1,15 +1,17 @@
 boolean pokemon=false;
 unsigned char page;
-boolean test;
+boolean test=false;
 boolean midiNote;
 #define NUMBER_OF_PAGES 3
 #define KNOB_MODE SMALL_BUTTON_2
 #define DEFAULT_VELOCITY 127
 #define NUMBER_OF_ARP_TYPES 9
 boolean slave=false;
-boolean sustainPedal;
+boolean sustainPedal=false;
+unsigned char notesInBuffer=0;
 
-boolean combo;
+
+boolean combo=false;
 //int var[NUMBER_OF_VARIABLES];
 //unsigned char currentSound[NUMBER_OF_VOICES];
 #define NUMBER_OF_DIVIDERS 8
@@ -46,6 +48,11 @@ void UI(){
     renderLfo();
 
     if(arp) renderArp();
+  }
+  //hack
+  if(notesInBuffer==0){
+    for(int i=0;i<NUMBER_OF_VOICES;i++) ADSR[i].noteOff();
+   freeAllVoices();
   }
   //for(int i=0;i<3;i++) hw.setLed(i,ADSR[i].active());
   //if(sustainPedal) hw.setColor(WHITE);
@@ -282,7 +289,7 @@ void renderCombo(){
       else loadPreset(i+3*hw.buttonState(EXTRA_BUTTON_2)), hw.freezeAllKnobs();
       // countLong=false, longCount=0, longPress=false;
     }
-
+//hack
     if(longPress) hw.setLed(i,true);
     else hw.setLed(i,hw.switchState(i));
   }
@@ -316,8 +323,16 @@ void renderBigButtons(){
         hw.flipSwitch(i), sound=hw.soundFromSwitches();
         // playSound(sound,DEFAULT_VELOCITY);
         hw.setLed(i,hw.switchState(i));
+     // hw.setLed(i,ADSR[i].active()|ADSR[i+3].active());//,true);
+     // if(notesInBuffer>i) 
+      //else hw.setLed(i,false);
       }
+    //   if(notesInBuffer>i) hw.setLed(i,true);
+     // else hw.setLed(i,false);
+         //   hw.setLed(i,ADSR[i].active()|ADSR[i+3].active());//,true);
+
     };
+    
     if(sound!=lastSound)  setAllValues(sound), hw.freezeAllKnobs();
     lastSound=sound;
   } 

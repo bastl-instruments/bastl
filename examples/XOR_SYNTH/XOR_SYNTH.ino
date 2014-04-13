@@ -1,10 +1,12 @@
 // libraries
 #include <MIDI.h>
+#include <midi_Defs.h>
 #include <EEPROM.h>
 #include <avr/pgmspace.h>
 #include <trinityHW.h>
 #include <MozziGuts.h>
 #include <mozzi_midi.h>
+#include <midi_Defs.h>
 
 #include <mozzi_rand.h>
 
@@ -82,17 +84,17 @@ void setup() {
 
 void updateControl(){
   
-  MIDI.read();
-  MIDI.read();
-  MIDI.read();
+  //MIDI.read();
+  //MIDI.read();
+  while(MIDI.read());
   while(MIDI.read(inputChannel)) MIDI.read(inputChannel);
   hw.update();
-  while(MIDI.read(inputChannel)) MIDI.read(inputChannel);
+//  while(MIDI.read(inputChannel)) MIDI.read(inputChannel);
   UI();
   while(MIDI.read(inputChannel)) MIDI.read(inputChannel);
-  MIDI.read();
-  MIDI.read();
-  MIDI.read();
+ // MIDI.read();
+ // MIDI.read();
+ // MIDI.read();
 
 
 }

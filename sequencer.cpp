@@ -46,12 +46,16 @@ long sequencer::clockLenght(unsigned char _clockCounter,unsigned char _stepCount
  minuta / počet tiků
  */
  	long grooveNow=getGrooveCompensation(_clockCounter,_stepCounter);
- 	return ( ( 60000*(1000/timeBase) ) / (tempo * 24) ) + grooveNow;
+ 	return fixedClockLength + grooveNow;
  
 }
 
-long sequencer::clockLenght(){
+long sequencer::calculateClockLenght(){
 	return ( ( 60000*(1000/timeBase) ) / (tempo * 24) );
+}
+
+long sequencer::clockLenght(){
+	return fixedClockLength;
 }
 
 int sequencer::getGrooveCompensation(unsigned char _clockCounter,unsigned char _stepCounter){
@@ -75,16 +79,20 @@ void sequencer::setGrooveOff(){
 void  sequencer::update(long _time){
 		
 	if(grooveOn){
-		while(_time-lastTime>=clockLenght(clockCounter,stepCounter)) {
+	int _clockL=clockLenght(clockCounter,stepCounter);
+		while(_time-lastTime>=_clockL) {
 			clocksReady++;
-			lastTime=_time;
+			lastTime+=_clockL;
+//			lastTime=_time;
 		}
 	}
 	
 	else{
-		while((_time-lastTime)>=clockLenght()) { //clockLenght()
+	int _clockL=clockLenght();
+		while((_time-lastTime)>=_clockL) { //clockLenght()
 			clocksReady++;
-			lastTime=_time;
+			lastTime+=_clockL;
+			//lastTime=_time;
 		}		
 	}
 	
@@ -109,6 +117,7 @@ void sequencer::setClockDivider(unsigned char _clockDivider){
 void sequencer::setTempo(int _tempo){
 	tempo=_tempo;
 	if(tempo==0) tempo=1;
+	fixedClockLength=calculateClockLenght();
 }
 int sequencer::getTempo(){
 	return tempo;
