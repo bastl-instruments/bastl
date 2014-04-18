@@ -79,13 +79,24 @@ void UI(){
 
     for(int i=0;i<3;i++){
       if(hw.justPressed(i))  hw.flipSwitch(i), sendSwitch=true;
+      // if(hw.justReleased(i))  MIDI.sendNoteOff(59+i*2,0,1);
       hw.setLed(i,hw.switchState(i));
-    //  hw.unfreezeKnob(i);
-    //  if(hw.knobMoved(i)) MIDI.sendControlChange(10+i,hw.knobValue(i)>>3,1),  hw.setColor(WHITE);
+      //  hw.unfreezeKnob(i);
+      //  if(hw.knobMoved(i)) MIDI.sendControlChange(10+i,hw.knobValue(i)>>3,1),  hw.setColor(WHITE);
     }
     if(sendSwitch) MIDI.sendControlChange(SWITCH_BYTE,hw.soundFromSwitches(),1), sendSwitch=false;
   }
   else{
+
+    for(int i=0;i<3;i++){
+      if(hw.justPressed(i))   MIDI.sendNoteOn(59+i*2,127,1);
+      if(hw.justReleased(i))  MIDI.sendNoteOff(59+i*2,0,1);
+    }
+    if(hw.justPressed(SMALL_BUTTON_1)) MIDI.sendRealTime(Start);
+    if(hw.justReleased(SMALL_BUTTON_1)) MIDI.sendRealTime(Stop);
+    if((counter%3)==0){
+      if(hw.buttonState(SMALL_BUTTON_1)) MIDI.sendRealTime(Clock);
+    }
     counter++;
     if(counter>32) counter=0,page=increaseValue(page,7),sendSysExArray();
     hw.setColor(page);
@@ -131,6 +142,8 @@ int updateAudio(){
   return value<<4; 
 
 }
+
+
 
 
 
