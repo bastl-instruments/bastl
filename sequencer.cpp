@@ -20,7 +20,7 @@ for Standuino wwww.standuino.eu
 #define DEFAULT_NUMBER_OF_STEPS 16
 #define DEFAULT_TEMPO 120
 
-PROGMEM prog_uchar groove[]={
+const unsigned char groove[] PROGMEM ={
   128,192,64,128, 128,192,64,128, 128,192,64,128, 128,192,64,128, };
 
 sequencer::sequencer(int _timeBase){ // 1 microseconds 1000 milliseconds 61 microseconds
