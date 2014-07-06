@@ -20,7 +20,8 @@
 //   - SRCK: clock for taking the value from SER to the first storage register and shifting the other one step ahead
 //   - RCK:  enable the output of the shift register
 //
-// if you have several shift registers daisy chained, you can use write() multiple times
+// - if you have several shift registers daisy chained, you can use write() multiple times
+// - shifting out a byte takes ~70us due to continuous pointer dereferencing but you can access multiple shift registers with multiple instances
 
 class shiftRegisterBasic {
 public:
@@ -45,7 +46,7 @@ public:
 	void write(uint8_t byte);
 
 	// enable output
-	inline void latch() {
+	inline void enableOutput() {
 		setHigh(*rck_port,rck_num);
 		setLow(*rck_port,rck_num);
 	}

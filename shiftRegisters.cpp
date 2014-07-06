@@ -35,13 +35,10 @@ void shiftRegisterBasic::setup(
 	this->ser_num = ser_num;
 
 
-	//set clock pins as output
+	//set pins as outputs
 	setHigh(*srck_ddr,srck_num);
 	setHigh(*rck_ddr,rck_num);
-
-	//set data pin mode
 	setHigh(*ser_ddr,ser_num);
-
 
 	//initialize clocks to low
 	setLow(*rck_port,rck_num);
