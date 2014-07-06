@@ -8,9 +8,10 @@
 #ifndef EEPROMOBJECT_H_
 #define EEPROMOBJECT_H_
 
-#include <new.h>
+#include <Arduino.h>
 #include <EEPROM.h>
 #include <debugSwitch.h>
+
 
 
 /*
