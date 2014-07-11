@@ -61,11 +61,18 @@ namespace shiftRegFast {
 	}
 
 	// send out a byte
-	// if you have several registers daisy chained use this function several times
 	void write(uint8_t byte) {
 
 		for (uint8_t index = 0; index < 8; index++) {
 			setDataBit(bitRead(byte,index));
+			serClkIn();
+		}
+	}
+
+	// send out an integer
+	void write(uint16_t integer) {
+		for (uint8_t index = 0; index < 16; index++) {
+			setDataBit(bitRead(integer,index));
 			serClkIn();
 		}
 	}

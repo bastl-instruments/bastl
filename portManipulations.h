@@ -18,8 +18,8 @@
 //   - bit_set()			sets bit to HIGH
 //     bit_clear()			sets bit to LOW
 //     bit_read()   		returns the current value of the bit
-//     bit_dir_output()     sets data direction to output
-//     bit_dir_input()      sets data direction to input
+//     bit_dir_outp()       sets data direction to output
+//     bit_dir_inp()        sets data direction to input
 //     bit_read_in()		performs quick digitalRead
 
 
@@ -36,6 +36,21 @@
 #define   bit_dir_inp_(x,y)  DDR ## x &= ~(1<<y)
 #define   bit_read_in(...)   bit_read_in_(__VA_ARGS__)
 #define   bit_read_in_(x,y)  (!!(PIN ## x & (1<<y)))
+
+
+// some lower-level version that use explicit register specification
+// copied from: https://gist.github.com/holachek/3310645
+
+//#define setOutput(ddr, pin) ((ddr) |= (1<< (pin)))
+#define setLow(port, pin) ((port) &= ~(1 << (pin)))
+#define setHigh(port, pin) ((port) |= (1 << (pin)))
+//#define outputState(port, pin) ((port) & (1 << (pin)))
+//#define pulse(port, pin) do { \
+//setHigh((port), (pin)); \
+//setLow((port), (pin)); \
+//} while (0)
+
+
 
 
 #endif /* PORTMANIPULATIONS_H_ */
