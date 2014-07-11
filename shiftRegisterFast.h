@@ -30,7 +30,7 @@ namespace shiftRegFast {
 
 	// initialize pins
 	// call this function before shifting out data!
-	void setup() {
+	inline void setup() {
 
 		//set pins to output mode
 		bit_dir_outp(SHIFTREGISTER_SER);
@@ -43,25 +43,25 @@ namespace shiftRegFast {
 	}
 
 	// pulse the serial clock to shift storage registers and place vaule from SER to first storage register
-	void serClkIn() {
+	inline void serClkIn() {
 		bit_set(SHIFTREGISTER_SRCK);
 		bit_clear(SHIFTREGISTER_SRCK);
 	}
 
 	// pulse the latch pin to copy data from storage register to output
-	void enableOutput() {
+	inline void enableOutput() {
 		bit_set(SHIFTREGISTER_RCK);
 		bit_clear(SHIFTREGISTER_RCK);
 	}
 
 	// set the data pin to the given value
-	void setDataBit(bool value) {
+	inline void setDataBit(bool value) {
 		if (value) bit_set(SHIFTREGISTER_SER);
 		else       bit_clear(SHIFTREGISTER_SER);
 	}
 
 	// send out a byte
-	void write(uint8_t byte) {
+	inline void write(uint8_t byte) {
 
 		for (uint8_t index = 0; index < 8; index++) {
 			setDataBit(bitRead(byte,index));
@@ -70,7 +70,7 @@ namespace shiftRegFast {
 	}
 
 	// send out an integer
-	void write(uint16_t integer) {
+	inline void write(uint16_t integer) {
 		for (uint8_t index = 0; index < 16; index++) {
 			setDataBit(bitRead(integer,index));
 			serClkIn();
