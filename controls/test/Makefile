@@ -8,7 +8,7 @@ CC_FLAGS=-c -Wall
 #test: $(OBJ_FILES) $(OBJ_FILES_CLASS)
 #	g++ $(LD_FLAGS) -o $@ $^
 
-test : tst.o HWLayerMock.o ../RadioButtons.o
+test : tst.o HWLayerMock.o ../RadioButtons.o ../Switches.o
 	g++ -o $@ $^
 	./test
 
@@ -19,6 +19,9 @@ HWLayerMock.o : HWLayerMock.cpp
 	g++ $(CC_FLAGS) -o $@ $<
 
 ../RadioButtons.o : ../RadioButtons.cpp
+	g++ $(CC_FLAGS) -o $@ $<
+
+../Switches.o : ../Switches.cpp
 	g++ $(CC_FLAGS) -o $@ $<
 
 clean:
