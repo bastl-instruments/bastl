@@ -2,12 +2,11 @@
 #ifndef SEKVOJHW_H_
 #define SEKVOJHW_H_
 
-
+// used pins
 
 #define SHIFTREGISTER_SER C,5
 #define SHIFTREGISTER_RCK B,1
 #define SHIFTREGISTER_SRCK B,0
-
 
 #define BUTTONCOL_0 C,1
 #define BUTTONCOL_1 C,0
@@ -20,13 +19,8 @@
 
 static const uint8_t updateFreq = 50; // in Hertz
 
-
-// for RAM
-#define NOP asm volatile ("nop\n\t")
 #define UINT16_MAX 65535
-#define SCK B,5
-#define MISO B,4
-#define MOSI B,3
+
 
 
 class sekvojHW {

@@ -8,6 +8,7 @@
 #include <Arduino.h>
 #include <sekvojHW.h>
 #include <shiftRegisterFast.h>
+#include <SdFat.h>
 
 
 static const uint8_t leds_cols = 12;
@@ -16,6 +17,15 @@ static const uint8_t buttons_cols = 4;
 static const uint8_t buttons_rows = 12;
 
 static const uint8_t rowsTotal = 5;
+
+
+
+// internal defines for RAM
+#define NOP asm volatile ("nop\n\t")
+
+#define SCK B,5
+#define MISO B,4
+#define MOSI B,3
 
 
 
@@ -83,9 +93,6 @@ void sekvojHW::setup() {
 
 	// DISPLAY
 	//display_start();
-
-
-
 	sei();
 }
 
@@ -251,8 +258,6 @@ void sekvojHW::readSRAM(long address, uint8_t* buf, uint16_t len) {
 
 
 
-
-
 ISR(TIMER2_COMPA_vect) {
 
 		static uint8_t counter= 0;
@@ -265,10 +270,6 @@ ISR(TIMER2_COMPA_vect) {
 		}
 
 		hardware.leds_updateNextRow();
-
-
-
-
 
 }
 

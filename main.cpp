@@ -3,9 +3,12 @@
 #include <Arduino.h>
 #include <portManipulations.h>
 #include <sekvojHW.h>
+#include <SdFat.h>
 
 
 
+SdFat sd;
+SdFile file;
 
 int main(void) {
 
@@ -25,15 +28,16 @@ extern sekvojHW hardware;
 void setup() {
 
 
-	hardware.setup();
+
 	Serial.begin(115200);
+
+
+	hardware.setup();
 
 	hardware.led_setOn(17);
 	hardware.led_setOn(18);
 	hardware.led_setOn(19);
 	hardware.led_setOn(21);
-
-
 
 
 
@@ -49,12 +53,7 @@ void loop() {
 		hardware.led_setOff(16);
 	}
 
-	hardware.writeSRAM(0,B101010);
 
-	if (hardware.readSRAM(0) == B101010) hardware.led_setOn(22);
-	else hardware.led_setOn(24);
-
-	Serial.println(hardware.readSRAM(0),BIN);
 
 
 }
