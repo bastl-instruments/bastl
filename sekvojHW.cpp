@@ -6,11 +6,9 @@
  */
 
 #include <Arduino.h>
-#include <SEKVOJ_HW.h>
+#include <sekvojHW.h>
 #include <shiftRegisterFast.h>
 
-
-#define timerCompareValue
 
 static const uint8_t leds_cols = 12;
 static const uint8_t leds_rows = 4;
@@ -49,7 +47,34 @@ void sekvojHW::setup() {
 	// LEDS
 	leds_allOff();
 
-	// TIMER
+	// SPI
+	bit_dir_outp(SCK);
+	bit_dir_outp(MOSI);
+	bit_dir_inp(MISO);
+	bit_dir_outp(SS_RAM);
+	bit_dir_outp(SS_SDCARD);
+
+	bit_clear(SCK);
+	bit_clear(MOSI);
+	bit_clear(MISO);
+	bit_set(SS_RAM);
+	bit_set(SS_SDCARD);
+
+	// Configure SPI
+	SPCR |= _BV(SPE);    // enable SPI
+	SPCR &= ~_BV(SPIE);  // SPI interrupts off
+	SPCR &= ~_BV(DORD);  // MSB first
+	SPCR |= _BV(MSTR);   // SPI master mode
+	SPCR &= ~_BV(CPOL);  // leading edge rising
+	SPCR &= ~_BV(CPHA);  // sample on leading edge
+	SPCR &= ~_BV(SPR1);  // speed = clock/4
+	SPCR &= ~_BV(SPR0);
+	SPSR |= _BV(SPI2X);  // 2X speed
+
+	// Disable Timer1 interrupt
+	//TIMSK1 &= ~_BV(TOIE1);
+
+	// TIMER 2
 	TCCR2A = (1 << WGM21);  // turn on CTC mode
 	TIMSK2 |= (1 << OCIE2A);// enable interrupt
 	TCCR2B = B00000111;	  //prescaler = 1024
@@ -57,9 +82,11 @@ void sekvojHW::setup() {
 	TCNT2  = 0;
 
 	// DISPLAY
-	display_start();
+	//display_start();
 
-	//sei();
+
+
+	sei();
 }
 
 
@@ -106,14 +133,14 @@ void sekvojHW::leds_allOff() {
 
 void sekvojHW::leds_update() {
 	   for (uint8_t row =0; row<leds_rows; row++) {
-		   shiftRegFast::write(ledStates[row]);
+		   shiftRegFast::write_16bit(ledStates[row]);
 		   shiftRegFast::enableOutput();
 	   }
 }
 
 void sekvojHW::leds_updateNextRow() {
 	static uint8_t currentRow = 0;
-	shiftRegFast::write(ledStates[currentRow]);
+	shiftRegFast::write_16bit(ledStates[currentRow]);
 	shiftRegFast::enableOutput();
 	currentRow=(currentRow+1)%leds_rows;
 }
@@ -123,7 +150,7 @@ void sekvojHW::buttons_update() {
 
 	for (int8_t row=buttons_rows-1; row>=0; row--) {
 
-		shiftRegFast::write((uint16_t)(0xFFF & ~(1<<row)));
+		shiftRegFast::write_16bit((0xFFF & ~(1<<row)));
 		shiftRegFast::enableOutput();
 
 		bitWrite(buttonStates[0],row, bit_read_in(BUTTONCOL_0));
@@ -156,8 +183,74 @@ sekvojHW::buttonState sekvojHW::button_getState(uint8_t number) {
 		return pressed;
 	}
 
+}
+
+
+void sekvojHW::writeSRAM(long address, uint8_t data) {
+
+	bit_clear(SS_RAM);
+
+	spiWrite(0x02);           // mode = write
+	spiWrite(address >> 16);  // address
+	spiWrite(address >> 8);
+	spiWrite(address);
+	spiWrite(data);
+
+	bit_set(SS_RAM);
+}
+
+void sekvojHW::writeSRAM(long address, uint8_t* buf, uint16_t len) {
+
+	bit_clear(SS_RAM);
+
+  spiWrite(0x02);           // mode = write
+  spiWrite(address >> 16);  // address
+  spiWrite(address >> 8);
+  spiWrite(address);
+  for(uint16_t i=0;i<len;i++) {
+    spiWrite(*buf);
+    buf++;
+  }
+
+  bit_set(SS_RAM);
+}
+
+uint8_t sekvojHW::readSRAM(long address) {
+  uint8_t data;
+
+  bit_clear(SS_RAM);
+
+  spiWrite(0x03);           // mode = read
+  spiWrite(address >> 16);  // address
+  spiWrite(address >> 8);
+  spiWrite(address);
+  data = spiRead();
+
+  bit_set(SS_RAM);
+
+  return data;
+}
+
+void sekvojHW::readSRAM(long address, uint8_t* buf, uint16_t len) {
+
+	bit_clear(SS_RAM);
+
+  spiWrite(0x03);           // mode = read
+  spiWrite(address >> 16);  // address
+  spiWrite(address >> 8);
+  spiWrite(address);
+  for(uint16_t i=0;i<len;i++) {
+    *buf = spiRead();
+    buf++;
+  }
+
+  bit_set(SS_RAM);
 
 }
+
+
+
+
 
 
 ISR(TIMER2_COMPA_vect) {
