@@ -1,8 +1,8 @@
 #ifndef DUMMYSEQUENCEMEMORY_H
 #define DUMMYSEQUENCEMEMORY_H
 
-#include "IStepMemory.h"
-#include "InstrumentDefinitions.h"
+#include "../IStepMemory.h"
+#include "../InstrumentDefinitions.h"
 
 class DummyStepMemory : public IStepMemory
 {

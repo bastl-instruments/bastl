@@ -8,7 +8,7 @@ CC_FLAGS=-c -Wall
 #test: $(OBJ_FILES) $(OBJ_FILES_CLASS)
 #	g++ $(LD_FLAGS) -o $@ $^
 
-test : tst.o SRAMHWMock.o ../Step.o ../DrumStep.o ../DummyStepMemory.o ../FlashStepMemory.o
+test : tst.o SRAMHWMock.o ../Step.o ../DrumStep.o DummyStepMemory.o ../FlashStepMemory.o
 	g++ -o $@ $^
 	./test
 
@@ -24,7 +24,7 @@ tst_step.o : tst_step.cpp
 ../DrumStep.o : ../DrumStep.cpp
 	g++ $(CC_FLAGS) -o $@ $<
 
-../DummyStepMemory.o : ../DummyStepMemory.cpp
+DummyStepMemory.o : DummyStepMemory.cpp
 	g++ $(CC_FLAGS) -o $@ $<
 
 ../FlashStepMemory.o : ../FlashStepMemory.cpp
