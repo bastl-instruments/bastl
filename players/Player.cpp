@@ -3,12 +3,6 @@
 #include "IMIDICommandProcessor.h"
 #include "../data/MIDICommand.h"
 
-//#define DEBUG
-
-#ifdef DEBUG
-#include <iostream>
-#endif
-
 #define SUBSTEPS_PER_STEP 4
 
 Player::Player(IStepMemory * memory, IMIDICommandProcessor * midiProcessor, PlayerSettings * settings) : memory_(memory),
@@ -22,6 +16,7 @@ Player::Player(IStepMemory * memory, IMIDICommandProcessor * midiProcessor, Play
     for (unsigned char i = 0 ; i < ALL_INSTRUMENTS_IN_BYTES; i++) {
         playingInstruments[i] = 0;
     }
+    currentPatterns_[0] = 0;
 }
 
 void Player::stepFourth()
@@ -39,11 +34,11 @@ void Player::stepDrumInstruments()
         if (currentSteps_[i] % SUBSTEPS_PER_STEP != 0) {
             unsigned char nextStepIndex = currentSteps_[i] / SUBSTEPS_PER_STEP;
             //printf("calling currentStep on for %i index is %i \n", i, nextStepIndex);
-            nextStep = memory_->getDrumStep(i, currentPatterns_[i], nextStepIndex);
+            nextStep = memory_->getDrumStep(i, currentPatterns_[0], nextStepIndex);
         } else {
             unsigned char currentStepIndex = currentSteps_[i] / SUBSTEPS_PER_STEP;
             //printf("calling nextStep on for %i index is %i \n", i, currentStepIndex);
-            nextStepExists = memory_->getNextActiveDrumStep(i, currentPatterns_[i], currentStepIndex, nextStep);
+            nextStepExists = memory_->getNextActiveDrumStep(i, currentPatterns_[0], currentStepIndex, nextStep);
             //if (nextStepExists) printf("NextStepExists index %i\n", currentStepIndex);
             currentSteps_[i] = SUBSTEPS_PER_STEP * currentStepIndex;
         }

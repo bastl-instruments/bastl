@@ -16,6 +16,7 @@ private:
     unsigned char * buttonIndexes_;
     unsigned char buttonCount_;
     unsigned char selectedButton_;
+    unsigned char lastDownButton_;
     bool buttonSelected_;
 };
 
