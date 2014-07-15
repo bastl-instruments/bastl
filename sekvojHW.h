@@ -62,8 +62,8 @@ public:
 	// only called by ISR routine.
 	// the would be declared private but this would prevent the ISR to access them
 	// there are workarounds for this but as they come at a cost I just left it like this
-	void leds_updateNextRow();
-	void buttons_update();
+	void isr_updateNextLEDRow();
+	void isr_updateButtons();
 
 private:
 

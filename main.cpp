@@ -32,16 +32,16 @@ void setup() {
 	Serial.begin(115200);
 
 
-	hardware.setup();
+	hardware.init();
 
-	hardware.led_setState(16,sekvojHW::on);
-	hardware.led_setState(17,sekvojHW::blinkStart);
-	hardware.led_setState(18,sekvojHW::blinkEnd);
+	hardware.setLED(16,sekvojHW::ON);
+	hardware.setLED(17,sekvojHW::BLINK);
+	hardware.setLED(18,sekvojHW::BLINK_INVERT);
 
 
 	delayMicroseconds(10000);
 
-	hardware.leds_printStates();
+	hardware.printLEDStates();
 
 
 
@@ -50,10 +50,10 @@ void setup() {
 
 void loop() {
 
-	if (hardware.button_getState(16) == sekvojHW::pressed ) {
-		hardware.led_setState(15,sekvojHW::on);
+	if (hardware.getButtonState(16) == sekvojHW::DOWN ) {
+		hardware.setLED(16,sekvojHW::ON);
 	} else {
-		hardware.led_setState(15,sekvojHW::off);
+		hardware.setLED(16,sekvojHW::OFF);
 	}
 
 

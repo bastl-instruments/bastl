@@ -62,7 +62,12 @@ void sekvojHW::init() {
 	bit_set(BUTTONCOL_3);
 
 	// LEDS
-	leds_init();
+	for (uint8_t row=0; row<leds_rows; row++) {
+		ledStatesBeg[row] =  1<<(15-row);    				//set row hit high
+		ledStatesBeg[row] |= (B00001111<<8) | (B11111111); //disable all rows
+
+		ledStatesEnd [row] = ledStatesBeg[row]; 			// copy to second set of states
+	}
 
 	// SPI
 	bit_dir_outp(SCK);
@@ -106,7 +111,7 @@ void sekvojHW::init() {
 
 /**** LEDS ****/
 
-void sekvojHW::leds_printStates() {
+void sekvojHW::printLEDStates() {
 	for (uint8_t row=0; row<leds_rows; row++) {
 		Serial.print("Row "); Serial.print(row,DEC);Serial.print(": ");
 		for (int8_t col=15; col>=0;col--) {
@@ -139,16 +144,16 @@ void sekvojHW::leds_printStates() {
 }*/
 
 
-void sekvojHW::led_setState(uint8_t number,sekvojHW::ledState state) {
+void sekvojHW::setLED(uint8_t number,sekvojHW::LedState state) {
 
-	if ((state == on) | (state==blinkStart)) {
+	if ((state == ON) | (state==BLINK)) {
 		ledStatesBeg[number/leds_cols] &= ~(1<<(number%leds_cols));
 	} else {
 		ledStatesBeg[number/leds_cols] |= (1<<(number%leds_cols));
 
 	}
 
-	if ((state == on) | (state==blinkEnd)) {
+	if ((state == ON) | (state==BLINK_INVERT)) {
 		ledStatesEnd[number/leds_cols] &= ~(1<<(number%leds_cols));
 	} else {
 		ledStatesEnd[number/leds_cols] |= (1<<(number%leds_cols));
@@ -158,19 +163,11 @@ void sekvojHW::led_setState(uint8_t number,sekvojHW::ledState state) {
 
 
 
-void sekvojHW::leds_init() {
-	for (uint8_t row=0; row<leds_rows; row++) {
-		ledStatesBeg[row] =  1<<(15-row);    				//set row hit high
-		ledStatesBeg[row] |= (B00001111<<8) | (B11111111); //disable all rows
-
-		ledStatesEnd [row] = ledStatesBeg[row]; 			// copy to second set of states
-	}
-
-}
 
 
 
-void sekvojHW::leds_updateNextRow() {
+
+void sekvojHW::isr_updateNextLEDRow() {
 	static uint8_t currentRow = 0;
 	static uint8_t blinkCounter = 0;
 
@@ -191,7 +188,7 @@ void sekvojHW::leds_updateNextRow() {
 /**** BUTTONS ****/
 
 
-void sekvojHW::buttons_update() {
+void sekvojHW::isr_updateButtons() {
 
 	for (int8_t row=buttons_rows-1; row>=0; row--) {
 
@@ -206,7 +203,7 @@ void sekvojHW::buttons_update() {
 }
 
 
-void sekvojHW::buttons_printStates() {
+void sekvojHW::printButtonStates() {
 	for (uint8_t row=0; row<4; row++) {
 		Serial.print("col "); Serial.print(row,DEC);Serial.print(": ");
 		for (int8_t col=15; col>=0;col--) {
@@ -220,12 +217,12 @@ void sekvojHW::buttons_printStates() {
 	}
 }
 
-sekvojHW::buttonState sekvojHW::button_getState(uint8_t number) {
+sekvojHW::ButtonState sekvojHW::getButtonState(uint8_t number) {
 
 	if ((buttonStates[number/buttons_rows] & (1<<(number%buttons_rows)))) {
-		return released;
+		return UP;
 	} else {
-		return pressed;
+		return DOWN;
 	}
 
 }
@@ -301,8 +298,8 @@ void sekvojHW::readSRAM(long address, uint8_t* buf, uint16_t len) {
 
 ISR(TIMER2_COMPA_vect) {
 
-	hardware.buttons_update();
-	hardware.leds_updateNextRow();
+	hardware.isr_updateButtons();
+	hardware.isr_updateNextLEDRow();
 
 }
 

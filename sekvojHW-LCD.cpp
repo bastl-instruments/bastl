@@ -64,11 +64,8 @@ void sekvojHW::display_start() {
 
 	bit_dir_outp(RS_Pin);
 	bit_dir_outp(ENABLE_Pin);
+	bit_dir_outp(PIN);
 
-
-
-	bit_clear(RS_Pin);        //set pins low to start commands
-	bit_clear(ENABLE_Pin);
 
 	_displayfunction = LCD_8BITMODE | LCD_1LINE | LCD_5x8DOTS;
 	_displayfunction |= LCD_2LINE;
@@ -77,19 +74,27 @@ void sekvojHW::display_start() {
 	delayMicroseconds(50000); // wait for display to power on
 
 
-	// set display mode
-    display_sendCommand(LCD_FUNCTIONSET | LCD_8BITMODE | LCD_2LINE);
-    delayMicroseconds(4500);  // wait more than 4.1ms
-    display_sendCommand(LCD_FUNCTIONSET | LCD_8BITMODE | LCD_2LINE);
-    delayMicroseconds(150);
-    display_sendCommand(LCD_FUNCTIONSET | LCD_8BITMODE | LCD_2LINE);
-    display_sendCommand(LCD_FUNCTIONSET | LCD_8BITMODE | LCD_2LINE);
+	bit_clear(RS_Pin);        //set pins low to start commands
+	bit_clear(ENABLE_Pin);
 
-    display_sendCommand(LCD_DISPLAYCONTROL | LCD_DISPLAYON | LCD_CURSOROFF | LCD_BLINKOFF);
+
+	// set display mode
+    display_sendCommand(LCD_FUNCTIONSET | _displayfunction);
+    delayMicroseconds(4500);  // wait more than 4.1ms
+    display_sendCommand(LCD_FUNCTIONSET |  _displayfunction);
+    delayMicroseconds(150);
+    display_sendCommand(LCD_FUNCTIONSET |  _displayfunction);
+    display_sendCommand(LCD_FUNCTIONSET |  _displayfunction);
+
+    _displaycontrol = LCD_DISPLAYON | LCD_CURSOROFF | LCD_BLINKOFF;
+    _displaycontrol |= LCD_DISPLAYON;
+    display_sendCommand( LCD_DISPLAYON | _displaycontrol );
 
     display_clear();
 
-    display_sendCommand(LCD_ENTRYMODESET |  LCD_ENTRYLEFT | LCD_ENTRYSHIFTDECREMENT);
+    // initialize default direction
+    _displaymode = LCD_ENTRYLEFT | LCD_ENTRYSHIFTDECREMENT;
+    display_sendCommand(LCD_ENTRYMODESET | _displaymode);
 
     display_sendData(65);
 
