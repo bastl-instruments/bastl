@@ -7,12 +7,12 @@ SRAMHWMock::SRAMHWMock()
     }
 }
 
-bool SRAMHWMock::buttonDown(unsigned char index)
+IHWLayer::ButtonState SRAMHWMock::getButtonState(unsigned char index)
 {
-    return false;
+    return IHWLayer::UP;
 }
 
-void SRAMHWMock::setDiod(unsigned char index)
+void SRAMHWMock::setLED(unsigned char index)
 {
 
 }
@@ -27,7 +27,7 @@ unsigned char SRAMHWMock::readSRAM(long address)
     return data_[address];
 }
 
-void SRAMHWMock::readSRAMMore(long address, unsigned char *data, unsigned char size)
+void SRAMHWMock::readSRAM(long address, unsigned char *data, unsigned char size)
 {
     for (unsigned char i = 0; i < size; i++) {
         data[i] = data_[i + address];
@@ -39,7 +39,7 @@ void SRAMHWMock::writeSRAM(long address, unsigned char data)
     data_[address] = data;
 }
 
-void SRAMHWMock::writeSRAMMore(long address, unsigned char *data, unsigned char size)
+void SRAMHWMock::writeSRAM(long address, unsigned char *data, unsigned char size)
 {
     for (unsigned char i = 0; i < size; i++) {
         data_[i + address] = data[i];

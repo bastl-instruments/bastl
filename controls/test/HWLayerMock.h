@@ -8,15 +8,15 @@ class HWLayerMock : public IHWLayer
 public:
     HWLayerMock();    
 
-    virtual bool buttonDown(unsigned char index);
-    virtual void setDiod(unsigned char diod);
+    virtual IHWLayer::ButtonState getButtonState(unsigned char index);
+    virtual void setLED(unsigned char index);
     virtual unsigned char getKnobValue(unsigned char index);
-    void setButtonState(unsigned char buttonIndex, bool newState);
     virtual unsigned char readSRAM(long address) {return 0;};
-    virtual void readSRAMMore(long address, unsigned char * data, unsigned char size) {};
+    virtual void readSRAM(long address, unsigned char * data, unsigned char size) {};
     virtual void writeSRAM(long address, unsigned char data) {};
-    virtual void writeSRAMMore(long address, unsigned char * data, unsigned char size) {};
+    virtual void writeSRAM(long address, unsigned char * data, unsigned char size) {};
 
+    void setButtonState(unsigned char buttonIndex, bool newState);
 private:
     bool buttonStates_[16];
 

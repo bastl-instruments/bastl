@@ -2,7 +2,7 @@
 #include "../PlayerSettings.h"
 #include "../Player.h"
 #include "../../data/InstrumentDefinitions.h"
-#include "../../data/DummyStepMemory.h"
+#include "../../data/test/DummyStepMemory.h"
 #include "MIDICommandProcessorMock.h"
 
 int main( int argc, const char* argv[] ) {

@@ -19,7 +19,7 @@ Switches::Switches(IHWLayer *hwLayer, unsigned char * buttonIndexes, unsigned ch
 
 void Switches::update() {
     for (unsigned char i = 0; i < buttonCount_; i++) {
-        bool buttonDown = hwLayer_->buttonDown(buttonIndexes_[i]);
+        bool buttonDown = hwLayer_->getButtonState(buttonIndexes_[i]) == IHWLayer::DOWN;
         if (!GETBIT(lastStates_, i) && buttonDown) {
             SETBITTRUE(changedStates_, i);
             if (GETBIT(statuses_, i)) {

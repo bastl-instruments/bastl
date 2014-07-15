@@ -7,13 +7,18 @@
 
 class IHWLayer {
 public:
-    virtual bool buttonDown(unsigned char index) = 0;
-    virtual void setDiod(unsigned char index) = 0;
+
+	enum LedState{ON, OFF, BLINK, BLINK_INVERT};
+	enum ButtonState{UP, DOWN};
+
+
+    virtual ButtonState getButtonState(unsigned char index) = 0;
+    virtual void setLED(unsigned char index) = 0;
     virtual unsigned char getKnobValue(unsigned char index) = 0;
     virtual unsigned char readSRAM(long address) = 0;
-    virtual void readSRAMMore(long address, unsigned char * data, unsigned char size) = 0;
+    virtual void readSRAM(long address, unsigned char * data, unsigned char size) = 0;
     virtual void writeSRAM(long address, unsigned char data) = 0;
-    virtual void writeSRAMMore(long address, unsigned char * data, unsigned char size) = 0;
+    virtual void writeSRAM(long address, unsigned char * data, unsigned char size) = 0;
 
 };
 

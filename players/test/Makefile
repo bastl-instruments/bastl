@@ -8,7 +8,7 @@ CC_FLAGS=-c -Wall
 #test: $(OBJ_FILES) $(OBJ_FILES_CLASS)
 #	g++ $(LD_FLAGS) -o $@ $^
 
-test : tst.o MIDICommandProcessorMock.o ../Player.o ../PlayerSettings.o ../../data/DrumStep.o ../../data/DummyStepMemory.o ../../data/MIDICommand.o ../../data/Step.o
+test : tst.o MIDICommandProcessorMock.o ../Player.o ../PlayerSettings.o ../../data/DrumStep.o ../../data/test/DummyStepMemory.o ../../data/MIDICommand.o ../../data/Step.o
 	g++ -o $@ $^
 	./test
 
@@ -27,7 +27,7 @@ MIDICommandProcessorMock.o : MIDICommandProcessorMock.cpp
 ../../data/DrumStep.o : ../../data/DrumStep.cpp
 	g++ $(CC_FLAGS) -o $@ $<
 
-../../data/DummyStepMemory.o : ../../data/DummyStepMemory.cpp
+../../data/test/DummyStepMemory.o : ../../data/test/DummyStepMemory.cpp
 	g++ $(CC_FLAGS) -o $@ $<
 
 ../../data/Step.o : ../../data/Step.cpp

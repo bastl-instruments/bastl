@@ -14,7 +14,7 @@ RadioButtons::RadioButtons(IHWLayer *hwLayer, unsigned char * buttonIndexes, uns
 
 void RadioButtons::update() {
     for (unsigned char i = 0; i < buttonCount_; i++) {
-        bool buttonDown = hwLayer_->buttonDown(buttonIndexes_[i]);
+        bool buttonDown = hwLayer_->getButtonState(buttonIndexes_[i]) == IHWLayer::DOWN;
 #ifdef DEBUG
         printf("Button: %i %s Last button down: %i\n", buttonIndexes_[i], buttonDown ? "DOWN" : "UP", lastDownButton_);
 #endif

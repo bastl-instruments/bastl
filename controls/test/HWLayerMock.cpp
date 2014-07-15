@@ -7,12 +7,12 @@ HWLayerMock::HWLayerMock()
     }
 }
 
-bool HWLayerMock::buttonDown(unsigned char index)
+IHWLayer::ButtonState HWLayerMock::getButtonState(unsigned char index)
 {
-    return buttonStates_[index / 2];
+    return buttonStates_[index / 2] ? IHWLayer::DOWN : IHWLayer::UP ;
 }
 
-void HWLayerMock::setDiod(unsigned char diod)
+void HWLayerMock::setLED(unsigned char diod)
 {
 
 }

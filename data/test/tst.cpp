@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "../Step.h"
 #include "../DrumStep.h"
-#include "../DummyStepMemory.h"
+#include "DummyStepMemory.h"
 #include "../FlashStepMemory.h"
 #include "../IStepMemory.h"
 #include "SRAMHWMock.h"
