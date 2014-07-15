@@ -2,66 +2,82 @@
 #ifndef SEKVOJHW_H_
 #define SEKVOJHW_H_
 
-// used pins
 
-#define SHIFTREGISTER_SER C,5
-#define SHIFTREGISTER_RCK B,1
-#define SHIFTREGISTER_SRCK B,0
-
-#define BUTTONCOL_0 C,1
-#define BUTTONCOL_1 C,0
-#define BUTTONCOL_2 D,7
-#define BUTTONCOL_3 D,6
-
-#define SS_SDCARD B,2
-#define SS_RAM    D,2
-
-
-static const uint8_t updateFreq = 50; // in Hertz
-
-#define UINT16_MAX 65535
 
 
 
 class sekvojHW {
 
 
+
 public:
 
 	enum buttonState{pressed,released};
-	enum ledState{on,off,blinking};
+	enum ledState{on,off,blinkStart,blinkEnd};
 
-	//sekvojHW(){};
+	// sets up all the pins, timers and SPI interface
+	// call this before using any other method from this class
 	void setup();
 
-	void leds_printStates();
-	void leds_setStates(uint16_t ledStates[]);
-	void leds_allOff();
-	void leds_update();
-	void leds_updateNextRow();
-	void led_setOn(uint8_t number);
-	void led_setOff(uint8_t number);
 
-	void buttons_update();
+	/***LEDS***/
+
+	// turn off all leds and reformat the state arrays
+	// this is automatically called duribng setup
+	void leds_init();
+
+	// set the state of a led
+	void led_setState(uint8_t number,ledState state);
+
+	// print the state arrays to the Serial terminal
+	void leds_printStates();
+
+
+	/***BUTTONS***/
+
+	// print the read button states to serial terminal
 	void buttons_printStates();
+
+	// the the state of a button identified by its id
 	buttonState button_getState(uint8_t number);
 
+
+	/***RAM***/
+
+	// write a byte to the given address
+	void writeSRAM(long address, uint8_t data);
+
+	// write a number of bytes starting at the given address
+	void writeSRAM(long address, uint8_t* buf, uint16_t len);
+
+	// read the byte stored at the given address
+	uint8_t readSRAM(long address);
+
+	// read a number of bytes starting from the given address
+	void readSRAM(long address, uint8_t* buf, uint16_t len);
+
+
+
+	/***DISPLAY***/
 	void display_start();
 	void display_clear();
 
-	void writeSRAM(long address, uint8_t data);
-	void writeSRAM(long address, uint8_t* buf, uint16_t len);
-	uint8_t readSRAM(long address);
-	void readSRAM(long address, uint8_t* buf, uint16_t len);
+	// only called by ISR routine.
+	// the would be declared private but this would prevent the ISR to access them
+	// there are workarounds for this but as they come at a cost I just left it like this
+	void leds_updateNextRow();
+	void buttons_update();
 
 private:
+
 
 	void display_sendCommand(uint8_t command);
 	void display_sendData(uint8_t data);
 	void display_send(uint8_t byte);
 	void display_enable();
 
-	uint16_t ledStates[4];
+	uint16_t ledStatesBeg[4];
+	uint16_t ledStatesEnd[4];
 	uint16_t buttonStates[4];
 
 };
@@ -81,6 +97,8 @@ static inline __attribute__((always_inline)) byte spiWrite(byte data) {
 }
 
 
+// Declaration of instance (for use in interrupt service routine)
+sekvojHW hardware;
 
 
 #endif

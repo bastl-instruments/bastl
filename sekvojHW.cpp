@@ -1,22 +1,64 @@
-/*
- * SEKVOJ_HW.cpp
- *
- *  Created on: 11.07.2014
- *      Author: user
- */
+
+/*** PERMANENT SETTINGS***/
+
+// used pins
+#define SHIFTREGISTER_SER C,5
+#define SHIFTREGISTER_RCK B,1
+#define SHIFTREGISTER_SRCK B,0
+
+#define BUTTONCOL_0 C,1
+#define BUTTONCOL_1 C,0
+#define BUTTONCOL_2 D,7
+#define BUTTONCOL_3 D,6
+
+#define SS_SDCARD B,2
+#define SS_RAM    D,2
+
+
+// the frequency at which the leds are updated.
+// when set too high, resources are wasted, when set too low flikering occurs
+// the value is in hertz and can be set from 16 to 255
+#define FREQ 50
+
+
+// properties of the led blinking
+// total defines the frequency of one blink cycle
+// duty defines when the led state is switched
+// the values are relative to the frequency, so when you want dimming instead of blinking, you will need to increase that value
+//  -------
+//        |
+//        |
+//        -------------
+//  0    duty         total
+
+#define blinkTotal 20
+#define blinkDuty  10
+
+
+
+
+/*** ACTUAL CODE ***/
 
 #include <Arduino.h>
 #include <sekvojHW.h>
 #include <shiftRegisterFast.h>
-#include <SdFat.h>
+//#include <SdFat.h>
 
 
+#define UINT16_MAX 65535
+#define MAX_ADDR 131067
+
+// set by defines
+static const uint8_t updateFreq = FREQ;
+static const uint8_t blinkCompare[2] = {blinkDuty,blinkTotal};
+
+// set by hardware
 static const uint8_t leds_cols = 12;
 static const uint8_t leds_rows = 4;
 static const uint8_t buttons_cols = 4;
 static const uint8_t buttons_rows = 12;
 
-static const uint8_t rowsTotal = 5;
+static const uint8_t rowsTotal = 4; // for calculation of update frequency timer
 
 
 
@@ -26,12 +68,6 @@ static const uint8_t rowsTotal = 5;
 #define SCK B,5
 #define MISO B,4
 #define MOSI B,3
-
-
-
-// Declaration of instance
-// used in interrupt service routine
-sekvojHW hardware;
 
 
 
@@ -55,7 +91,7 @@ void sekvojHW::setup() {
 	bit_set(BUTTONCOL_3);
 
 	// LEDS
-	leds_allOff();
+	leds_init();
 
 	// SPI
 	bit_dir_outp(SCK);
@@ -97,11 +133,22 @@ void sekvojHW::setup() {
 }
 
 
+/**** LEDS ****/
+
 void sekvojHW::leds_printStates() {
 	for (uint8_t row=0; row<leds_rows; row++) {
 		Serial.print("Row "); Serial.print(row,DEC);Serial.print(": ");
 		for (int8_t col=15; col>=0;col--) {
-			if (bitRead(ledStates[row],col)) {
+			if (bitRead(ledStatesBeg[row],col)) {
+				Serial.print("1");
+			} else {
+				Serial.print("0");
+			}
+		}
+		Serial.println("");
+		Serial.print("    "); Serial.print(row,DEC);Serial.print(": ");
+		for (int8_t col=15; col>=0;col--) {
+			if (bitRead(ledStatesEnd[row],col)) {
 				Serial.print("1");
 			} else {
 				Serial.print("0");
@@ -113,44 +160,64 @@ void sekvojHW::leds_printStates() {
 
 
 
-void sekvojHW::leds_setStates(uint16_t ledStates[]) {
+/*void sekvojHW::leds_setStates(uint16_t ledStates[]) {
 	for (uint8_t row = 0; row<leds_rows; row++) {
-		this->ledStates[row]=ledStates[row];
+		this->ledStatesBeg[row]=ledStates[row];
+
+	}
+}*/
+
+
+void sekvojHW::led_setState(uint8_t number,sekvojHW::ledState state) {
+
+	if ((state == on) | (state==blinkStart)) {
+		ledStatesBeg[number/leds_cols] &= ~(1<<(number%leds_cols));
+	} else {
+		ledStatesBeg[number/leds_cols] |= (1<<(number%leds_cols));
+
+	}
+
+	if ((state == on) | (state==blinkEnd)) {
+		ledStatesEnd[number/leds_cols] &= ~(1<<(number%leds_cols));
+	} else {
+		ledStatesEnd[number/leds_cols] |= (1<<(number%leds_cols));
 
 	}
 }
 
 
-void sekvojHW::led_setOn(uint8_t number) {
-	ledStates[number/leds_cols] &= ~(1<<(number%leds_cols));
 
-}
-
-void sekvojHW::led_setOff(uint8_t number) {
-	ledStates[number/leds_cols] |= (1<<(number%leds_cols));
-
-}
-
-void sekvojHW::leds_allOff() {
+void sekvojHW::leds_init() {
 	for (uint8_t row=0; row<leds_rows; row++) {
-		ledStates[row] =  1<<(15-row);    				//set row hit high
-		ledStates[row] |= (B00001111<<8) | (B11111111); //disable all rows
+		ledStatesBeg[row] =  1<<(15-row);    				//set row hit high
+		ledStatesBeg[row] |= (B00001111<<8) | (B11111111); //disable all rows
+
+		ledStatesEnd [row] = ledStatesBeg[row]; 			// copy to second set of states
 	}
+
 }
 
-void sekvojHW::leds_update() {
-	   for (uint8_t row =0; row<leds_rows; row++) {
-		   shiftRegFast::write_16bit(ledStates[row]);
-		   shiftRegFast::enableOutput();
-	   }
-}
+
 
 void sekvojHW::leds_updateNextRow() {
 	static uint8_t currentRow = 0;
-	shiftRegFast::write_16bit(ledStates[currentRow]);
+	static uint8_t blinkCounter = 0;
+
+	if (blinkCounter < blinkCompare[0]) {
+		shiftRegFast::write_16bit(ledStatesBeg[currentRow]);
+	} else {
+		shiftRegFast::write_16bit(ledStatesEnd[currentRow]);
+	}
+
 	shiftRegFast::enableOutput();
+
 	currentRow=(currentRow+1)%leds_rows;
+	if (currentRow == 0) blinkCounter = (blinkCounter+1)%blinkCompare[1];
 }
+
+
+
+/**** BUTTONS ****/
 
 
 void sekvojHW::buttons_update() {
@@ -192,6 +259,9 @@ sekvojHW::buttonState sekvojHW::button_getState(uint8_t number) {
 
 }
 
+
+
+/**** RAM ****/
 
 void sekvojHW::writeSRAM(long address, uint8_t data) {
 
@@ -256,20 +326,12 @@ void sekvojHW::readSRAM(long address, uint8_t* buf, uint16_t len) {
 }
 
 
-
+/**** INTERRUPT ****/
 
 ISR(TIMER2_COMPA_vect) {
 
-		static uint8_t counter= 0;
-
-		if (counter < 3)  {
-			hardware.buttons_update();
-			counter++;
-		} else {
-			counter=0;
-		}
-
-		hardware.leds_updateNextRow();
+	hardware.buttons_update();
+	hardware.leds_updateNextRow();
 
 }
 

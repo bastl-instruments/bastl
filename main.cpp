@@ -34,11 +34,14 @@ void setup() {
 
 	hardware.setup();
 
-	hardware.led_setOn(17);
-	hardware.led_setOn(18);
-	hardware.led_setOn(19);
-	hardware.led_setOn(21);
+	hardware.led_setState(16,sekvojHW::on);
+	hardware.led_setState(17,sekvojHW::blinkStart);
+	hardware.led_setState(18,sekvojHW::blinkEnd);
 
+
+	delayMicroseconds(10000);
+
+	hardware.leds_printStates();
 
 
 
@@ -48,9 +51,9 @@ void setup() {
 void loop() {
 
 	if (hardware.button_getState(16) == sekvojHW::pressed ) {
-		hardware.led_setOn(16);
+		hardware.led_setState(15,sekvojHW::on);
 	} else {
-		hardware.led_setOff(16);
+		hardware.led_setState(15,sekvojHW::off);
 	}
 
 
