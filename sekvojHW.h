@@ -80,6 +80,10 @@ private:
 	uint16_t ledStatesEnd[4];
 	uint16_t buttonStates[4];
 
+	uint8_t _displayfunction;
+	uint8_t _displaycontrol;
+	uint8_t _displaymode;
+
 };
 
 static inline __attribute__((always_inline)) byte spiRead() {
@@ -97,8 +101,7 @@ static inline __attribute__((always_inline)) byte spiWrite(byte data) {
 }
 
 
-// Declaration of instance (for use in interrupt service routine)
-sekvojHW hardware;
+
 
 
 #endif
