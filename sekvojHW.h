@@ -3,43 +3,40 @@
 #define SEKVOJHW_H_
 
 
-
-
-
 class sekvojHW {
 
 
 
 public:
 
-	enum buttonState{pressed,released};
-	enum ledState{on,off,blinkStart,blinkEnd};
+	enum LedState{ON, OFF, BLINK, BLINK_INVERT};
+	enum ButtonState{UP, DOWN};
 
 	// sets up all the pins, timers and SPI interface
 	// call this before using any other method from this class
-	void setup();
+	void init();
 
 
 	/***LEDS***/
 
 	// turn off all leds and reformat the state arrays
 	// this is automatically called duribng setup
-	void leds_init();
+	//void leds_init();
 
 	// set the state of a led
-	void led_setState(uint8_t number,ledState state);
+	void setLED(uint8_t number,LedState state);
 
 	// print the state arrays to the Serial terminal
-	void leds_printStates();
+	void printLEDStates();
 
 
 	/***BUTTONS***/
 
 	// print the read button states to serial terminal
-	void buttons_printStates();
+	void printButtonStates();
 
 	// the the state of a button identified by its id
-	buttonState button_getState(uint8_t number);
+	ButtonState getButtonState(uint8_t number);
 
 
 	/***RAM***/

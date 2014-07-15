@@ -44,7 +44,7 @@ static const uint8_t rowsTotal = 4; // for calculation of update frequency timer
 
 
 
-void sekvojHW::setup() {
+void sekvojHW::init() {
 
 	cli();
 
