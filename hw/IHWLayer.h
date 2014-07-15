@@ -13,12 +13,12 @@ public:
 
 
     virtual ButtonState getButtonState(unsigned char index) = 0;
-    virtual void setLED(unsigned char index) = 0;
+    virtual void setLED(unsigned char index, LedState state) = 0;
     virtual unsigned char getKnobValue(unsigned char index) = 0;
     virtual unsigned char readSRAM(long address) = 0;
-    virtual void readSRAM(long address, unsigned char * data, unsigned char size) = 0;
+    virtual void readSRAM(long address, unsigned char * data, unsigned int size) = 0;
     virtual void writeSRAM(long address, unsigned char data) = 0;
-    virtual void writeSRAM(long address, unsigned char * data, unsigned char size) = 0;
+    virtual void writeSRAM(long address, unsigned char * data, unsigned int size) = 0;
 
 };
 

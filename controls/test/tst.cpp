@@ -34,6 +34,11 @@ int main( int argc, const char* argv[] ) {
     printf("\tTest 6 - Button pressed again \t\t%s\n", !buttons.getSelectedButton(selectedButton) ? "OK" : "Error");
 
     hw.setButtonState(8, false);
+    buttons.update();
+    hw.setButtonState(8, true);
+    buttons.update();
+    printf("\tTest 7 - Button release and pressed again \t\t%s\n", buttons.getSelectedButton(selectedButton) && selectedButton == 4 ? "OK" : "Error");
+
 
     printf("Switches\n");
 

@@ -12,7 +12,7 @@ IHWLayer::ButtonState HWLayerMock::getButtonState(unsigned char index)
     return buttonStates_[index / 2] ? IHWLayer::DOWN : IHWLayer::UP ;
 }
 
-void HWLayerMock::setLED(unsigned char diod)
+void HWLayerMock::setLED(unsigned char diod, IHWLayer::LedState state)
 {
 
 }
