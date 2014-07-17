@@ -28,7 +28,7 @@
 
 namespace shiftRegFast {
 
-	enum bitOrder {lsbfirst,msbfirst};
+	enum BitOrder {LSB_FIRST,MSB_FIRST};
 
 	// initialize pins
 	// call this function before shifting out data!
@@ -63,14 +63,14 @@ namespace shiftRegFast {
 	}
 
 	// send out a byte
-	inline void write_8bit(uint8_t byte, shiftRegFast::bitOrder order = lsbfirst) {
-		if (order == lsbfirst) {
+	inline void write_8bit(uint8_t byte, shiftRegFast::BitOrder order = LSB_FIRST) {
+		if (order == LSB_FIRST) {
 			for (uint8_t index = 0; index < 8; index++) {
 				setDataBit(bitRead(byte,index));
 				serClkIn();
 			}
 		} else {
-			for (uint8_t index = 8; index > 0; index--) {
+			for (int8_t index = 7; index >=0; index--) {
 				setDataBit(bitRead(byte,index));
 				serClkIn();
 			}
@@ -78,14 +78,14 @@ namespace shiftRegFast {
 	}
 
 	// send out an integer
-	inline void write_16bit(uint16_t integer, shiftRegFast::bitOrder order=lsbfirst) {
-		if (order == lsbfirst) {
+	inline void write_16bit(uint16_t integer, shiftRegFast::BitOrder order=LSB_FIRST) {
+		if (order == LSB_FIRST) {
 			for (uint8_t index = 0; index < 16; index++) {
 				setDataBit(bitRead(integer,index));
 				serClkIn();
 			}
 		} else {
-			for (uint8_t index = 16; index >0; index--) {
+			for (int8_t index = 15; index>=0; index--) {
 				setDataBit(bitRead(integer,index));
 				serClkIn();
 			}
