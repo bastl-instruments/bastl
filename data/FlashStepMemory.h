@@ -23,6 +23,7 @@ public:
     virtual DrumStep getDrumStep( unsigned char instrumentID, unsigned char pattern, unsigned char step);
     virtual bool getNextActiveDrumStep( unsigned char instrumentID, unsigned char pattern, unsigned char & step, DrumStep & drumStep);
     virtual bool setDrumStep(unsigned char instrumentID, unsigned char pattern, unsigned char step, DrumStep stepData);
+    virtual void getActivesAndMutesForNote(unsigned char instrumentID, unsigned char pattern, unsigned char windowIndex, unsigned char * data);
 private:
     IHWLayer * hwLayer_;
 };
