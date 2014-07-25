@@ -234,6 +234,8 @@ void HandleNoteOff(byte channel, byte note, byte velocity){
 #define CONTROL_CHANGE_OFFSET 3
 #define CONTROL_CHANGE_OFFSET_2 102
 #define ARP_SWITCH 114
+#define ALL_NOTES_OFF 123
+#define ALL_SOUNDS_OFF 120
 
 void HandleControlChange(byte channel, byte number, byte value){
   // implement knob movement
@@ -267,6 +269,13 @@ void HandleControlChange(byte channel, byte number, byte value){
       setVar(midiSound,number,scale(value,CONTROL_CHANGE_BITS,variableDepth[number]));  
       hw.freezeAllKnobs();
       renderTweaking(sound,(number)/VARIABLES_PER_PAGE);
+    }
+    
+    if((number==ALL_NOTES_OFF) || (number==ALL_SOUNDS_OFF)){
+      //for(int i=0;i<NUMBER_OF_VOICES;i++) ADSR[i].noteOff();
+      sendAllNoteOff();
+      freeAllVoices(); 
+      resetEnvelope();
     }
 
   }

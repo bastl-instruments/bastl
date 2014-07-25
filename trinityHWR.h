@@ -1,18 +1,18 @@
 /* 
 	
-trinityHW.cpp library
+trinityHWR.cpp library
 this library is to be used with standuino fraAngelico hardware
 MOZZI library compatible
 documentation of the library you find here:
-trinityHW library
+trinityHWR library
 
 Created by Vaclav Pelousek 2013 www.pelousek.eu
 for Standuino wwww.standuino.eu
 
 */
 
-#ifndef trinityHW_h
-#define trinityHW_h
+#ifndef trinityHWR_h
+#define trinityHWR_h
 
 #include "Arduino.h"
 #include <avr/pgmspace.h>
@@ -34,26 +34,12 @@ for Standuino wwww.standuino.eu
 // pin definitions //
 
 #define KNOB_1_PIN A1 
-#define KNOB_2_PIN A2 
-#define KNOB_3_PIN A4 //A3
+#define KNOB_2_PIN A4 
+#define KNOB_3_PIN A2 //A3
 
 //#define REVERSED_BOARD 1
 
 
-#if REVERSED_BOARD<1
-
-#define BIG_BUTTON_1_PIN 12
-#define BIG_BUTTON_2_PIN 13
-#define BIG_BUTTON_3_PIN 8
-
-#define SMALL_BUTTON_1_PIN 11
-#define SMALL_BUTTON_2_PIN 17 //18
-
-#define EXTRA_BUTTON_1_PIN 14
-#define EXTRA_BUTTON_2_PIN 19
-
-
-#else
 
 #define BIG_BUTTON_1_PIN 8
 #define BIG_BUTTON_2_PIN 13
@@ -66,11 +52,10 @@ for Standuino wwww.standuino.eu
 #define EXTRA_BUTTON_1_PIN 19
 #define EXTRA_BUTTON_2_PIN 14
 
-#endif
 
-#define LED_1_PIN 7
+#define LED_1_PIN 2
 #define LED_2_PIN 6
-#define LED_3_PIN 2
+#define LED_3_PIN 7
 
 
 //TAYDA RGB
@@ -165,11 +150,11 @@ for Standuino wwww.standuino.eu
 // extern int led; i can acces from the main
 
 
-class trinityHW
+class trinityHWR
 {
   public: 
   
-    trinityHW(); // constructor
+    trinityHWR(); // constructor
 	void initialize(unsigned char _HW_VERSION);
 	void update();
 
@@ -182,12 +167,14 @@ class trinityHW
 	
 	boolean knobFreezed(unsigned char _KNOB);
 	boolean knobMoved(unsigned char _KNOB);
+	
 	void freezeAllKnobs();
 	void unfreezeAllKnobs();
 	void freezeKnob(unsigned char _KNOB);
 	void unfreezeKnob(unsigned char _KNOB);
 	int knobValue(unsigned char _KNOB);
 	int lastKnobValue(unsigned char _KNOB);
+	
 	void setFreezeType(unsigned char _TYPE);
 	
 	void setKnobTolerance(unsigned char _tolerance);
@@ -214,7 +201,7 @@ class trinityHW
 	int buttonStateHash;
 	int lastButtonStateHash;
 	int switchStateHash;
-	int justPressedHash;
+	int justPressedHash; // change
 	int justReleasedHash;
 	unsigned char ledStateHash;
 	unsigned char knobFreezedHash;

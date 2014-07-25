@@ -1,7 +1,7 @@
 
 
-PROGMEM prog_uchar clearTo[]={
-  100,100,100,0, 0,0,0,0};
+PROGMEM prog_uint16_t clearTo[]={
+ 0,0,0,0,0,0};
 /*
 
  osc
@@ -27,56 +27,104 @@ PROGMEM prog_uchar clearTo[]={
 //osc mod-freq amt
 //atck decay mod type // 2+2+3
 
-#define OSC_PAGE 0
-#define LFO_PAGE 1
-#define ADSR_PAGE 2
-#define CHAR_PAGE 3
+#define PAGE_G 0
+#define PAGE_B 1
+
 
 #define VARIABLES_PER_PAGE 3
 
-#define OSC_FREQ 0 // 127 - 7
-#define MOD_FREQ 1 // 255 - 8
-#define MOD_AMT 2// 255 - 8
-//23
-#define RATE 3 // 255 - 8
-#define RESOLUTION 4 // 63 -6
-#define LFO_AMT 5 // 127 -7
-//21
-#define ATTACK 6 // 63 - 6
-#define SUSTAIN 7 // 63 - 6
-#define RELEASE 8 // 63 - 6
-//18
-#define OSC_CHAR 9 // 31 - 5
-#define LFO_CHAR 10 // 31 - 5
-#define ADSR_CHAR 11 // 255 - 8
-//18
+#define OSC_TOP 0 //  1023 - 10
+#define OSC_LEFT 1 // 255 - 8
+#define OSC_RIGHT 2// 255 - 8
+//26
+#define OSC_CHAR 3 // 7 - 3
+#define LFO_CHAR 4 // 255 - 8
+#define ADSR_CHAR 5 // 255 -8
 
-// =>77 bitu => 10 bytu
 
-//6 zvuku *10 bytů = 60 bytů / preset
+#define OSC_TYPE 0
+#define OSC_PARAM_1 1
+#define OSC_PARAM_2 2
+
+#define LFO_AMT 3
+#define LFO_RATE 4
+#define LFO_DEST 5
+#define LFO_SHAPE 6
+
+#define ADSR_TYPE 7
+#define ADSR_ATTACK 9
+#define ADSR_RELEASE 8
+
+
+#define NUMBER_OF_PARAMS 10
+
+const unsigned char bits[NUMBER_OF_PARAMS]={3,3,2,2,2,2,2,2,3,3};
+const unsigned char byteN[NUMBER_OF_PARAMS]={0,0,0,1,1,1,1,2,2,2};
+const unsigned char bitOffset[NUMBER_OF_PARAMS]={5,2,0,6,4,2,0,6,3,0};
+
+unsigned char var[3];
+
+unsigned char getBits(unsigned char _subVar){
+  unsigned char _val=0;
+  for(int i=0;i<bits[_subVar];i++){
+    bitWrite(_val,i,bitRead(var[byteN[_subVar]],bitOffset[_subVar]+i));
+  }
+  return _val;
+}
+
+
+//REC
+// tempo
+// lenght
+// groove
+
+
+// rate
+// stretch
+// cut
+
+// mystery
+// crush
+// volume
+
+
+#define NUMBER_OF_PATTERNS 6
+#define NUMBER_OF_BITS_PER_STEP 3
+
+
+//19
+
+// 4*8= 32+13= 45 bitu => 6 bytů
+
+//6 zvuku *6 bytů = 36 bytů / preset
 
 #define KNOB_BITS 10
 
 
-PROGMEM prog_uint16_t maxValue[]={
-  127,255,255, 255,63,127, 63,63,63, 31,31,255}; //const
+  PROGMEM prog_uint16_t maxValue[]={
+  255,255,255, 255,255,255}; //const
+  //10+10+10+8+8+8 = 30+24 = 54 / 8
 
+//3bit per step - pattern = 32*3bit = 96bit = 12 bytu
 
-#define NUMBER_OF_VARIABLES 12
-#define NUMBER_OF_BYTES 10
+#define NUMBER_OF_VARIABLES 6 
+#define NUMBER_OF_BYTES 6
+#define NUMBER_OF_PATTERN_BYTES 12
 #define NUMBER_OF_PRESETS 6
 
-#define PRESET_SIZE 60
+//5patterns*12 bytes = 60 bytes
 
-#define NUMBER_OF_SOUNDS 6
+#define PRESET_SIZE 160 //7*7=49+60=109
 
-#define ADSR_BITS 6
-#define SUSTAIN_BITS 8
+#define NUMBER_OF_SOUNDS 7
 
 #define CHANNEL_BYTE 1023
 
-const unsigned char variableDepth[NUMBER_OF_VARIABLES]={
-  7,8,8, 8,6,7, 6,6,6, 5,5,8};//={1,2,3,6,4,8,2,3,1,5,3,7,8,6,7};
+#define TEMPO_BYTE 156
+#define GROOVE_BYTE 157
+
+
+unsigned char variableDepth[NUMBER_OF_VARIABLES]={8,8,8,8,8,8};
 
 
 
@@ -84,15 +132,17 @@ int maxVal(int _maxVal){
   return  pgm_read_word_near(maxValue+_maxVal);
 }
 
-unsigned char byteCoordinate[NUMBER_OF_VARIABLES];
-unsigned char bitCoordinate[NUMBER_OF_VARIABLES];
-unsigned char currentPreset;
+//const unsigned char byteCoordinate[NUMBER_OF_VARIABLES]={0, 1, 2, 3, 4, 5};
+//const unsigned char bitCoordinate[NUMBER_OF_VARIABLES]={0, 2, 4, 6, 6, 6};
+unsigned char currentPreset=0;
 /*
 int buffer[NUMBER_OF_SOUNDS][NUMBER_OF_VARIABLES];
  unsigned char bufferP[NUMBER_OF_STEPS];
  */
 
 unsigned char variable[NUMBER_OF_SOUNDS][NUMBER_OF_BYTES];
+unsigned char pattern[NUMBER_OF_PATTERNS][NUMBER_OF_PATTERN_BYTES];
+
 
 void initMem(){
 
@@ -105,25 +155,32 @@ void initMem(){
 }
 
 void calculateBitDepth(){
-  /*
+/*
   for(int i=0;i<NUMBER_OF_VARIABLES;i++){ // calculate bitDepth according to the maximum value
-   int x=0;
-   while(maxVal(i)-pow(2,x)>=0) x++;
-   variableDepth[i]=x ;
-   }
-   */
+    int x=0;
+    while(maxVal(i)-pow(2,x)>=0) x++;
+    variableDepth[i]=x ;
+  }
+
+ Serial.print("start");
   for(int i=0;i<NUMBER_OF_VARIABLES;i++){
     int sum=0;
     for(int j=0;j<i;j++){
       sum+=variableDepth[j];
     }
     byteCoordinate[i]=sum/8;
+    
     bitCoordinate[i]=sum%8;
+    Serial.print(bitCoordinate[i]);
+    Serial.print(", ");
   } 
+  Serial.print("end");
+*/
 }
 
 int getVar(unsigned char _SOUND, unsigned char _VARIABLE){
-
+ return variable[_SOUND][_VARIABLE];
+/*
   int _value=0;
   unsigned char byteShift=0;
   unsigned char _bitCoordinate=0;
@@ -146,11 +203,12 @@ int getVar(unsigned char _SOUND, unsigned char _VARIABLE){
 
   }
   return _value; 
-
+*/
 }
 
 void setVar(unsigned char _SOUND, unsigned char _VARIABLE, int _value){
-
+variable[_SOUND][_VARIABLE]=_value;
+/*
   unsigned char byteShift=0;
   unsigned char _bitCoordinate;
   for(int i=0;i<variableDepth[_VARIABLE];i++){
@@ -172,10 +230,10 @@ void setVar(unsigned char _SOUND, unsigned char _VARIABLE, int _value){
     boolean bitState=bitRead(_value,i);
     bitWrite(variable[_SOUND][byteCoordinate[_VARIABLE]+byteShift],_bitCoordinate,bitState);
   }
-
+*/
 }
 
-
+#define PATTERN_OFFSET 42
 void storePreset(unsigned char index) {
 
   int offset = index * PRESET_SIZE;
@@ -185,6 +243,13 @@ void storePreset(unsigned char index) {
     }
   }
 
+  for (int j = 0; j < NUMBER_OF_PATTERNS-1; j++) {
+    for (int k = 0; k < NUMBER_OF_PATTERN_BYTES; k++) {
+      EEPROM.write(offset +PATTERN_OFFSET+ ((NUMBER_OF_PATTERN_BYTES * j) + k),pattern[j][k]);
+    }
+  }
+  EEPROM.write(offset + TEMPO_BYTE,seq.getTempo());
+  EEPROM.write(offset + GROOVE_BYTE,seq.getGrooveAmount());
 }
 
 void loadPreset(unsigned char index) {
@@ -195,36 +260,47 @@ void loadPreset(unsigned char index) {
   for (int j = 0; j < NUMBER_OF_SOUNDS; j++) {
     for (int k = 0; k < NUMBER_OF_BYTES; k++) {
       variable[j][k]=EEPROM.read(offset + ((NUMBER_OF_BYTES * j) + k));
+
+    }
+  }
+  for (int j = 0; j < NUMBER_OF_PATTERNS-1; j++) {
+    for (int k = 0; k < NUMBER_OF_PATTERN_BYTES; k++) {
+      pattern[j][k]=EEPROM.read(offset +PATTERN_OFFSET+ ((NUMBER_OF_PATTERN_BYTES * j) + k));
     }
   }
 
+  seq.setTempo(EEPROM.read(offset + TEMPO_BYTE));
+  seq.setGrooveAmount(EEPROM.read(offset + GROOVE_BYTE));
 }
 
 
+//unsigned char initialSampe[6]={0,2,3,4,6,8};
 
 void clearMemmory(){
-  //  randSeed();
+
   for(int x=0;x<NUMBER_OF_PRESETS;x++){
     loadPreset(x);
     for(int i=0;i<NUMBER_OF_SOUNDS;i++){
       for(int j=0;j<NUMBER_OF_VARIABLES;j++){
-        setVar(i,j, 100);
+        setVar(i,j, pgm_read_word_near(clearTo+j));
       }
-      setVar(i,OSC_FREQ, rand(100));
-      setVar(i,SUSTAIN, maxValue[SUSTAIN]);
-      setVar(i,ATTACK, 0);
-      setVar(i,OSC_CHAR, 16);
-      setVar(i,2, 255);
-
-
-
+    }
+    for (int j = 0; j < NUMBER_OF_PATTERNS; j++) {
+      for (int k = 0; k < NUMBER_OF_PATTERN_BYTES; k++) {
+        pattern[j][k]=0;
+      }
     }
     //  tempo=120;
-
+    seq.setTempo(120);
+    seq.setGrooveAmount(0);
+    // EEPROM.write(offset + TEMPO_BYTE,seq.getTempo());
+    //EEPROM.write(offset + GROOVE_BYTE,seq.getGrooveAmount());
     storePreset(x);
-
   }
+  
 }
+
+
 
 
 void ShouldIClearMemory(){ 
@@ -234,7 +310,7 @@ void ShouldIClearMemory(){
     IndicateClearing(true);
     clearMemmory();
     IndicateClearing(false);
-    setMidiChannel(0);
+    setMidiChannel(1);
   }
 
 }
@@ -292,109 +368,32 @@ int scale(int _value, unsigned char _originalBits, unsigned char _endBits){
   else return _value << (_endBits - _originalBits);
 }
 
-/*
+unsigned char getStep(unsigned char _PATTERN,unsigned char _STEP){
 
- void debug(){
- randomSeed(analogread(0));
- 
- Serial.begin(9600);
- Serial.println();
- 
- for(int j=0;j<NUMBER_OF_PATTERNS;j++){
- for(int i=0;i<NUMBER_OF_STEPS;i++){
- bufferP[i]=random(255);
- for(int k=0;k<NUMBER_OF_SOUNDS;k++){
- Serial.print(bitRead(bufferP[i],k),DEC);
- SetStep(j,i,k,bitRead(bufferP[i],k));
- }
- }
- Serial.println();
- }
- 
- Serial.println();
- Serial.println();
- for(int j=0;j<NUMBER_OF_PATTERNS;j++){
- for(int i=0;i<NUMBER_OF_STEPS;i++){
- for(int k=0;k<NUMBER_OF_SOUNDS;k++){
- Serial.print( GetStep(j,i,k),DEC);
- }
- }
- Serial.println();
- }
- 
- StorePreset(0);
- // StorePreset(1);
- // ClearMemmory();
- // LoadPreset(1);
- 
- Serial.println();
- for(int j=0;j<NUMBER_OF_PATTERNS;j++){
- for(int i=0;i<NUMBER_OF_STEPS;i++){
- for(int k=0;k<NUMBER_OF_SOUNDS;k++){
- Serial.print( GetStep(j,i,k),DEC);
- }
- }
- Serial.println();
- }
- 
- Serial.println("original:");
- for(int j=0;j<NUMBER_OF_SOUNDS;j++){
- for(int i=0;i<NUMBER_OF_VARIABLES;i++){
- buffer[j][i]=random(0,maxVal(i));
- Serial.print(buffer[j][i],DEC);
- Serial.print(" , ");
- }
- Serial.println();
- }
- Serial.println();
- Serial.println("comprimed & decomprimed:");
- 
- for(int j=0;j<NUMBER_OF_SOUNDS;j++){
- for(int i=0;i<NUMBER_OF_VARIABLES;i++){
- setVar(j,i,buffer[j][i]);
- }
- }
- for(int j=0;j<NUMBER_OF_SOUNDS;j++){
- for(int i=0;i<NUMBER_OF_VARIABLES;i++){
- Serial.print(getVar(j,i));
- Serial.print(" , ");
- }
- Serial.println();
- }
- 
- 
- Serial.println();
- Serial.println();
- Serial.println();
- StorePreset(0);
- // ClearMemmory();
- LoadPreset(0);
- Serial.println("loaded from eeprom:");
- for(int j=0;j<NUMBER_OF_SOUNDS;j++){
- for(int i=0;i<NUMBER_OF_VARIABLES;i++){
- Serial.print(getVar(j,i));
- Serial.print(" , ");
- }
- Serial.println();
- }
- 
- 
- 
- 
- Serial.println();
- for(int j=0;j<NUMBER_OF_PATTERNS;j++){
- for(int i=0;i<NUMBER_OF_STEPS;i++){
- for(int k=0;k<NUMBER_OF_SOUNDS;k++){
- Serial.print( GetStep(j,i,k),DEC);
- }
- }
- Serial.println();
- }
- 
- }
- 
- */
+  unsigned char _byte=(_STEP*NUMBER_OF_BITS_PER_STEP)/8;
+  unsigned char _bit=(_STEP*NUMBER_OF_BITS_PER_STEP)%8;
+  unsigned char _OUT=0;
+  for(int i=0;i<NUMBER_OF_BITS_PER_STEP;i++){
+    bitWrite(_OUT,i, bitRead( pattern[_PATTERN][_byte],_bit));
+    _bit++;
+    if(_bit>=8) _bit=0,_byte++;
+  }
+  return _OUT;
+
+}
+
+void setStep( unsigned char _PATTERN,unsigned char _STEP,unsigned char _IN){
+
+  unsigned char _byte=(_STEP*NUMBER_OF_BITS_PER_STEP)/8;
+  unsigned char _bit=(_STEP*NUMBER_OF_BITS_PER_STEP)%8;
+
+  for(int i=0;i<NUMBER_OF_BITS_PER_STEP;i++){
+    bitWrite(pattern[_PATTERN][_byte],_bit,bitRead(_IN,i));
+    _bit++;
+    if(_bit>=8) _bit=0,_byte++;
+  }
 
 
+}
 
 
