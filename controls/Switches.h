@@ -23,7 +23,7 @@ public:
 	 * 					    button switches array (MAXIMUM IS 8)
 	 * @param count number of buttons in this button array
 	 */
-    Switches(IHWLayer *hwLayer, unsigned char * buttonIndexes, unsigned char count);
+    Switches(IHWLayer *hwLayer, unsigned char * buttonIndexes, unsigned char count, IHWLayer::ButtonState changeOnEvent = IHWLayer::DOWN);
 
     /**
      * get the status of the button at the index in the switches array
@@ -48,9 +48,9 @@ private:
     IHWLayer * hwLayer_;
     unsigned char * buttonIndexes_;
     unsigned char buttonCount_;
-    unsigned char lastStates_;
-    unsigned char changedStates_;
-    unsigned char statuses_;
+    unsigned int lastStates_;
+    unsigned int statuses_;
+    unsigned char changeOnEvent_;
 };
 
 #endif // SWITCHES_H

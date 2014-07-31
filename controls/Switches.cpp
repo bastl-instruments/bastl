@@ -6,13 +6,13 @@
 #include <iostream>
 #endif
 
-Switches::Switches(IHWLayer *hwLayer, unsigned char * buttonIndexes, unsigned char count) :
+Switches::Switches(IHWLayer *hwLayer, unsigned char * buttonIndexes, unsigned char count, IHWLayer::ButtonState changeOnEvent) :
     hwLayer_(hwLayer),
     buttonIndexes_(buttonIndexes),
     buttonCount_(count),
     lastStates_(0),
-    changedStates_(0),
-    statuses_(0)
+    statuses_(0),
+    changeOnEvent_(changeOnEvent)
 {
 
 }
@@ -20,15 +20,13 @@ Switches::Switches(IHWLayer *hwLayer, unsigned char * buttonIndexes, unsigned ch
 void Switches::update() {
     for (unsigned char i = 0; i < buttonCount_; i++) {
         bool buttonDown = hwLayer_->getButtonState(buttonIndexes_[i]) == IHWLayer::DOWN;
-        if (!GETBIT(lastStates_, i) && buttonDown) {
-            SETBITTRUE(changedStates_, i);
+        if (((changeOnEvent_ == IHWLayer::DOWN) && !GETBIT(lastStates_, i) && buttonDown) ||
+        	((changeOnEvent_ == IHWLayer::UP) && GETBIT(lastStates_, i) && !buttonDown)	) {
             if (GETBIT(statuses_, i)) {
                 SETBITFALSE(statuses_, i);
             } else {
                 SETBITTRUE(statuses_, i);
             }
-        } else {
-            SETBITFALSE(changedStates_, i);
         }
         if (buttonDown) {
             SETBITTRUE(lastStates_, i);
@@ -40,7 +38,7 @@ void Switches::update() {
 
 bool Switches::getStatus(unsigned char buttonIndex)
 {
-    return GETBIT(statuses_, buttonIndex);
+    return GETBIT(statuses_, buttonIndex) == 1;
 }
 
 void Switches::setStatus(unsigned char buttonIndex, bool value)
