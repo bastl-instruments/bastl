@@ -30,6 +30,29 @@ bool checkMemory(IStepMemory & memory, DrumStep & drumstep, DrumStep & drumstep2
     return memory1OK && memory2OK;
 }
 
+bool testNon16GetNextActive() {
+	DrumStep::DrumVelocityType steps1[4] = {DrumStep::OFF, DrumStep::OFF, DrumStep::OFF, DrumStep::OFF};
+	DrumStep::DrumVelocityType firstStep[4] = {DrumStep::NORMAL, DrumStep::OFF, DrumStep::OFF, DrumStep::OFF};
+	DrumStep firstDrumStep = DrumStep(true, false, firstStep);
+	DrumStep activedrumstep = DrumStep(true, false, steps1);
+	DrumStep inactivedrumstep = DrumStep(false, false, steps1);
+
+	SRAMHWMock hwMOck;
+	FlashStepMemory flashMemory = FlashStepMemory(&hwMOck);
+
+	for (int i = 0; i < 64; i++) {
+		if (i == 0) {
+			flashMemory.setDrumStep(0, 0, i, firstDrumStep);
+		} else {
+			flashMemory.setDrumStep(0, 0, i, (i < 20) ? activedrumstep : inactivedrumstep);
+		}
+	}
+	DrumStep resultDrumStep;
+	unsigned char nextStep = 20;
+	flashMemory.getNextActiveDrumStep(0, 0, nextStep, resultDrumStep);
+	printf("Result drum step %d %s", nextStep,  (resultDrumStep.getSubStep(0) == DrumStep::NORMAL) ? "OK" : "NOK");
+}
+
 int main( int argc, const char* argv[] )
 {
     Step step = Step(false, false);
@@ -79,4 +102,20 @@ int main( int argc, const char* argv[] )
 
     printf("Flash memory next valid (no step valid) check: %s \n", !nextValueExists ? "OK" : "Error");
 
+    DrumStep::DrumVelocityType activeSteps[4] = {DrumStep::NORMAL, DrumStep::OFF, DrumStep::OFF, DrumStep::OFF};
+    DrumStep inactiveDrumStep = DrumStep(false, false, activeSteps);
+    DrumStep activeDrumStep = DrumStep(true, false, activeSteps);
+    for (unsigned char i = 0; i < 8; i++) {
+        flashMemory.setDrumStep(0, 0, i, activeDrumStep);
+    }
+    for (unsigned char i = 8; i < 64; i++) {
+    	flashMemory.setDrumStep(0, 0, i, inactiveDrumStep);
+    }
+    nextStep = 7;
+    flashMemory.getNextActiveDrumStep(0, 0, nextStep, resultDrumStep);
+    printf("Flash memory next valid is same: %s \n", nextStep == 7 ? "OK" : "Error");
+    nextStep = 8;
+    flashMemory.getNextActiveDrumStep(0, 0, nextStep, resultDrumStep);
+    printf("Flash memory next valid is first: %s \n", nextStep == 0 ? "OK" : "Error");
+    testNon16GetNextActive();
 }

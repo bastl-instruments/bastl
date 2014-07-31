@@ -34,9 +34,9 @@ int main( int argc, const char* argv[] ) {
     MIDICommandProcessorMock mock;
     printf("\tTest 11 - Checking initialized On counters \t\t%s\n", mock.getNoteOffCountForChannel(5) == 0 ? "OK" : "Error");
     printf("\tTest 12 - Checking initialized Off counters \t\t%s\n", mock.getNoteOnCountForChannel(10) == 0 ? "OK" : "Error");
-    MIDICommand onCommand(MIDICommand::NOTEON, 0 , 0);
+    MIDICommand onCommand(MIDICommand::NOTEON, 0, 0, 0);
     onCommand.setChannel(10);
-    MIDICommand offCommand(MIDICommand::NOTEOFF, 0 , 0);
+    MIDICommand offCommand(MIDICommand::NOTEOFF, 0, 0, 0);
     offCommand.setChannel(5);
     mock.SendCommand(onCommand);
     mock.SendCommand(onCommand);
@@ -51,21 +51,29 @@ int main( int argc, const char* argv[] ) {
     printf("\nTesting Player\n");
 
     DummyStepMemory stepMemory;
-    DrumStep::DrumVelocityType substeps[4] = {DrumStep::NORMAL, DrumStep::NORMAL, DrumStep::OFF, DrumStep::NORMAL};
-    DrumStep::DrumVelocityType substeps2[4] = {DrumStep::NORMAL, DrumStep::OFF, DrumStep::NORMAL, DrumStep::NORMAL};
-    DrumStep::DrumVelocityType substeps3[4] = {DrumStep::NORMAL, DrumStep::OFF, DrumStep::OFF, DrumStep::NORMAL};
-    stepMemory.setDrumStep(0, 0, 0, DrumStep(true, false, substeps));
-    stepMemory.setDrumStep(1, 0, 0, DrumStep(true, false, substeps2));
-    stepMemory.setDrumStep(1, 0, 1, DrumStep(false, false, substeps2));
-    stepMemory.setDrumStep(1, 0, 2, DrumStep(true, true, substeps2));
-    stepMemory.setDrumStep(1, 0, 3, DrumStep(true, false, substeps3));
+    DrumStep::DrumVelocityType substeps[4] = {DrumStep::NORMAL, DrumStep::OFF, DrumStep::OFF, DrumStep::OFF};
+    DrumStep::DrumVelocityType substeps2[4] = {DrumStep::OFF, DrumStep::OFF, DrumStep::OFF, DrumStep::OFF};
+    //DrumStep::DrumVelocityType substeps3[4] = {DrumStep::NORMAL, DrumStep::OFF, DrumStep::OFF, DrumStep::NORMAL};
+    for (int i = 0; i < 8; i++) {
+    	stepMemory.setDrumStep(0, 0, i, DrumStep(true, false, substeps));
+    }
+    for (int i = 8; i < 64; i++) {
+    	stepMemory.setDrumStep(0, 0, i, DrumStep(false, false, substeps2));
+    }
+    //stepMemory.setDrumStep(1, 0, 1, DrumStep(false, false, substeps2));
+    //stepMemory.setDrumStep(1, 0, 2, DrumStep(true, true, substeps2));
+    //stepMemory.setDrumStep(1, 0, 3, DrumStep(true, false, substeps3));
     Player player(& stepMemory, & mock, & settings);
 
     //First step
-    player.stepFourth();
-    player.stepFourth();
-    player.stepFourth();
-    player.stepFourth();
+    for (int i = 0; i < 64; i++) {
+    	player.stepFourth();
+    	/*printf(" %d NOTE ONs: %d NOTE OFFs %d Curent step: %d\n",
+    			i,
+    			mock.getNoteOnCountForChannel(0),
+    			mock.getNoteOffCountForChannel(0),
+    			player.getCurrentInstrumentStep(0));*/
+    }
 
     printf("\tTest 17 - Two instruments playing one step \t\t%s\n", mock.getNoteOnCountForChannel(0) == 6 &&
                                                                     mock.getNoteOffCountForChannel(0) == 4 ? "OK" : "Error");

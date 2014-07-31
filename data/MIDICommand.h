@@ -6,7 +6,7 @@ class MIDICommand
 public:
     enum MIDICommandType {NOTEON, NOTEOFF};
     MIDICommand();
-    MIDICommand(MIDICommandType type, unsigned char note, unsigned char velocity);
+    MIDICommand(MIDICommandType type, unsigned char channel, unsigned char note, unsigned char velocity);
     MIDICommandType getType();
     void setType(const MIDICommandType & type);
     unsigned char getNote();
@@ -18,9 +18,10 @@ public:
 
 private:
     MIDICommandType type_;
+    unsigned char channel_;
     unsigned char note_;
     unsigned char velocity_;
-    unsigned char channel_;
+
 
 };
 

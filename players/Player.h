@@ -23,6 +23,8 @@ class Player
 public:
     Player(IStepMemory * memory, IMIDICommandProcessor* midiProcessor, PlayerSettings * settings);
     void stepFourth();
+    unsigned char getCurrentInstrumentStep(unsigned char instrumentID);
+    unsigned char getCurrentInstrumentSubStep(unsigned char instrumentID);
 private:
     IStepMemory * memory_;
     IMIDICommandProcessor * midiProcessor_;
@@ -30,12 +32,22 @@ private:
     unsigned char currentSteps_[INSTRUMENTS];
     unsigned char playingInstruments[ALL_INSTRUMENTS_IN_BYTES];
     unsigned char currentPatterns_[1];
+    bool isStopped_;
 
     void stepDrumInstruments();
     bool isInstrumentPlaying(unsigned char instrumentID);
     void setInstrumentPlaying(unsigned char instrumentID, bool isPlaying);
 
 };
+
+inline unsigned char Player::getCurrentInstrumentStep(unsigned char instrumentID) {
+	return currentSteps_[instrumentID] / 4;
+}
+
+inline unsigned char Player::getCurrentInstrumentSubStep(unsigned char instrumentID) {
+	return currentSteps_[instrumentID] % 4;
+}
+
 
 inline bool Player::isInstrumentPlaying(unsigned char instrumentID)
 {
