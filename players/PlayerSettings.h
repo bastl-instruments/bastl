@@ -21,6 +21,9 @@ public:
     bool isInstrumentOn(InstrumentTypes::InstrumentType type, unsigned char instrumentID);
     void setInstrumentOn(InstrumentTypes::InstrumentType type, unsigned char instrumentID, bool isOn);
 
+    void setCurrentPattern(unsigned char pattern);
+    unsigned char getCurrentPattern();
+
 private:
     unsigned char drumInstrumentNotes_[DRUM_INSTRUMENTS];
     unsigned char instrumentChannels_[(DRUM_INSTRUMENTS + MONO_INSTRUMENTS) / 2];
@@ -28,6 +31,7 @@ private:
     unsigned char upDrumVelocity_;
     unsigned char downDrumVelocity_;
     unsigned char normalDrumVelocity_;
+    unsigned char currentPattern_;
 };
 
 inline unsigned char PlayerSettings::getDrumInstrumentNote(unsigned char instrumentID)
@@ -45,6 +49,14 @@ inline void PlayerSettings::setMIDIVelocitiesForDrumVelocities(unsigned char upD
     upDrumVelocity_ = upDrumVelocity;
     downDrumVelocity_ = downDrumVelocity;
     normalDrumVelocity_ = normalDrumVelocity;
+}
+
+inline void PlayerSettings::setCurrentPattern(unsigned char pattern) {
+	currentPattern_ = pattern;
+}
+
+inline unsigned char PlayerSettings::getCurrentPattern() {
+	return currentPattern_;
 }
 
 
