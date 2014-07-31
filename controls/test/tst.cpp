@@ -43,7 +43,8 @@ int main( int argc, const char* argv[] ) {
     printf("Down activate Switches\n");
 
     unsigned char switchesButtons[16] = {0, 2, 4, 6, 8, 10, 12, 14, 16};
-    Switches switches(&hw, switchesButtons, 9);
+    Switches switches;
+    switches.init(&hw, switchesButtons, 9);
 
     hw.setButtonState(16, true);
     switches.update();
@@ -64,7 +65,8 @@ int main( int argc, const char* argv[] ) {
 
     printf("Up activate Switches\n");
 
-    Switches switches2(&hw, switchesButtons, 9, IHWLayer::UP);
+    Switches switches2;
+    switches2.init(&hw, switchesButtons, 9, IHWLayer::UP);
 
     hw.setButtonState(16, true);
     switches2.update();

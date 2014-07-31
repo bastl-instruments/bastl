@@ -6,15 +6,21 @@
 #include <iostream>
 #endif
 
-Switches::Switches(IHWLayer *hwLayer, unsigned char * buttonIndexes, unsigned char count, IHWLayer::ButtonState changeOnEvent) :
-    hwLayer_(hwLayer),
-    buttonIndexes_(buttonIndexes),
-    buttonCount_(count),
+Switches::Switches() :
+    hwLayer_(0),
+    buttonIndexes_(0),
+    buttonCount_(0),
     lastStates_(0),
     statuses_(0),
-    changeOnEvent_(changeOnEvent)
+    changeOnEvent_(IHWLayer::DOWN)
 {
+}
 
+void Switches::init(IHWLayer *hwLayer, unsigned char * buttonIndexes, unsigned char count, IHWLayer::ButtonState changeOnEvent) {
+	hwLayer_ = hwLayer;
+	buttonIndexes_ = buttonIndexes;
+	buttonCount_ = count;
+	changeOnEvent_ = changeOnEvent;
 }
 
 void Switches::update() {

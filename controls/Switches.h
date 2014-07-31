@@ -18,12 +18,18 @@ public:
 
 	/**
 	 * Constructor
+	 */
+	Switches();
+
+	/**
+	 * Initialize switches
 	 * @param hwLayer HW layer to read button states from
 	 * @param buttonIndexes indexes of the buttons in HW layer to be used in this
-	 * 					    button switches array (MAXIMUM IS 8)
+	 * 					    button switches array (MAXIMUM IS 16)
 	 * @param count number of buttons in this button array
+	 * @param changeOnEvent event to change state on (Default is on button down)
 	 */
-    Switches(IHWLayer *hwLayer, unsigned char * buttonIndexes, unsigned char count, IHWLayer::ButtonState changeOnEvent = IHWLayer::DOWN);
+    void init(IHWLayer *hwLayer, unsigned char * buttonIndexes, unsigned char count, IHWLayer::ButtonState changeOnEvent = IHWLayer::DOWN);
 
     /**
      * get the status of the button at the index in the switches array
