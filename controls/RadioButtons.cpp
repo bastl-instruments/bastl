@@ -38,6 +38,10 @@ void RadioButtons::update() {
     lastDownButton_ = 255;
 }
 
+void RadioButtons::setSelectedButton(unsigned char selectedButton) {
+	selectedButton_ = selectedButton;
+}
+
 
 bool RadioButtons::getSelectedButton(unsigned char &selectedButton)
 {

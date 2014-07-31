@@ -9,6 +9,7 @@ class RadioButtons
 public:
     RadioButtons(IHWLayer * hwLayer, unsigned char * buttonIndexes, unsigned char count);
     bool getSelectedButton(unsigned char & selectedButton);
+    void setSelectedButton(unsigned char selectedButton);
     void update();
 
 private:
