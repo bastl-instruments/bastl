@@ -7,7 +7,7 @@
 
 #include "SteppingHWLayerMock.h"
 
-void SteppingHWLayerMock::setBastlCyclesPerSecond(unsigned char bastlCyclesPerSecond) {
+void SteppingHWLayerMock::setBastlCyclesPerSecond(unsigned int bastlCyclesPerSecond) {
 	bastlCyclesPerSecond_ = bastlCyclesPerSecond;
 }
 

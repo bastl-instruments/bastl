@@ -16,7 +16,7 @@ public:
     virtual void writeSRAM(long address, unsigned char data) {};
     virtual void writeSRAM(long address, unsigned char * data, unsigned int size) {};
     virtual unsigned int getElapsedBastlCycles() {return 0;};
-    virtual unsigned char getBastlCyclesPerSecond() {return 0;};
+    virtual unsigned int getBastlCyclesPerSecond() {return 0;};
 
 
     void setButtonState(unsigned char buttonIndex, bool newState);

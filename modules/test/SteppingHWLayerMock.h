@@ -20,11 +20,11 @@ public:
 	virtual void writeSRAM(long address, unsigned char data) {}
 	virtual void writeSRAM(long address, unsigned char * data, unsigned int size) {}
 	virtual unsigned int getElapsedBastlCycles() {return elapsedBastlCycles_;}
-	virtual unsigned char getBastlCyclesPerSecond() {return bastlCyclesPerSecond_;}
-	void setBastlCyclesPerSecond(unsigned char bastlCyclesPerSecond);
+	virtual unsigned int getBastlCyclesPerSecond() {return bastlCyclesPerSecond_;}
+	void setBastlCyclesPerSecond(unsigned int bastlCyclesPerSecond);
 	void setElapsedBastlCycles(unsigned int elapsedBastlCycles);
 private:
-	unsigned char bastlCyclesPerSecond_;
+	unsigned int bastlCyclesPerSecond_;
 	unsigned int elapsedBastlCycles_;
 };
 

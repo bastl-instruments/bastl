@@ -20,7 +20,7 @@ public:
     virtual void writeSRAM(long address, unsigned char data) = 0;
     virtual void writeSRAM(long address, unsigned char * data, unsigned int size) = 0;
     virtual unsigned int getElapsedBastlCycles() = 0;
-    virtual unsigned char getBastlCyclesPerSecond() = 0;
+    virtual unsigned int getBastlCyclesPerSecond() = 0;
 
 };
 
