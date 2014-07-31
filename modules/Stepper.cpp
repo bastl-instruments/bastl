@@ -41,7 +41,7 @@ void Stepper::update() {
 			}
 
 			// catch the next step
-			lastElapsedCycles_ += getBastlCyclesPerStep() * ((elapsedCycles - lastElapsedCycles_) % getBastlCyclesPerStep());
+			lastElapsedCycles_ = elapsedCycles; // getBastlCyclesPerStep() * ((elapsedCycles - lastElapsedCycles_) % getBastlCyclesPerStep());
 		}
 	}
 }
@@ -57,7 +57,8 @@ void Stepper::setBPM(unsigned int bpm) {
 	if (bpm < 5) {bpm = 5;};
 	// Rounding instead of casting could be nice here but lets make it little out of sync
 	// One beat is actually 16 bastl steps
-	bastlCyclesPerStep_ = (int)((((float)hwLayer_->getBastlCyclesPerSecond()) / ((float)bpm / 60.0)) / 16.0);
+
+	bastlCyclesPerStep_ = ((hwLayer_->getBastlCyclesPerSecond() * 60) / bpm)  / 16;
 }
 
 unsigned char Stepper::getBastlCyclesPerStep() {
