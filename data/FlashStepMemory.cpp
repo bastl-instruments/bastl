@@ -1,6 +1,8 @@
 #include "FlashStepMemory.h"
 #include "InstrumentDefinitions.h"
 
+#define INSTRUMENT_DATA_OFFSET
+
 //#define DEBUG
 #ifdef DEBUG
 
@@ -49,21 +51,27 @@ bool FlashStepMemory::getNextActiveDrumStep(unsigned char instrumentID, unsigned
 
     unsigned char actives = hwLayer_->readSRAM(instrumentOffset + byteIndex);
 
-    actives = actives >> bitIndex;
+    unsigned char nextActives = actives >> bitIndex;
 
-    while (actives == 0) {
-        byteIndex = ((byteIndex + 1) % 4);
-        actives = hwLayer_->readSRAM(instrumentOffset + byteIndex);
-        if (byteIndex == originalByteIndex) {
+
+    while (nextActives == 0) {
+    	bitIndex = 0;
+        byteIndex = ((byteIndex + 1) % 8);
+        nextActives = hwLayer_->readSRAM(instrumentOffset + byteIndex);
+        if (byteIndex == originalByteIndex && nextActives == 0) {
             return false;
         }
     }
+
+    actives = nextActives;
 
     //Find first non zero bit in the array
     while (actives % 2 == 0) {
         actives = actives >> 1;
         bitIndex++;
     }
+
+    step = byteIndex * 8 + bitIndex;
 
     unsigned char mutes = hwLayer_->readSRAM(instrumentOffset + byteIndex + 8);
     unsigned char data = hwLayer_->readSRAM(instrumentOffset + 16 + step);
@@ -75,8 +83,6 @@ bool FlashStepMemory::getNextActiveDrumStep(unsigned char instrumentID, unsigned
     for (unsigned char i = 0; i < 4; i++) {
         subSteps[i] = (DrumStep::DrumVelocityType)(((3 << (i * 2)) & data) >> (i * 2));
     }
-
-    step = byteIndex * 8 + bitIndex;
 
     drumStep = DrumStep(active, mute, subSteps);
     return true;
@@ -106,11 +112,8 @@ bool FlashStepMemory::setDrumStep(unsigned char instrumentID, unsigned char patt
         mutes = mutes & ~(1 << bitIndex);
     }
 
-    for (int i = 3; i >=0 ; i--) {
-        data = (data | stepData.getSubStep(i));
-        if (i != 0) {
-            data = data << 2;
-        }
+    for (int i = 0; i < 4 ; i++) {
+        data = (data | stepData.getSubStep(i) << (2 * i));
     }
     hwLayer_->writeSRAM(instrumentOffset + byteIndex, actives);
     hwLayer_->writeSRAM(instrumentOffset + byteIndex + 8, mutes);
@@ -127,3 +130,11 @@ void FlashStepMemory::getActivesAndMutesForNote(unsigned char instrumentID, unsi
 	data[2] = hwLayer_->readSRAM(instrumentOffset + windowIndex + 8);
 	data[3] = hwLayer_->readSRAM(instrumentOffset + windowIndex + 9);
 }
+
+void FlashStepMemory::getPatternSettings(unsigned char patternIndex, unsigned char * settings) {
+	hwLayer_->readSRAM( DRUM_BYTES + patternIndex * 3, settings, 3);
+}
+void FlashStepMemory::setPatternSettings(unsigned char patternIndex, unsigned char * settings) {
+	hwLayer_->writeSRAM( DRUM_BYTES + patternIndex * 3, settings, 3);
+}
+
