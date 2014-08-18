@@ -268,7 +268,8 @@ void HandleControlChange(byte channel, byte number, byte value){
       number=number-CONTROL_CHANGE_OFFSET_2;
       setVar(midiSound,number,scale(value,CONTROL_CHANGE_BITS,variableDepth[number]));  
       hw.freezeAllKnobs();
-      renderTweaking(sound,(number)/VARIABLES_PER_PAGE);
+      setAllValues(sound);
+//      renderTweaking(sound,(number)/VARIABLES_PER_PAGE);
     }
     
     if((number==ALL_NOTES_OFF) || (number==ALL_SOUNDS_OFF)){
