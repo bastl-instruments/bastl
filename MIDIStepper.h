@@ -8,7 +8,7 @@
 #ifndef MIDISTEPPER_H_
 #define MIDISTEPPER_H_
 
-#include "Stepper.h"
+#include "BastlMetronome.h"
 #include "IHWLayer.h"
 
 /**
@@ -17,7 +17,7 @@
  *
  * !!! This class makes setBPM method unusable since it is driven by MIDI clock
  */
-class MIDIStepper : public Stepper {
+class MIDIStepper : public BastlMetronome {
 public:
 	MIDIStepper(IHWLayer * hwLayer);
 	void stepMIDI();

@@ -14,7 +14,7 @@
 
 #include "MIDIStepper.h"
 
-MIDIStepper::MIDIStepper(IHWLayer * hwLayer) : Stepper(hwLayer) {
+MIDIStepper::MIDIStepper(IHWLayer * hwLayer) : BastlMetronome(hwLayer) {
 }
 
 unsigned char MIDIStepper::getBastlCyclesPerStep() {
