@@ -1,7 +1,7 @@
 #ifndef FLASHSTEPMEMORY_H
 #define FLASHSTEPMEMORY_H
 
-#include "../hw/IHWLayer.h"
+#include "IHWLayer.h"
 #include "IStepMemory.h"
 #include "DrumStep.h"
 

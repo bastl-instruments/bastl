@@ -3,11 +3,12 @@
 
 //#define DEBUG
 
-#include "../data/IStepMemory.h"
-#include "../data/MIDICommand.h"
-#include "../data/InstrumentDefinitions.h"
+#include "IStepMemory.h"
+#include "MIDICommand.h"
+#include "InstrumentDefinitions.h"
 #include "IMIDICommandProcessor.h"
 #include "PlayerSettings.h"
+#include "DrumStep.h"
 
 #ifdef DEBUG
 
@@ -24,7 +25,10 @@ public:
     Player(IStepMemory * memory, IMIDICommandProcessor* midiProcessor, PlayerSettings * settings);
     void stepFourth();
     unsigned char getCurrentInstrumentStep(unsigned char instrumentID);
+    void setCurrentInstrumentStep(unsigned char instrumentID, unsigned char step);
     unsigned char getCurrentInstrumentSubStep(unsigned char instrumentID);
+    void playNote(unsigned char instrumentID, DrumStep::DrumVelocityType velocityType);
+
 private:
     IStepMemory * memory_;
     IMIDICommandProcessor * midiProcessor_;
@@ -37,11 +41,16 @@ private:
     void stepDrumInstruments();
     bool isInstrumentPlaying(unsigned char instrumentID);
     void setInstrumentPlaying(unsigned char instrumentID, bool isPlaying);
+    void sendNoteOffIfPlaying(unsigned char instrumentID);
 
 };
 
 inline unsigned char Player::getCurrentInstrumentStep(unsigned char instrumentID) {
 	return currentSteps_[instrumentID] / 4;
+}
+
+inline void Player::setCurrentInstrumentStep(unsigned char instrumentID, unsigned char step) {
+	currentSteps_[instrumentID] = step * 4 + currentSteps_[instrumentID] % 4;
 }
 
 inline unsigned char Player::getCurrentInstrumentSubStep(unsigned char instrumentID) {

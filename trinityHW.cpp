@@ -16,7 +16,7 @@ for Standuino wwww.standuino.eu
 #include <avr/pgmspace.h>
 #include "trinityHW.h"
 //#include <MozziGuts.h>
-#include <mozzi_analog.h>
+#include <../Mozzi/mozzi_analog.h>
 
 
 

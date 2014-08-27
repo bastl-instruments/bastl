@@ -41,14 +41,9 @@
 // some lower-level version that use explicit register specification
 // copied from: https://gist.github.com/holachek/3310645
 
-//#define setOutput(ddr, pin) ((ddr) |= (1<< (pin)))
 #define setLow(port, pin) ((port) &= ~(1 << (pin)))
 #define setHigh(port, pin) ((port) |= (1 << (pin)))
-//#define outputState(port, pin) ((port) & (1 << (pin)))
-//#define pulse(port, pin) do { \
-//setHigh((port), (pin)); \
-//setLow((port), (pin)); \
-//} while (0)
+
 
 
 

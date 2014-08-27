@@ -9,7 +9,7 @@
 #define MIDISTEPPER_H_
 
 #include "Stepper.h"
-#include "../hw/IHWLayer.h"
+#include "IHWLayer.h"
 
 /**
  * Class for stepping using midi clock as an input. To be able to do this with our device we need to double the stepping

@@ -1,7 +1,7 @@
 #ifndef IMIDICOMMANDPROCESSOR_H
 #define IMIDICOMMANDPROCESSOR_H
 
-#include "../data/MIDICommand.h"
+#include "MIDICommand.h"
 
 class IMIDICommandProcessor {
 public:

@@ -7,7 +7,7 @@
 #define SETBITFALSE(X, Y) ((X) = ((X) & ~(1 << (Y))))
 
 
-#include "../hw/IHWLayer.h"
+#include "IHWLayer.h"
 
 /**
  * This class handles maximum 8 independent switches

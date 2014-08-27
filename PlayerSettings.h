@@ -1,8 +1,8 @@
 #ifndef PLAYERSETTINGS_H
 #define PLAYERSETTINGS_H
 
-#include "../data/InstrumentDefinitions.h"
-#include "../data/DrumStep.h"
+#include "InstrumentDefinitions.h"
+#include "DrumStep.h"
 
 class PlayerSettings
 {
