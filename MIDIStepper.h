@@ -19,7 +19,7 @@
  */
 class MIDIStepper : public BastlMetronome {
 public:
-	MIDIStepper(IHWLayer * hwLayer);
+	MIDIStepper();
 	void stepMIDI();
 protected:
 	virtual unsigned char getBastlCyclesPerStep();

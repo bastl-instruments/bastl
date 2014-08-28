@@ -14,11 +14,12 @@ class BastlMetronome {
 
 public:
 
-	BastlMetronome(IHWLayer * hwLayer);
+	BastlMetronome();
 	void setStepCallback(void (*stepCallback)());
 	void setBPM(unsigned int bpm);
 	void update();
 	void sync();
+	void init(IHWLayer * hwLayer);
 	unsigned char getQuantizedStep(unsigned char quantization, bool & played);
 	unsigned char getCurrentStepIndex();
 protected:
@@ -39,6 +40,7 @@ private:
 	unsigned char quatizedStep_;
 	QuantizedShift shift_;
 };
+
 
 inline unsigned char BastlMetronome::getCurrentStepIndex() {
 	return currentGlobalStep_;

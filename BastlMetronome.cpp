@@ -15,8 +15,12 @@
 
 #include "BastlMetronome.h"
 
-BastlMetronome::BastlMetronome(IHWLayer * hwLayer) :
-	running_(true), stopAfterNextStep_(false), stepCallback_(0), hwLayer_(hwLayer), currentGlobalStep_(0), quatizedStep_(0), shift_(DOWN) {
+BastlMetronome::BastlMetronome():
+	running_(true), stopAfterNextStep_(false), stepCallback_(0), hwLayer_(0), currentGlobalStep_(0), quatizedStep_(0), shift_(DOWN) {
+}
+
+void BastlMetronome::init(IHWLayer * hwLayer){
+	hwLayer_=hwLayer;
 }
 
 unsigned char BastlMetronome::getQuantizedStep(unsigned char quantization, bool & played) {
