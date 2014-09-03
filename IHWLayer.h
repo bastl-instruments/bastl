@@ -8,7 +8,7 @@
 class IHWLayer {
 public:
 
-	enum LedState{ON, OFF, BLINK, BLINK_INVERT};
+	enum LedState{ON, OFF, BLINK, BLINK_INVERT, DULLON};
 	enum ButtonState{UP, DOWN};
 
 
