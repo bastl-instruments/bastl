@@ -2,11 +2,6 @@
 #ifndef SWITCHES_H
 #define SWITCHES_H
 
-#define GETBIT(X, Y)  (((X) & (1 << (Y))) >> (Y) == 1)
-#define SETBITTRUE(X, Y) ((X) = ((X) | (1 << (Y))))
-#define SETBITFALSE(X, Y) ((X) = ((X) & ~(1 << (Y))))
-
-
 #include "IHWLayer.h"
 
 /**

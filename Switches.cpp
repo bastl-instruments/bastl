@@ -1,4 +1,5 @@
 #include "Switches.h"
+#include "BitArrayOperations.h"
 
 //#define DEBUG
 
