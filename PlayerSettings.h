@@ -24,6 +24,8 @@ public:
     void setCurrentPattern(unsigned char pattern);
     unsigned char getCurrentPattern();
 
+    bool getDrumInstrumentIndexFromMIDIMessage(unsigned char channel, unsigned char note, unsigned char & drumInstrumentID);
+
 private:
     unsigned char drumInstrumentNotes_[DRUM_INSTRUMENTS];
     unsigned char instrumentChannels_[(DRUM_INSTRUMENTS + MONO_INSTRUMENTS) / 2];

@@ -66,3 +66,15 @@ unsigned char PlayerSettings::getMIDIVelocityFromDrumVelocity(DrumStep::DrumVelo
             return 0;
     }
 }
+
+bool PlayerSettings::getDrumInstrumentIndexFromMIDIMessage(unsigned char channel, unsigned char note, unsigned char & drumInstrumentID) {
+	for (unsigned char instrumentID = 0; instrumentID < DRUM_INSTRUMENTS; instrumentID++) {
+		if (drumInstrumentNotes_[instrumentID] == note) {
+			if (getInstrumentChannel(InstrumentTypes::DRUM, instrumentID) == channel) {
+				drumInstrumentID = instrumentID;
+				return true;
+			}
+		}
+	}
+	return false;
+}
