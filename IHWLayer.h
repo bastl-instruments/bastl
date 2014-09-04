@@ -8,12 +8,13 @@
 class IHWLayer {
 public:
 
-	enum LedState{ON, OFF, BLINK, BLINK_INVERT, DULLON};
+	enum LedState{ON,OFF, BLINK, BLINK_INVERT, DULLON};
 	enum ButtonState{UP, DOWN};
 
 
     virtual ButtonState getButtonState(unsigned char index) = 0;
     virtual void setLED(unsigned char index, LedState state) = 0;
+    virtual void setLED(unsigned char index, unsigned char brightness, unsigned char blinkTime = 0) = 0;
     virtual unsigned char getKnobValue(unsigned char index) = 0;
     virtual unsigned char readSRAM(long address) = 0;
     virtual void readSRAM(long address, unsigned char * data, unsigned int size) = 0;
