@@ -5,6 +5,8 @@
 #define BUTTON_DRUM_2 17
 #define BUTTON_DRUM_3 18
 
+#include <inttypes.h>
+
 class IHWLayer {
 public:
 
@@ -22,6 +24,11 @@ public:
     virtual void writeSRAM(long address, unsigned char * data, unsigned int size) = 0;
     virtual unsigned int getElapsedBastlCycles() = 0;
     virtual unsigned int getBastlCyclesPerSecond() = 0;
+
+    // subject to change
+	virtual void readEEPROM(uint8_t pageNumb, uint8_t* byteArray, uint16_t numbBytes);
+	virtual void readEEPROMDirect(uint16_t address, uint8_t* byteArray, uint16_t numbBytes);
+	virtual bool isEEPROMBusy();
 
 };
 
