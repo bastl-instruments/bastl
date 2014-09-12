@@ -5,28 +5,44 @@
  *      Author: bastl
  */
 
-#include <StepGenerator.h>
+#include "StepGenerator.h"
 
+#define DEBUG
+#ifdef DEBUG
+#include <iostream>
+#endif
 
-StepGenerator::StepGenerator() : BastlStepper(), bastlCyclesPerStep_(10), lastStepBastlCycles_(0){
+StepGenerator::StepGenerator() : BastlStepper(), lastStepTimeUnits_(0){
 }
 
-void StepGenerator::doStep() {
+void StepGenerator::doStep(unsigned int elapsedTimeUnits) {
 
 	//This is kind of sync method
-	unsigned int currentTime = hw_->getElapsedBastlCycles();
-	if (currentTime - lastStepBastlCycles_  < (bastlCyclesPerStep_ / 10)) {
-		lastStepBastlCycles_ = currentTime;
-	} else if ((lastStepBastlCycles_ + bastlCyclesPerStep_ - currentTime) < (bastlCyclesPerStep_ / 10)) {
-		lastStepBastlCycles_ -= (lastStepBastlCycles_ + bastlCyclesPerStep_ - currentTime);
+	#ifdef DEBUG
+	printf("StepGenerator::doStep - timeElapsedFromLast: %d , timeUnitsPerStep,: %d\n",
+			(elapsedTimeUnits - lastStepTimeUnits_),
+			timeUnitsPerStep_);
+	#endif
+	if (elapsedTimeUnits - lastStepTimeUnits_  < (timeUnitsPerStep_ / 3)) {
+		lastStepTimeUnits_ = elapsedTimeUnits;
+		#ifdef DEBUG
+		printf("StepGenerator::doStep - Move this little forward! to: %d\n", lastStepTimeUnits_);
+		#endif
+	} else {
+		lastStepTimeUnits_ = (elapsedTimeUnits - timeUnitsPerStep_) - 1;
+		#ifdef DEBUG
+		printf("StepGenerator::doStep - Move this little backward! to: %d\n", lastStepTimeUnits_);
+		#endif
 	}
-	update();
+	update(elapsedTimeUnits);
 }
 
-void StepGenerator::update() {
-	unsigned int currentTime = hw_->getElapsedBastlCycles();
-	if (currentTime - lastStepBastlCycles_ > bastlCyclesPerStep_) {
-		lastStepBastlCycles_ += bastlCyclesPerStep_;
+void StepGenerator::update(unsigned int elapsedTimeUnits) {
+	if (elapsedTimeUnits - lastStepTimeUnits_ > timeUnitsPerStep_) {
+		lastStepTimeUnits_ = elapsedTimeUnits - ((elapsedTimeUnits - lastStepTimeUnits_) % timeUnitsPerStep_);
+		#ifdef DEBUG
+		printf("StepGenerator::update - TRIGGER! elapsed: %d, timeUnitsPerStep: %d, currentStep %d\n", elapsedTimeUnits, timeUnitsPerStep_, lastStepTimeUnits_);
+		#endif
 		if (stepCallback_ != 0) {
 			stepCallback_();
 		}

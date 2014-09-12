@@ -13,12 +13,12 @@
 class StepDivider : public BastlStepper {
 public:
 	StepDivider();
-	virtual void doStep();
-	virtual void update(){}
+	virtual void doStep(unsigned int elapsedTimeUnits);
+	virtual void update(unsigned int elapsedTimeUnits){}
 	void setDivision(unsigned char division);
 protected:
-	unsigned char numberOfIgnoredSteps_;
-	unsigned int lastStepBastlCycles_;
+	unsigned char numberOfStepsToIgnore_;
+	unsigned int lastStepTimeUnits_;
 	unsigned char division_;
 };
 

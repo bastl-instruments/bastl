@@ -13,16 +13,15 @@
 class StepGenerator : public BastlStepper {
 public:
 	StepGenerator();
-	virtual void doStep();
-	virtual void update();
-	void setBastlCyclesPerStep(unsigned char bastlCyclesPerStep);
+	virtual void doStep(unsigned int elapsedTimeUnits);
+	virtual void update(unsigned int elapsedTimeUnits);
+	void setTimeUnitsPerStep(unsigned char timeUnits);
 private:
-	unsigned char bastlCyclesPerStep_;
-	unsigned char lastStepBastlCycles_;
+	unsigned int lastStepTimeUnits_;
 };
 
-inline void StepGenerator::setBastlCyclesPerStep(unsigned char bastlCyclesPerStep) {
-	bastlCyclesPerStep_ = bastlCyclesPerStep;
+inline void StepGenerator::setTimeUnitsPerStep(unsigned char timeUnits) {
+	timeUnitsPerStep_ = timeUnits;
 }
 
 #endif /* STEPGENERATOR_H_ */
