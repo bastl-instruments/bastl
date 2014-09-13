@@ -24,7 +24,7 @@ unsigned char MIDIStepper::getBastlCyclesPerStep() {
 
 void MIDIStepper::stepMIDI() {
 
-	int currentCycles = hwLayer_->getElapsedBastlCycles();
+	/*int currentCycles = hwLayer_->getElapsedBastlCycles();
 	nextMidiStepCycles_ = (currentCycles - lastMidiStepCycles_) / 2;
 	#ifdef DEBUG
 	printf("\tCurrentCycles %d LastCycles %d NextMidiCycles %d\n",currentCycles, lastMidiStepCycles_, nextMidiStepCycles_);
@@ -32,6 +32,6 @@ void MIDIStepper::stepMIDI() {
 	lastMidiStepCycles_ = currentCycles;
 	sync();
 	start();
-	stopAfterNextStep();
+	stopAfterNextStep();*/
 }
 

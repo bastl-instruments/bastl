@@ -9,6 +9,7 @@
 #define BPMCONVERTER_H_
 
 class BPMConverter {
+public:
 	static unsigned char bpmToTimeUnits(unsigned int bpm, unsigned int timeUnitsPerSecond);
 	static unsigned char timeUnitsToBPM(unsigned int timeUnits, unsigned int timeUnitsPerSecond);
 };

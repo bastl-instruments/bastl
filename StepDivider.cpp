@@ -7,7 +7,7 @@
 
 #include "StepDivider.h"
 
-#define DEBUG
+//#define DEBUG
 #ifdef DEBUG
 #include <iostream>
 #endif

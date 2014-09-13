@@ -5,7 +5,7 @@
  *      Author: bastl
  */
 
-#include <BPMConverter.h>
+#include "BPMConverter.h"
 
 unsigned char BPMConverter::bpmToTimeUnits(unsigned int bpm, unsigned int timeUnitsPerSecond) {
 	return (timeUnitsPerSecond * 60) / bpm;

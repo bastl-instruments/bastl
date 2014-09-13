@@ -7,7 +7,7 @@
 
 #include "StepMultiplier.h"
 
-#define DEBUG
+//#define DEBUG
 #ifdef DEBUG
 #include <iostream>
 #endif
