@@ -16,26 +16,24 @@ public:
 
 	BastlMetronome();
 	void setStepCallback(void (*stepCallback)());
-	void setBPM(unsigned int bpm);
-	void update();
+	void setBPM(unsigned int bpm, unsigned int timeUnitsPerSecond);
+	void update(unsigned int elapsedTimeUnits);
 	void sync();
-	void init(IHWLayer * hwLayer);
 	unsigned char getQuantizedStep(unsigned char quantization, bool & played);
 	unsigned char getCurrentStepIndex();
 protected:
 	bool running_;
 	bool stopAfterNextStep_;
 	void (*stepCallback_)();
-	IHWLayer * hwLayer_;
-	virtual unsigned char getBastlCyclesPerStep();
-	void start();
+	virtual unsigned char getTimeUnitsPerStep();
+	void start(unsigned int elapsedTimeUnits);
 	void stop();
 	void stopAfterNextStep();
 private:
 	enum QuantizedShift {UP, DOWN};
 
-	unsigned int lastElapsedCycles_;
-	unsigned int bastlCyclesPerStep_;
+	unsigned int lastElapsedTimeUnits_;
+	unsigned int timeUnitsPerStep_;
 	unsigned char currentGlobalStep_;
 	unsigned char quatizedStep_;
 	QuantizedShift shift_;
@@ -46,9 +44,9 @@ inline unsigned char BastlMetronome::getCurrentStepIndex() {
 	return currentGlobalStep_;
 }
 
-inline void BastlMetronome::start() {
+inline void BastlMetronome::start(unsigned int elapsedTimeUnits) {
 	running_ = true;
-	lastElapsedCycles_ = hwLayer_->getElapsedBastlCycles();
+	lastElapsedTimeUnits_ = elapsedTimeUnits;
 }
 
 inline void BastlMetronome::stop() {

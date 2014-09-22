@@ -8,7 +8,8 @@
 #include "InstrumentDefinitions.h"
 #include "IMIDICommandProcessor.h"
 #include "PlayerSettings.h"
-#include "DrumStep.h"
+#include "StepSynchronizer.h"
+
 
 #ifdef DEBUG
 
@@ -22,10 +23,11 @@
 class Player
 {
 public:
-    Player(IStepMemory * memory, IMIDICommandProcessor* midiProcessor, PlayerSettings * settings);
+    Player(IStepMemory * memory, IMIDICommandProcessor* midiProcessor, PlayerSettings * settings, StepSynchronizer * synchronizer);
     void stepFourth();
     unsigned char getCurrentInstrumentStep(unsigned char instrumentID);
     void setCurrentInstrumentStep(unsigned char instrumentID, unsigned char step);
+    void changeActivesForCurrentStep(unsigned char instrumentID, unsigned char numberOfActiveSteps);
     unsigned char getCurrentInstrumentSubStep(unsigned char instrumentID);
     void playNote(unsigned char instrumentID, DrumStep::DrumVelocityType velocityType);
 
@@ -33,6 +35,7 @@ private:
     IStepMemory * memory_;
     IMIDICommandProcessor * midiProcessor_;
     PlayerSettings * settings_;
+    StepSynchronizer * synchronizer_;
     unsigned char currentSteps_[INSTRUMENTS];
     unsigned char playingInstruments[ALL_INSTRUMENTS_IN_BYTES];
     unsigned char currentPatterns_[1];

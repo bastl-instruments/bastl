@@ -5,9 +5,10 @@
 
 #define SUBSTEPS_PER_STEP 4
 
-Player::Player(IStepMemory * memory, IMIDICommandProcessor * midiProcessor, PlayerSettings * settings) : memory_(memory),
+Player::Player(IStepMemory * memory, IMIDICommandProcessor * midiProcessor, PlayerSettings * settings, StepSynchronizer * synchronizer) : memory_(memory),
                                                                                                       midiProcessor_(midiProcessor),
                                                                                                       settings_(settings),
+                                                                                                      synchronizer_(synchronizer),
                                                                                                       isStopped_(true)
 
 {
@@ -87,4 +88,8 @@ void Player::stepDrumInstruments()
         }
         //printf("\n");
     }
+}
+
+void Player::changeActivesForCurrentStep(unsigned char instrumentID, unsigned char numberOfActiveSteps) {
+	setCurrentInstrumentStep(instrumentID, (synchronizer_->getCurrentStepNumber() / 4) % numberOfActiveSteps);
 }
