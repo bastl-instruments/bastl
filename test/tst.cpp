@@ -3,6 +3,7 @@
 #include "../StepDivider.h"
 #include "../StepMultiplier.h"
 #include "../StepGenerator.h"
+#include "../NoVelocityStepMemory.h"
 
 unsigned int lastStepTimeUnits = 0;
 unsigned int numberOfTaps = 0;
@@ -10,6 +11,81 @@ unsigned int numberOfTaps = 0;
 unsigned int numberOfStepCallbacks = 0;
 
 Tapper tapper;
+
+
+
+bool compareMemoryResults(DrumStep & drumstep, DrumStep & drumstepExpected) {
+	bool ok = drumstepExpected.isActive() == drumstep.isActive();
+	printf("Active step %s \n", ok ? "OK" : "NOK");
+	if (!ok)
+		return false;
+
+	ok = drumstepExpected.isMuted() == drumstep.isMuted();
+	printf("Mute step %s \n", ok ? "OK" : "NOK");
+	if (!ok)
+		return false;
+
+	ok = drumstepExpected.getSubStep(0) == drumstep.getSubStep(0);
+	printf("Substep 1 step %s \n", ok ? "OK" : "NOK");
+	if (!ok)
+		return false;
+
+	ok = drumstepExpected.getSubStep(1) == drumstep.getSubStep(1);
+	printf("Substep 2 step %s \n", ok ? "OK" : "NOK");
+	if (!ok)
+		return false;
+
+	ok = drumstepExpected.getSubStep(2) == drumstep.getSubStep(2);
+	printf("Substep 3 step %s \n", ok ? "OK" : "NOK");
+	if (!ok)
+		return false;
+
+	ok = drumstepExpected.getSubStep(3) == drumstep.getSubStep(3);
+	printf("Substep 4 step %s \n", ok ? "OK" : "NOK");
+	if (!ok)
+		return false;
+
+
+	return true;
+}
+
+bool checkMemory(IStepMemory & memory, DrumStep & drumstep, DrumStep & drumstep2) {
+
+    memory.setDrumStep(0, 0, 0, drumstep);
+
+    memory.setDrumStep(3, 0, 61, drumstep2);
+
+    DrumStep drumStepResult = memory.getDrumStep(0, 0, 0);
+    DrumStep drumStepResult2 = memory.getDrumStep(3, 0, 61);
+
+    bool ok = compareMemoryResults(drumStepResult, drumstep);
+    if (!ok) return false;
+    return compareMemoryResults(drumStepResult2, drumstep2);
+}
+
+
+bool testNon16GetNextActive() {
+	DrumStep::DrumVelocityType steps1[4] = {DrumStep::OFF, DrumStep::OFF, DrumStep::NORMAL, DrumStep::OFF};
+	DrumStep::DrumVelocityType firstStep[4] = {DrumStep::NORMAL, DrumStep::OFF, DrumStep::NORMAL, DrumStep::OFF};
+	DrumStep firstDrumStep = DrumStep(true, false, firstStep);
+	DrumStep activedrumstep = DrumStep(true, false, steps1);
+	DrumStep inactivedrumstep = DrumStep(false, false, steps1);
+
+	NoVelocityStepMemory flashMemory = NoVelocityStepMemory();
+
+	for (int i = 0; i < 64; i++) {
+		if (i == 0) {
+			flashMemory.setDrumStep(0, 0, i, firstDrumStep);
+		} else {
+			flashMemory.setDrumStep(0, 0, i, (i < 20) ? activedrumstep : inactivedrumstep);
+		}
+	}
+	DrumStep resultDrumStep;
+	unsigned char nextStep = 20;
+	flashMemory.getNextActiveDrumStep(0, 0, nextStep, resultDrumStep);
+	printf("Result drum step %d %s", nextStep,  (resultDrumStep.getSubStep(0) == DrumStep::NORMAL) ? "OK" : "NOK");
+	return true;
+}
 
 void tapped() {
 	numberOfTaps++;
@@ -20,7 +96,63 @@ void step() {
 	numberOfStepCallbacks++;
 }
 
+
 int main( int argc, const char* argv[] ) {
+
+	//int z = 0;
+	DrumStep::DrumVelocityType steps1[4] = {DrumStep::NORMAL, DrumStep::OFF, DrumStep::OFF, DrumStep::NORMAL};
+	DrumStep::DrumVelocityType steps2[4] = {DrumStep::OFF, DrumStep::NORMAL, DrumStep::OFF, DrumStep::OFF};
+	DrumStep drumstep = DrumStep(false, false, steps1);
+	DrumStep drumstep2 = DrumStep(true, true, steps2);
+
+
+	//for (unsigned char i = 0; i < 4 ; i++) {
+	//    	#ifdef DEBUG
+	    	//printf("Setting bit at index %d to value %s \n", i, drumstep2.getSubStep(i) == DrumStep::NORMAL ? "True": "False");
+	//    	#endif
+	//    }
+	int z;
+
+	NoVelocityStepMemory flashMemory = NoVelocityStepMemory();
+	printf("Flash memory check: %s \n", checkMemory(flashMemory, drumstep, drumstep2) ? "OK" : "Error");
+
+	DrumStep resultDrumStep;
+	unsigned char nextStep = 0;
+	flashMemory.setDrumStep(0, 0, 1, drumstep2);
+	bool nextValueExists = flashMemory.getNextActiveDrumStep(0, 0, nextStep, resultDrumStep);
+
+	printf("Flash memory next valid (next step valids) check: %s \n", nextValueExists && nextStep == 1 ? "OK" : "Error");
+
+	    nextStep = 61;
+	    nextValueExists = flashMemory.getNextActiveDrumStep(3, 0, nextStep, resultDrumStep);
+
+	    printf("Flash memory next valid (this step valid) check: %s \n", nextValueExists && nextStep == 61 ? "OK" : "Error");
+
+	    for (unsigned char i = 0; i < 64; i++) {
+	        flashMemory.setDrumStep(1, 1, i, drumstep);
+	    }
+
+	    nextStep = 0;
+	    nextValueExists = flashMemory.getNextActiveDrumStep(1, 1, nextStep, resultDrumStep);
+
+	    printf("Flash memory next valid (no step valid) check: %s \n", !nextValueExists ? "OK" : "Error");
+
+	    DrumStep::DrumVelocityType activeSteps[4] = {DrumStep::NORMAL, DrumStep::OFF, DrumStep::OFF, DrumStep::OFF};
+	    DrumStep inactiveDrumStep = DrumStep(false, false, activeSteps);
+	    DrumStep activeDrumStep = DrumStep(true, false, activeSteps);
+	    for (unsigned char i = 0; i < 8; i++) {
+	        flashMemory.setDrumStep(0, 0, i, activeDrumStep);
+	    }
+	    for (unsigned char i = 8; i < 64; i++) {
+	    	flashMemory.setDrumStep(0, 0, i, inactiveDrumStep);
+	    }
+	    nextStep = 7;
+	    flashMemory.getNextActiveDrumStep(0, 0, nextStep, resultDrumStep);
+	    printf("Flash memory next valid is same: %s \n", nextStep == 7 ? "OK" : "Error");
+	    nextStep = 8;
+	    flashMemory.getNextActiveDrumStep(0, 0, nextStep, resultDrumStep);
+	    printf("Flash memory next valid is first: %s \n", nextStep == 0 ? "OK" : "Error");
+	    testNon16GetNextActive();
 
 	printf("Testing Tapper");
 	tapper.init(100, 10);

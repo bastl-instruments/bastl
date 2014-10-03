@@ -30,7 +30,7 @@ void Player::playNote(unsigned char instrumentID, DrumStep::DrumVelocityType vel
 	sendNoteOffIfPlaying(instrumentID);
 	unsigned char velocity = settings_->getMIDIVelocityFromDrumVelocity(velocityType);
 	MIDICommand command(MIDICommand::NOTEON,
-			settings_->getInstrumentChannel(InstrumentTypes::DRUM , instrumentID),
+			settings_->getInstrumentChannel(Step::DRUM , instrumentID),
 			settings_->getDrumInstrumentNote(instrumentID),
 			velocity) ;
 	midiProcessor_->SendCommand(command);
@@ -41,7 +41,7 @@ void Player::sendNoteOffIfPlaying(unsigned char instrumentID) {
 	if (isInstrumentPlaying(instrumentID)) {
 		//printf("Playing ");
 		MIDICommand command(MIDICommand::NOTEOFF,
-				settings_->getInstrumentChannel(InstrumentTypes::DRUM , instrumentID),
+				settings_->getInstrumentChannel(Step::DRUM , instrumentID),
 				settings_->getDrumInstrumentNote(instrumentID),
 				0);
 		midiProcessor_->SendCommand(command);
@@ -73,7 +73,7 @@ void Player::stepDrumInstruments()
         }
 
         if (nextStepExists) {
-            if (settings_->isInstrumentOn(InstrumentTypes::DRUM, i)) {
+            if (settings_->isInstrumentOn(Step::DRUM, i)) {
             	sendNoteOffIfPlaying(i);
                 if (!nextStep.isMuted()) {
                     //printf("Not muted");

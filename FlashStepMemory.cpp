@@ -1,5 +1,5 @@
 #include "FlashStepMemory.h"
-#include "InstrumentDefinitions.h"
+#include "RackInstrumentDefinitions.h"
 
 #define INSTRUMENT_DATA_OFFSET
 

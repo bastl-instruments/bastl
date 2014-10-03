@@ -10,7 +10,7 @@ CC_FLAGS=-c -Wall
 
 .PHONY : test
 
-test : tst.o ../Tapper.o ../StepDivider.o ../StepMultiplier.o ../StepGenerator.o ../BastlStepper.o
+test : tst.o ../Tapper.o ../StepDivider.o ../StepMultiplier.o ../StepGenerator.o ../BastlStepper.o ../DrumStep.o ../NoVelocityStepMemory.o ../Step.o
 	g++ -o $@ $^
 	./test
 
@@ -31,6 +31,15 @@ tst.o : tst.cpp
 	
 ../BastlStepper.o : ../BastlStepper.cpp
 	g++ $(CC_FLAGS) -o $@ $<
+	
+../DrumStep.o : ../DrumStep.cpp
+	g++ $(CC_FLAGS) -o $@ $<
+	
+../Step.o : ../Step.cpp
+	g++ $(CC_FLAGS) -o $@ $<
+	
+../NoVelocityStepMemory.o : ../NoVelocityStepMemory.cpp
+	g++ $(CC_FLAGS) -o $@ $<
 
 
 #../obj/%.o: ../%.cpp
@@ -45,6 +54,9 @@ clean:
 	-rm -f ../StepMultiplier.o
 	-rm -f ../StepGenerator.o
 	-rm -f ../BastlStepper.o
+	-rm -f ../DrumStep.o
+	-rm -f ../NoVelocityStepMemory.o
+	-rm -f ../Step.o
 	-rm -f tst.o
 	-rm -f test
 

@@ -1,7 +1,7 @@
 #ifndef PLAYERSETTINGS_H
 #define PLAYERSETTINGS_H
 
-#include "InstrumentDefinitions.h"
+#include "RackInstrumentDefinitions.h"
 #include "DrumStep.h"
 
 class PlayerSettings
@@ -12,14 +12,14 @@ public:
     unsigned char getDrumInstrumentNote(unsigned char instrumentID);
     void setDrumInstrumentNote(unsigned char instrumentID, unsigned char note);
 
-    unsigned char getInstrumentChannel(InstrumentTypes::InstrumentType type, unsigned char instrumentID);
-    void setInstrumentChannel(InstrumentTypes::InstrumentType type, unsigned char instrumentID, unsigned char channel);
+    unsigned char getInstrumentChannel(Step::InstrumentType type, unsigned char instrumentID);
+    void setInstrumentChannel(Step::InstrumentType type, unsigned char instrumentID, unsigned char channel);
 
     unsigned char getMIDIVelocityFromDrumVelocity(DrumStep::DrumVelocityType type);
     void setMIDIVelocitiesForDrumVelocities(unsigned char upDrumVelocity, unsigned char downDrumVelocity, unsigned char normalDrumVelocity);
 
-    bool isInstrumentOn(InstrumentTypes::InstrumentType type, unsigned char instrumentID);
-    void setInstrumentOn(InstrumentTypes::InstrumentType type, unsigned char instrumentID, bool isOn);
+    bool isInstrumentOn(Step::InstrumentType type, unsigned char instrumentID);
+    void setInstrumentOn(Step::InstrumentType type, unsigned char instrumentID, bool isOn);
 
     void setCurrentPattern(unsigned char pattern);
     unsigned char getCurrentPattern();
