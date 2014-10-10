@@ -29,7 +29,7 @@ public:
 public:
 	void setFreq(phaseType freq);
 	void setWaveform(LFOBasicWaveform waveform, bool invert = false, bool flop = false, LFOThresholdType type = OVERFLOW);
-	void setPhase(phaseType pos);
+	void setPhase(uint8_t position);
 	void setToStart();
 	void setResolution(uint8_t numbStepsToSkip);
 	void setThreshold(uint8_t thres);
@@ -93,8 +93,8 @@ void lfoExtended<UPDATEFREQ>::setWaveform(LFOBasicWaveform waveform, bool invert
 }
 
 template <unsigned int UPDATEFREQ>
-void lfoExtended<UPDATEFREQ>::setPhase(phaseType pos) {
-	currentPhase = pos;
+void lfoExtended<UPDATEFREQ>::setPhase(uint8_t pos) {
+	currentPhase = pos<<numbFBits;
 }
 
 template <unsigned int UPDATEFREQ>

@@ -19,11 +19,13 @@ public:
 
     // LEDs //
     virtual void setLED(unsigned char index, LedState state) = 0;
-    virtual void setLED(unsigned char index, unsigned char brightness, unsigned char blinkTime = 0) = 0;
+    //virtual void setLED(unsigned char index, unsigned char brightness, unsigned char blinkTime = 0) = 0;
 
     // Knobs //
     virtual unsigned char getKnobValue(unsigned char index) = 0;
     virtual void freezeKnob(uint8_t number, uint8_t value) = 0;
+    virtual void setKnobLED(uint8_t number, uint8_t value) = 0;
+    virtual void setKnobLEDTracking(uint8_t number, bool) = 0;
 
 
     // RAM //
