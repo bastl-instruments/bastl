@@ -13,9 +13,9 @@ PlayerSettings::PlayerSettings() : upDrumVelocity_(253), downDrumVelocity_(64), 
     }
 }
 
-void PlayerSettings::setInstrumentOn(InstrumentTypes::InstrumentType type, unsigned char instrumentID, bool isOn)
+void PlayerSettings::setInstrumentOn(Step::InstrumentType type, unsigned char instrumentID, bool isOn)
 {
-    unsigned char position = (type == InstrumentTypes::MONO) ? 20 : 0 + instrumentID;
+    unsigned char position = (type == Step::MONO) ? 20 : 0 + instrumentID;
     if (isOn) {
         instrumentStatuses_[position / 8] = instrumentStatuses_[position / 8] | (1 << (position % 8));
     } else {
@@ -24,15 +24,15 @@ void PlayerSettings::setInstrumentOn(InstrumentTypes::InstrumentType type, unsig
 
 }
 
-bool PlayerSettings::isInstrumentOn(InstrumentTypes::InstrumentType type, unsigned char instrumentID)
+bool PlayerSettings::isInstrumentOn(Step::InstrumentType type, unsigned char instrumentID)
 {
-    unsigned char position = (type == InstrumentTypes::MONO) ? 20 : 0 + instrumentID;
+    unsigned char position = (type == Step::MONO) ? 20 : 0 + instrumentID;
     unsigned char value = instrumentStatuses_[position / 8];
     return (((1 << (position % 8)) & value) >> (position % 8) == 1);
 }
 
-unsigned char PlayerSettings::getInstrumentChannel(InstrumentTypes::InstrumentType type, unsigned char instrumentID) {
-    unsigned char position = (type == InstrumentTypes::MONO) ? 20 : 0 + instrumentID;
+unsigned char PlayerSettings::getInstrumentChannel(Step::InstrumentType type, unsigned char instrumentID) {
+    unsigned char position = (type == Step::MONO) ? 20 : 0 + instrumentID;
     unsigned char instrumentShift = ((position % 2) * 4);
 
     // we have only 16 channels so one byte contains information for two instruments
@@ -40,9 +40,9 @@ unsigned char PlayerSettings::getInstrumentChannel(InstrumentTypes::InstrumentTy
 
 }
 
-void PlayerSettings::setInstrumentChannel(InstrumentTypes::InstrumentType type, unsigned char instrumentID, unsigned char channel)
+void PlayerSettings::setInstrumentChannel(Step::InstrumentType type, unsigned char instrumentID, unsigned char channel)
 {
-    unsigned char position = (type == InstrumentTypes::MONO) ? 20 : 0 + instrumentID;
+    unsigned char position = (type == Step::MONO) ? 20 : 0 + instrumentID;
     unsigned char instrumentShift = ((position % 2) * 4);
 
     // we have only 16 channels so one byte contains information for two instruments
@@ -70,7 +70,7 @@ unsigned char PlayerSettings::getMIDIVelocityFromDrumVelocity(DrumStep::DrumVelo
 bool PlayerSettings::getDrumInstrumentIndexFromMIDIMessage(unsigned char channel, unsigned char note, unsigned char & drumInstrumentID) {
 	for (unsigned char instrumentID = 0; instrumentID < DRUM_INSTRUMENTS; instrumentID++) {
 		if (drumInstrumentNotes_[instrumentID] == note) {
-			if (getInstrumentChannel(InstrumentTypes::DRUM, instrumentID) == channel) {
+			if (getInstrumentChannel(Step::DRUM, instrumentID) == channel) {
 				drumInstrumentID = instrumentID;
 				return true;
 			}

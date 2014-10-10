@@ -5,7 +5,7 @@
 
 #include "IStepMemory.h"
 #include "MIDICommand.h"
-#include "InstrumentDefinitions.h"
+#include "RackInstrumentDefinitions.h"
 #include "IMIDICommandProcessor.h"
 #include "PlayerSettings.h"
 #include "StepSynchronizer.h"

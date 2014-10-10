@@ -3,7 +3,7 @@
 
 class Step {
 public:
-    enum StepType {DRUM, MONO, POLY};
+    enum InstrumentType {DRUM, MONO, POLY};
 
     Step( bool active, bool mute);
     bool isActive();
