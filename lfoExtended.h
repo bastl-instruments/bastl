@@ -45,7 +45,7 @@ public:
 
 private:
 	void incrementPhase();
-	void calcCurrentValue();
+	//void calcCurrentValue();
 
 	LFOBasicWaveform currentWaveform;
 	bool invertWaveform;
@@ -126,52 +126,17 @@ LFOBasicWaveform lfoExtended<UPDATEFREQ>::getWaveform() {
 template <unsigned int UPDATEFREQ>
 uint8_t lfoExtended<UPDATEFREQ>::getCurrentValue() {
 
-	return currentValue;
-
 	const uint8_t flopBit = 3;
-
-	// Invert Waveform
-	if (invertWaveform) {
-		currentValue = 255-currentValue;
-	}
-
-	// Apply Flopping
-	if ((flopWaveform) && (currentValue & (1<<flopBit))) {
-		currentValue = 0;
-	}
-
-	// Apply Overflowing
-	if (currentValue > threshold) {
-		if (thresholdType == OVERFLOW) currentValue -= threshold;
-		if (thresholdType == FOLDING)  currentValue = threshold - (currentValue - threshold);
-	}
-
-	return currentValue;
-}
-
-template <unsigned int UPDATEFREQ>
-void lfoExtended<UPDATEFREQ>::step() {
-	incrementPhase();
-	calcCurrentValue();
-}
-
-template <unsigned int UPDATEFREQ>
-void lfoExtended<UPDATEFREQ>::incrementPhase() {
-	currentPhase += phaseIncrement;
+	const int8_t randomStepWidth = 4;
+	int8_t randomCurrentSlopeSum = 0;
+	const uint8_t randomCurrentSlopeCount = 5;
 
 
-}
-
-template <unsigned int UPDATEFREQ>
-void lfoExtended<UPDATEFREQ>::calcCurrentValue() {
-
-	const int8_t randomStepWidth = 10;
-
-
+	// calculate step from phase
 	uint8_t currentIndex = currentPhase>>numbFBits;
 
 	if ((uint8_t)(currentIndex-lastUnskippedStep) < numbStepsToSkip) {
-		return;
+		currentIndex = lastUnskippedStep>>numbFBits;
 		//Serial.print("skipped "); Serial.println(currentIndex);
 	} else {
 		lastUnskippedStep = currentIndex;
@@ -179,7 +144,6 @@ void lfoExtended<UPDATEFREQ>::calcCurrentValue() {
 
 
 	// Render Basic Waveform
-
 	switch(currentWaveform) {
 		case SAW: {
 			currentValue = currentIndex;
@@ -205,7 +169,40 @@ void lfoExtended<UPDATEFREQ>::calcCurrentValue() {
 	}
 
 
+	// Invert Waveform
+	if (invertWaveform) {
+		currentValue = 255-currentValue;
+	}
+
+	// Apply Flopping
+	if ((flopWaveform) && (currentValue & (1<<flopBit))) {
+		currentValue = 0;
+	}
+
+	// Apply Overflowing
+	if (currentValue > threshold) {
+
+		if (thresholdType == OVERFLOW) currentValue = currentValue % threshold;
+		if (thresholdType == FOLDING)  currentValue = threshold - (currentValue % threshold);
+	}
+
+	return currentValue;
 }
+
+template <unsigned int UPDATEFREQ>
+void lfoExtended<UPDATEFREQ>::step() {
+	incrementPhase();
+	//calcCurrentValue();
+}
+
+template <unsigned int UPDATEFREQ>
+void lfoExtended<UPDATEFREQ>::incrementPhase() {
+	currentPhase += phaseIncrement;
+
+
+}
+
+
 
 template <unsigned int UPDATEFREQ>
 void lfoExtended<UPDATEFREQ>::dumpSettings() {
