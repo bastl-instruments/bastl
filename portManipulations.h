@@ -17,6 +17,7 @@
 //
 //   - bit_set()			sets bit to HIGH
 //     bit_clear()			sets bit to LOW
+//     bit_toggle()			flip bit
 //     bit_read()   		returns the current value of the bit
 //     bit_dir_outp()       sets data direction to output
 //     bit_dir_inp()        sets data direction to input
@@ -27,8 +28,12 @@
 #define   bit_set_(x,y)      PORT ## x |= 1<<y
 #define   bit_clear(...)     bit_clear_(__VA_ARGS__)
 #define   bit_clear_(x,y)    PORT ## x &= ~(1<<y)
+#define   bit_toggle(...)    bit_toggle_(__VA_ARGS__)
+#define   bit_toggle_(x,y)    PORT ## x ^= 1<<y
+
 #define   bit_read(...)      bit_read_(__VA_ARGS__)
 #define   bit_read_(x,y)     (!!(PORT ## x & (1<<y)))
+
 
 #define   bit_dir_outp(...)  bit_dir_outp_(__VA_ARGS__)
 #define   bit_dir_outp_(x,y) DDR ## x |= 1<<y
