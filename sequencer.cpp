@@ -46,6 +46,8 @@ long sequencer::clockLenght(unsigned char _clockCounter,unsigned char _stepCount
  minuta / počet tiků
  */
  	long grooveNow=getGrooveCompensation(_clockCounter,_stepCounter);
+ 	if(grooveNow>=fixedClockLength) grooveNow=fixedClockLength-20;
+ 	else if(grooveNow<=-fixedClockLength) grooveNow=-fixedClockLength+20;
  	return fixedClockLength + grooveNow;
  
 }
