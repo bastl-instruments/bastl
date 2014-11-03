@@ -7,7 +7,7 @@
 #define HALUZ2048_NUM_CELLS 2048
 #define HALUZ2048_SAMPLERATE 2048
 
-const char __attribute__((progmem)) HALUZ2048_DATA []  =
+const int8_t __attribute__((progmem)) HALUZ2048_DATA []  =
         { 48};
 
 

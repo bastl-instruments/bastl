@@ -24,7 +24,7 @@ www.bastl-instruments.com
 #include <tables/triangle2048_int8.h> // 
 
 //array of names of wavetables
-const char* WAVE_TABLES[]={
+const int8_t* WAVE_TABLES[]={
   SIN2048_DATA, SAW2048_DATA,TRIANGLE2048_DATA};
 
 #define NUMBER_OF_OSCILATORS 3

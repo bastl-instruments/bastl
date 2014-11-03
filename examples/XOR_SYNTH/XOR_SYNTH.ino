@@ -28,7 +28,7 @@
 //#include <python/hat.h>
 unsigned char inputChannel;
 
-const char* WAVE_TABLES[]={
+const int8_t* WAVE_TABLES[]={
   SIN2048_DATA, SAW2048_DATA, TRIANGLE2048_DATA, TRIANGLE2048_DATA};//SQUARE_NO_ALIAS512_DATA};//HAT_DATA};//WHITENOISE2048_DATA};
 
 #define NUMBER_OF_WAVETABLES 4
