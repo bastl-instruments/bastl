@@ -18,7 +18,7 @@ for Standuino wwww.standuino.eu
 #include <bastlSamples/SNARE2.h> 
 #include <bastlSamples/HAT2.h> 
 #include <bastlSamples/CB4.h> 
-#include <bastlTables/haluz2048_int8.h> 
+#include <bastlTables/haluz2048_int8_old.h> 
 
 const char* WAVE_TABLES[]={
   KICK2_DATA, SNARE2_DATA, HAT2_DATA,CB4_DATA,HALUZ2048_DATA};

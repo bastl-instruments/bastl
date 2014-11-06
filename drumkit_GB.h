@@ -18,7 +18,7 @@ for Standuino wwww.standuino.eu
 #include <bastlSamples/GB_SNARE.h> 
 #include <bastlSamples/GB_HH.h> 
 #include <bastlSamples/GB_TUI.h> 
-#include <bastlTables/haluz2048_int8.h> 
+#include <bastlTables/haluz2048_int8_old.h> 
 //#include <bastlSamples/GB_BLIP.h> 
 //#include <bastlSamples/GB_BZZ.h> 
 
