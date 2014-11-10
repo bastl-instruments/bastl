@@ -60,7 +60,7 @@ private:
 };
 
 template <unsigned char size, typename type>
-void incrementPos(uint8_t& pos) {
+void FiFoBuffer<size,type>::incrementPos(uint8_t& pos) {
 	pos++;
 	if (pos == size) pos = 0;
 }
