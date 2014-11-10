@@ -19,24 +19,23 @@ template <unsigned char size, typename type>
 class FiFoBuffer {
 public:
 
-	// The Nullobject will be returned after a read attempt on an empty buffer
-	FiFoBuffer(type NullObject):
+	FiFoBuffer():
 		head(0),
 		tail(0),
 		fillCount(0)
-		{this->NullObject = NullObject;}
+		{}
 
 	// Add a new entry to the buffer
-	// If the buffer is full, this function will silently return
-	void add(type);
+	// returns 1 on success and 0 on full buffer
+	bool add(const type&);
 
 	// Get the oldest entry in the buffer
-	// If the buffer is emtpy, this funtion will return the NullObject given in the constructor
-	type get();
+	// returns 1 on success and 0 on empty buffer
+	bool get(type&);
 
 	// Read the oldest value without deleting it from the buffer
-	// If the buffer is emtpy, this funtion will return the NullObject given in the constructor
-	type peek();
+	// returns 1 on success and 0 on empty buffer
+	bool peek(type&);
 
 	// Check if buffer is full
 	bool isFull();
@@ -53,7 +52,6 @@ private:
 	uint8_t fillCount;
 
 	type buffer[size];
-	type NullObject;
 
 	void incrementPos(uint8_t& pos);
 
@@ -66,33 +64,36 @@ void FiFoBuffer<size,type>::incrementPos(uint8_t& pos) {
 }
 
 template <unsigned char size, typename type>
-void FiFoBuffer<size,type>::add(type val) {
+bool FiFoBuffer<size,type>::add(const type& val) {
 
-	if (isFull()) return;
+	if (isFull()) return false;
 
 	buffer[head] = val;
 	incrementPos(head);
 	fillCount++;
+
+	return true;
 }
 
 template <unsigned char size, typename type>
-type FiFoBuffer<size,type>::get() {
+bool FiFoBuffer<size,type>::get(type& val) {
 
-	if (isEmpty()) return NullObject;
+	if (isEmpty()) return false;
 
-	type returnVal = buffer[tail];
+	val = buffer[tail];
 	incrementPos(tail);
 	fillCount--;
 
-	return returnVal;
+	return true;
 }
 
 template <unsigned char size, typename type>
-type FiFoBuffer<size,type>::peek() {
+bool FiFoBuffer<size,type>::peek(type& val) {
 
-	if (isEmpty()) return NullObject;
+	if (isEmpty()) return false;
 
-	return  buffer[tail];
+	val = buffer[tail];
+	return true;
 }
 
 template <unsigned char size, typename type>

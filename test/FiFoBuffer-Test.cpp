@@ -13,8 +13,9 @@ int main( int argc, const char* argv[] ) {
 	printf("Full: %u\n\n", buffer.isFull());
 
 	for (uint8_t index=0; index<size+2; index++) {
-		buffer.add(index);
+		bool success = buffer.add(index);
 		printf("Added %u\n",index);
+		printf("Succesfull: %u\n",success);
 		printf("FillCount: %u\n",buffer.getfillCount());
 		printf("Empty: %u\n",buffer.isEmpty());
 		printf("Full: %u\n\n", buffer.isFull());
@@ -22,13 +23,15 @@ int main( int argc, const char* argv[] ) {
 	}
 
 	for (uint8_t index=0; index<size+2; index++) {
-			uint8_t val = buffer.get();
-			printf("Read: %u\n",val);
+			uint8_t val;
+			bool success = buffer.get(val);
+			if (success ) printf("Read: %u\n",val);
+			else printf("Empty");
 			printf("FillCount: %u\n",buffer.getfillCount());
 			printf("Empty: %u\n",buffer.isEmpty());
 			printf("Full: %u\n\n", buffer.isFull());
 
-		}
+	}
 
 
 }
