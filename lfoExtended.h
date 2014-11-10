@@ -128,8 +128,8 @@ uint8_t lfoExtended<UPDATEFREQ>::getCurrentValue() {
 
 	const uint8_t flopBit = 3;
 	const int8_t randomStepWidth = 4;
-	int8_t randomCurrentSlopeSum = 0;
-	const uint8_t randomCurrentSlopeCount = 5;
+	//int8_t randomCurrentSlopeSum = 0;
+	//const uint8_t randomCurrentSlopeCount = 5;
 
 
 	// calculate step from phase
@@ -198,8 +198,6 @@ void lfoExtended<UPDATEFREQ>::step() {
 template <unsigned int UPDATEFREQ>
 void lfoExtended<UPDATEFREQ>::incrementPhase() {
 	currentPhase += phaseIncrement;
-
-
 }
 
 
