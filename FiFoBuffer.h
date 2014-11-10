@@ -83,6 +83,8 @@ type FiFoBuffer<size,type>::get() {
 	type returnVal = buffer[tail];
 	incrementPos(tail);
 	fillCount--;
+
+	return returnVal;
 }
 
 template <unsigned char size, typename type>
@@ -90,7 +92,7 @@ type FiFoBuffer<size,type>::peek() {
 
 	if (isEmpty()) return NullObject;
 
-	type returnVal = buffer[tail];
+	return  buffer[tail];
 }
 
 template <unsigned char size, typename type>
