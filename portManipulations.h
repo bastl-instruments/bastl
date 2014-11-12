@@ -29,7 +29,7 @@
 #define   bit_clear(...)     bit_clear_(__VA_ARGS__)
 #define   bit_clear_(x,y)    PORT ## x &= ~(1<<y)
 #define   bit_toggle(...)    bit_toggle_(__VA_ARGS__)
-#define   bit_toggle_(x,y)    PORT ## x ^= 1<<y
+#define   bit_toggle_(x,y)    PIN ## x = 1<<y
 
 #define   bit_read(...)      bit_read_(__VA_ARGS__)
 #define   bit_read_(x,y)     (!!(PORT ## x & (1<<y)))
