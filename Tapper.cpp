@@ -13,9 +13,6 @@
 #include <iostream>
 #endif
 
-#define MAX_TAP_STEP_LENGTH 200
-#define MAX_TAP_STEP_DEVIATION 50
-
 Tapper::Tapper() : 		stepsInRow_(-1),
 						lastTapTime_(0),
 						currentTapTime_(0),
@@ -39,7 +36,7 @@ void Tapper::tap(unsigned int tapTime)
 	#endif
 	// Reset values when first tap or tap over defined max tap deviation
     if ((stepsInRow_ == -1) ||
-        (lastTapTime_ + MAX_TAP_STEP_LENGTH < tapTime) ||
+        (lastTapTime_ + maxStepLengthInTimeUnits_ < tapTime) ||
         ((stepsInRow_ > 0) &&  (abs(lastTapTime_ + currentTapTime_ - tapTime)  > (0.5 * currentTapTime_))))
     {
     	lastTapTime_ = tapTime;
