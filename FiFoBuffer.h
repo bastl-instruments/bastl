@@ -46,6 +46,9 @@ public:
 	// get the number of entries in the buffer
 	uint8_t getfillCount() { return fillCount;}
 
+	// get direct Pointer to ring Buffer
+	type* getPointer() {return buffer;}
+
 private:
 	uint8_t head;
 	uint8_t tail;
