@@ -8,11 +8,16 @@
 #ifndef LFOEXTENDED_H_
 #define LFOEXTENDED_H_
 
+// dependencies on arduino removed
+#define min(a,b) ((a)<(b)?(a):(b))
+#define max(a,b) ((a)>(b)?(a):(b))
+#define abs(x) ((x)>0?(x):-(x))
 
 
 
-#include <mozzi_fixmath.h>
-#include <mozzi_rand.h>
+#include "fixedMath.h"
+#include "random.h"
+
 typedef Q8n8 phaseType;
 const uint16_t numbSteps = 256;
 const uint8_t numbFBits = 8;
@@ -28,7 +33,7 @@ public:
 
 public:
 	void setFreq(phaseType freq);
-	void setWaveform(LFOBasicWaveform waveform, bool invert = false, bool flop = false, LFOThresholdType type = OVERFLOW);
+	void setWaveform(LFOBasicWaveform waveform, bool invert = false, bool flop = false, LFOThresholdType type = FOLDING);
 	void setPhase(uint8_t position);
 	void setToStart();
 	void setResolution(uint8_t numbStepsToSkip);
@@ -127,9 +132,8 @@ template <unsigned int UPDATEFREQ>
 uint8_t lfoExtended<UPDATEFREQ>::getCurrentValue() {
 
 	const uint8_t flopBit = 3;
-	const int8_t randomStepWidth = 4;
-	//int8_t randomCurrentSlopeSum = 0;
-	//const uint8_t randomCurrentSlopeCount = 5;
+
+
 
 
 	// calculate step from phase
@@ -157,10 +161,38 @@ uint8_t lfoExtended<UPDATEFREQ>::getCurrentValue() {
 
 		case RANDOM: {
 
-			char max = min(255-currentValue,randomStepWidth);
-			char min = max(-currentValue,-randomStepWidth);
+			static int8_t currentSlope = 0;
+			static uint8_t currentTime = 5;
 
-			currentValue += rand(min,max);
+			uint8_t maxStepSize = 2;
+			uint8_t maxTime = 100;
+			uint8_t minTime = maxTime/4;
+
+
+			if (currentTime != 0) {
+				currentTime--;
+			} else {
+				currentSlope = rand((char)-maxStepSize,(char)maxStepSize);
+				currentTime = rand(minTime,maxTime);
+			}
+
+
+			if (thresholdType == FOLDING) {
+				int16_t tmpCurrentValue = currentValue+currentSlope;
+				currentValue += currentSlope;
+				if (tmpCurrentValue > 255) {
+					currentValue = 255-currentValue;
+					currentSlope = -currentSlope;
+				}
+				if (tmpCurrentValue < 0) {
+					currentValue = -currentValue;
+					currentSlope = -currentSlope;
+				}
+			} else {
+				currentValue += currentSlope;
+			}
+
+
 
 			break;
 		}
@@ -205,6 +237,9 @@ void lfoExtended<UPDATEFREQ>::incrementPhase() {
 template <unsigned int UPDATEFREQ>
 void lfoExtended<UPDATEFREQ>::dumpSettings() {
 
+	// Use printf here
+	/*
+
 	Serial.print("Basic Waveform: ");
 	switch (currentWaveform) {
 		case SAW: Serial.println("SAW"); break;
@@ -212,13 +247,14 @@ void lfoExtended<UPDATEFREQ>::dumpSettings() {
 		case RANDOM: Serial.println("RANDOM"); break;
 	}
 
+
 	Serial.print("Invert: "); Serial.println(invertWaveform);
 	Serial.print("Flop: "); Serial.println(flopWaveform);
 	Serial.print("Thres: "); Serial.println(threshold);
 	Serial.print("Thres type: "); Serial.println(thresholdType);
 	Serial.print("Steps to skip: "); Serial.println(numbStepsToSkip);
 	Serial.print("Phase Inc: "); Serial.println(phaseIncrement);
-
+	*/
 }
 
 
