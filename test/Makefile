@@ -10,35 +10,35 @@ CC_FLAGS=-c -Wall
 
 .PHONY : test
 
-test : tst.o ../Tapper.o ../StepDivider.o ../StepMultiplier.o ../StepGenerator.o ../BastlStepper.o ../DrumStep.o ../NoVelocityStepMemory.o ../Step.o
+test : obj/tst.o obj/Tapper.o obj/StepDivider.o obj/StepMultiplier.o obj/StepGenerator.o obj/BastlStepper.o obj/DrumStep.o obj/NoVelocityStepMemory.o obj/Step.o
 	g++ -o $@ $^
 	./test
 
-tst.o : tst.cpp
+obj/tst.o : tst.cpp
 	g++ $(CC_FLAGS) -o $@ $<
 
-../Tapper.o : ../Tapper.cpp
+obj/Tapper.o : ../Tapper.cpp
 	g++ $(CC_FLAGS) -o $@ $<
 
-../StepDivider.o : ../StepDivider.cpp
+obj/StepDivider.o : ../../bastl-sequencing/StepDivider.cpp
 	g++ $(CC_FLAGS) -o $@ $<
 
-../StepMultiplier.o : ../StepMultiplier.cpp
+obj/StepMultiplier.o : ../../bastl-sequencing/StepMultiplier.cpp
 	g++ $(CC_FLAGS) -o $@ $<
 
-../StepGenerator.o : ../StepGenerator.cpp
+obj/StepGenerator.o : ../../bastl-sequencing/StepGenerator.cpp
 	g++ $(CC_FLAGS) -o $@ $<
 	
-../BastlStepper.o : ../BastlStepper.cpp
+obj/BastlStepper.o : ../../bastl-sequencing/BastlStepper.cpp
 	g++ $(CC_FLAGS) -o $@ $<
 	
-../DrumStep.o : ../DrumStep.cpp
+obj/DrumStep.o : ../DrumStep.cpp
 	g++ $(CC_FLAGS) -o $@ $<
 	
-../Step.o : ../Step.cpp
+obj/Step.o : ../Step.cpp
 	g++ $(CC_FLAGS) -o $@ $<
 	
-../NoVelocityStepMemory.o : ../NoVelocityStepMemory.cpp
+obj/NoVelocityStepMemory.o : ../NoVelocityStepMemory.cpp
 	g++ $(CC_FLAGS) -o $@ $<
 
 
@@ -49,14 +49,6 @@ tst.o : tst.cpp
 #	g++ -I../ -c -o $@ $< -I../ISequenceMemory.h
 
 clean:
-	-rm -f ../Tapper.o
-	-rm -f ../StepDivider.o
-	-rm -f ../StepMultiplier.o
-	-rm -f ../StepGenerator.o
-	-rm -f ../BastlStepper.o
-	-rm -f ../DrumStep.o
-	-rm -f ../NoVelocityStepMemory.o
-	-rm -f ../Step.o
-	-rm -f tst.o
+	-rm -f obj/*.o
 	-rm -f test
 

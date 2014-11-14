@@ -1,20 +1,20 @@
 #include <iostream>
 #include "../Tapper.h"
-#include "../StepDivider.h"
-#include "../StepMultiplier.h"
-#include "../StepGenerator.h"
+#include "../../bastl-sequencing/StepDivider.h"
+#include "../../bastl-sequencing/StepMultiplier.h"
+#include "../../bastl-sequencing/StepGenerator.h"
 #include "../NoVelocityStepMemory.h"
 
 unsigned int lastStepTimeUnits = 0;
 unsigned int numberOfTaps = 0;
 
-unsigned int numberOfStepCallbacks = 0;
+//unsigned int numberOfStepCallbacks = 0;
 
 Tapper tapper;
 
 
 
-bool compareMemoryResults(DrumStep & drumstep, DrumStep & drumstepExpected) {
+/*bool compareMemoryResults(DrumStep & drumstep, DrumStep & drumstepExpected) {
 	bool ok = drumstepExpected.isActive() == drumstep.isActive();
 	printf("Active step %s \n", ok ? "OK" : "NOK");
 	if (!ok)
@@ -86,24 +86,24 @@ bool testNon16GetNextActive() {
 	printf("Result drum step %d %s", nextStep,  (resultDrumStep.getSubStep(0) == DrumStep::NORMAL) ? "OK" : "NOK");
 	return true;
 }
-
+*/
 void tapped() {
 	numberOfTaps++;
 	lastStepTimeUnits = tapper.getTimeUnitsPerStep();
 }
-
+/*
 void step() {
 	numberOfStepCallbacks++;
-}
+}*/
 
 
 int main( int argc, const char* argv[] ) {
 
 	//int z = 0;
-	DrumStep::DrumVelocityType steps1[4] = {DrumStep::NORMAL, DrumStep::OFF, DrumStep::OFF, DrumStep::NORMAL};
-	DrumStep::DrumVelocityType steps2[4] = {DrumStep::OFF, DrumStep::NORMAL, DrumStep::OFF, DrumStep::OFF};
-	DrumStep drumstep = DrumStep(false, false, steps1);
-	DrumStep drumstep2 = DrumStep(true, true, steps2);
+	//DrumStep::DrumVelocityType steps1[4] = {DrumStep::NORMAL, DrumStep::OFF, DrumStep::OFF, DrumStep::NORMAL};
+	//DrumStep::DrumVelocityType steps2[4] = {DrumStep::OFF, DrumStep::NORMAL, DrumStep::OFF, DrumStep::OFF};
+	//DrumStep drumstep = DrumStep(false, false, steps1);
+	//DrumStep drumstep2 = DrumStep(true, true, steps2);
 
 
 	//for (unsigned char i = 0; i < 4 ; i++) {
@@ -113,7 +113,7 @@ int main( int argc, const char* argv[] ) {
 	//    }
 	int z;
 
-	NoVelocityStepMemory flashMemory = NoVelocityStepMemory();
+	/*NoVelocityStepMemory flashMemory = NoVelocityStepMemory();
 	printf("Flash memory check: %s \n", checkMemory(flashMemory, drumstep, drumstep2) ? "OK" : "Error");
 
 	DrumStep resultDrumStep;
@@ -152,9 +152,10 @@ int main( int argc, const char* argv[] ) {
 	    nextStep = 8;
 	    flashMemory.getNextActiveDrumStep(0, 0, nextStep, resultDrumStep);
 	    printf("Flash memory next valid is first: %s \n", nextStep == 0 ? "OK" : "Error");
-	    testNon16GetNextActive();
+	    testNon16GetNextActive();*/
 
-	printf("Testing Tapper");
+	printf("Testing Tapper\n");
+	//Tapper tapper;
 	tapper.init(100, 10);
 	tapper.setStepCallBack(&tapped);
 
@@ -210,7 +211,7 @@ int main( int argc, const char* argv[] ) {
 	ok = (numberOfTaps == 9 && lastStepTimeUnits == 0);
 	printf("\tTest 9 - Tap %s\n", ok ? "OK" : "Error");
 	if (!ok) return 1;
-
+/*
 	printf("Testing Step Multiplier\n");
 
 	StepMultiplier multiplier;
@@ -450,5 +451,5 @@ int main( int argc, const char* argv[] ) {
 
 
 	//multiplier.setMultiplication(5);
-	//multiplier.setMinTriggerTime(1);
+	//multiplier.setMinTriggerTime(1);*/
 }
