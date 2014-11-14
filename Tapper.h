@@ -8,30 +8,36 @@
 #ifndef TAPPER_H_
 #define TAPPER_H_
 
+#include <inttypes.h>
+#include "movingAverage.h"
+
 class Tapper {
 public:
 	Tapper();
-	void init(unsigned int maxStepLengthInTimeUnits = 200, unsigned int  maxStepDeviationInTImeUnits = 50);
-	void tap(unsigned int tapTime);
-	void setStepsPerTap(unsigned char stepsPerTap);
-	unsigned char getTimeUnitsPerStep();
+	~Tapper();
+	void init(uint16_t maxStepLengthInTimeUnits, uint8_t averageWidth = 4, uint8_t maxRelativeDeviation=20);
+	void tap(uint16_t tapTime);
+	void setStepsPerTap(uint8_t stepsPerTap);
+	uint16_t getTimeUnitsPerStep();
 	void setStepCallBack(void (*makeStep)());
+
 private:
-	char stepsInRow_;
-	unsigned int lastTapTime_;
-	unsigned int currentTapTime_;
-	unsigned int stepsPerTap_;
-	unsigned int maxStepLengthInTimeUnits_;
-	unsigned int maxStepDeviationInTImeUnits_;
+
+	MovingAverageLinear<uint16_t>* history;
+
+	uint16_t lastTapTime;
+	uint8_t stepsPerTap_;
+	uint16_t maxStepLengthInTimeUnits;
+	uint8_t maxRelativeDeviation;
 	void (*makeStep_)();
 };
 
-inline void Tapper::setStepsPerTap(unsigned char stepsPerTap) {
+inline void Tapper::setStepsPerTap(uint8_t stepsPerTap) {
 	stepsPerTap_ = stepsPerTap;
 }
 
-inline unsigned char Tapper::getTimeUnitsPerStep() {
-	return currentTapTime_ / stepsPerTap_;
+inline uint16_t Tapper::getTimeUnitsPerStep() {
+	return history->getAverage() / stepsPerTap_;
 }
 
 inline void Tapper::setStepCallBack(void (*makeStep)()) {
