@@ -56,6 +56,7 @@ private:
 
 	type buffer[size];
 
+	// increment position with wrapping on end of buffer
 	void incrementPos(uint8_t& pos);
 
 };
