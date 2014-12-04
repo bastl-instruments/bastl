@@ -21,7 +21,7 @@ unsigned char divider;
 
 boolean doubleClock;
 unsigned char multiplier;
-long clockTime, subTime, lastTime, quarterClockTime;
+uint32_t clockTime, subTime, lastTime, quarterClockTime;
 void setup()  
 {
   // Open serial communications and wait for port to open:
@@ -34,41 +34,45 @@ void setup()
   pinMode(dinCVPin,INPUT);
   digitalWrite(dinCVPin,HIGH);
 
-  if(!digitalRead(dinCVPin)){
-    if(digitalRead(speedPin)) divider=2; // gb
+  if(!digitalRead(speedPin)){
+    if(digitalRead(dinCVPin)) divider=2; // gb
     else divider=12; // korg
     doubleClock=false;
   }
   else{
-    if(digitalRead(speedPin))  multiplier=4; // 48
+    if(digitalRead(dinCVPin))  multiplier=4; // 48
     else multiplier=2; // 24
     doubleClock=true;
     //2
   }
   pinMode(speedPin,OUTPUT);
   for(int i=0;i<4;i++){
-   digitalWrite(speedPin,cvState);
-   cvState=!cvState;
-   delay(100);
+    digitalWrite(speedPin,cvState);
+    cvState=!cvState;
+    delay(100);
   }
-   pinMode(speedPin,INPUT_PULLUP);
+  pinMode(speedPin,INPUT_PULLUP);
 }
 
 
 int counter;
 boolean render;
-
+int subMult;
 void loop() // run over and over
 {
   if(doubleClock){
-    long _time=micros();
+    uint32_t _time=micros();
 
     if((_time-subTime)>=quarterClockTime){
-      subTime=_time; 
-      if(render){
-        cvState=!cvState;
-        digitalWrite(cvPin,cvState);
-      } 
+      subMult++;
+      if(subMult<multiplier){
+        subTime=_time; 
+        if(render){
+          if((subMult%2)==1) cvState=false;
+          else cvState=true;
+          digitalWrite(cvPin,cvState);
+        } 
+      }
     }
   }
 
@@ -81,13 +85,26 @@ void loop() // run over and over
 
     if(incomingByte==0xF8){ //clock
       if(doubleClock){
-        long time=micros();
+        /*
+        if(subMult<(multiplier-1)){
+          while((micros()-subTime)<1000);
+          while(subMult<(multiplier-1)){
+            subMult++;
+            if((subMult%2)==1) cvState=false;
+            else cvState=true;
+            digitalWrite(cvPin,cvState);
+            delayMicroseconds(1000);
+          }
+        }
+        */
+        uint32_t time=micros();
         clockTime=time-lastTime;
         quarterClockTime=clockTime/multiplier;
         lastTime=time;
         cvState=true;
-        digitalWrite(cvPin,HIGH);
+        digitalWrite(cvPin,cvState);
         subTime=time;
+        subMult=0;
         //event=0;
       }
 
@@ -118,6 +135,7 @@ void loop() // run over and over
   }
 
 }
+
 
 
 
