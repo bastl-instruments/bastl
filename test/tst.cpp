@@ -1,4 +1,7 @@
-#include <iostream>
+//#include <iostream>
+#include <cstdio>
+#include <cstdlib>
+#include <vector>
 #include "../Tapper.h"
 #include "../../bastl-sequencing/StepDivider.h"
 #include "../../bastl-sequencing/StepMultiplier.h"
@@ -99,21 +102,52 @@ void step() {
 
 int main( int argc, const char* argv[] ) {
 
-	//int z = 0;
-	//DrumStep::DrumVelocityType steps1[4] = {DrumStep::NORMAL, DrumStep::OFF, DrumStep::OFF, DrumStep::NORMAL};
-	//DrumStep::DrumVelocityType steps2[4] = {DrumStep::OFF, DrumStep::NORMAL, DrumStep::OFF, DrumStep::OFF};
-	//DrumStep drumstep = DrumStep(false, false, steps1);
-	//DrumStep drumstep2 = DrumStep(true, true, steps2);
 
+	printf("----------- Test NoVelocityMemory ---------------\n");
+	
+	NoVelocityStepMemory flashMemory = NoVelocityStepMemory();
+	//6 instruments 64 steps each
+	std::vector<DrumStep> originalSteps;
+	printf("Writing steps");
+	for (unsigned char instrument = 0; instrument < 6; instrument++) {
+	    for (unsigned char step = 0; step < 64; step++) {
+		// Cretate totally random step to test all combinations
+		bool active = std::rand() % 2;
+		bool mute = std::rand() % 2;
+		DrumStep::DrumVelocityType substep1 = std::rand() % 2 == 0 ? DrumStep::OFF : DrumStep::NORMAL;
+		DrumStep::DrumVelocityType substep2 = std::rand() % 2 == 0 ? DrumStep::OFF : DrumStep::NORMAL;
+		DrumStep::DrumVelocityType substep3 = std::rand() % 2 == 0 ? DrumStep::OFF : DrumStep::NORMAL;
+		DrumStep::DrumVelocityType substep4 = std::rand() % 2 == 0 ? DrumStep::OFF : DrumStep::NORMAL;	
+		DrumStep::DrumVelocityType substeps[4] = {substep1, substep2, substep3, substep4};
+		DrumStep drumstep = DrumStep(active, mute, substeps);
+		originalSteps.push_back(drumstep);
+		flashMemory.setDrumStep(instrument, 0 /* pattern */, step, drumstep);
+	    }
+	    printf(".");
+	}
+	printf("\nSteps written\n");
+	printf("Reading steps");
+	for (unsigned char instrument = 0; instrument < 6; instrument++) {
+	    for (unsigned char step = 0; step < 64; step++) {
+		DrumStep expected = originalSteps[instrument * 64 + step];
+		DrumStep actual = flashMemory.getDrumStep(instrument, 0 /* pattern */, step);
+		if (expected.isActive() != actual.isActive()) {
+			printf("ERROR: Actives for instrumnet %d step %d differs", instrument, step);
+		}
+		if (expected.isMuted() != actual.isMuted()) {
+			printf("ERROR: Mutes for instrumnet %d step %d differs", instrument, step);
+		}
+		for (unsigned char substep = 0; substep < 4; substep++) {
+		    if (expected.getSubStep(substep) != actual.getSubStep(substep)) {
+			printf("ERROR: Substep %d for instrumnet %d step %d differs", substep, instrument, step);
+	    	    }		
+		}
+	    }
+	    printf(".");
+	}
+	printf("\nSteps read\n");
 
-	//for (unsigned char i = 0; i < 4 ; i++) {
-	//    	#ifdef DEBUG
-	    	//printf("Setting bit at index %d to value %s \n", i, drumstep2.getSubStep(i) == DrumStep::NORMAL ? "True": "False");
-	//    	#endif
-	//    }
-	int z;
-
-	/*NoVelocityStepMemory flashMemory = NoVelocityStepMemory();
+	/*
 	printf("Flash memory check: %s \n", checkMemory(flashMemory, drumstep, drumstep2) ? "OK" : "Error");
 
 	DrumStep resultDrumStep;
@@ -154,7 +188,7 @@ int main( int argc, const char* argv[] ) {
 	    printf("Flash memory next valid is first: %s \n", nextStep == 0 ? "OK" : "Error");
 	    testNon16GetNextActive();*/
 
-	printf("Testing Tapper\n");
+	/*printf("Testing Tapper\n");
 	//Tapper tapper;
 	tapper.init(100, 10);
 	tapper.setStepCallBack(&tapped);
@@ -211,7 +245,7 @@ int main( int argc, const char* argv[] ) {
 	ok = (numberOfTaps == 9 && lastStepTimeUnits == 0);
 	printf("\tTest 9 - Tap %s\n", ok ? "OK" : "Error");
 	if (!ok) return 1;
-/*
+
 	printf("Testing Step Multiplier\n");
 
 	StepMultiplier multiplier;

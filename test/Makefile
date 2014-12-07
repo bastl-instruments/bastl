@@ -8,11 +8,11 @@ CC_FLAGS=-c -Wall
 #test: $(OBJ_FILES) $(OBJ_FILES_CLASS)
 #	g++ $(LD_FLAGS) -o $@ $^
 
-.PHONY : test
+.PHONY : check
 
-test : obj/tst.o obj/Tapper.o obj/StepDivider.o obj/StepMultiplier.o obj/StepGenerator.o obj/BastlStepper.o obj/DrumStep.o obj/NoVelocityStepMemory.o obj/Step.o
+check : obj/tst.o obj/Tapper.o obj/StepDivider.o obj/StepMultiplier.o obj/StepGenerator.o obj/BastlStepper.o obj/DrumStep.o obj/NoVelocityStepMemory.o obj/Step.o
 	g++ -o $@ $^
-	./test
+	./check
 
 obj/tst.o : tst.cpp
 	g++ $(CC_FLAGS) -o $@ $<
