@@ -14,7 +14,7 @@ for Standuino wwww.standuino.eu
 #include "lfo.h"
 #include "Arduino.h"
 #include <avr/pgmspace.h>
-#include <mozzi_rand.h>
+#include "../Mozzi/mozzi_rand.h"
 
 
 
