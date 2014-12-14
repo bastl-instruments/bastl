@@ -25,8 +25,13 @@ public:
     virtual bool getNextActiveDrumStep( unsigned char instrumentID, unsigned char & step, DrumStep & drumStep);
     virtual bool setDrumStep(unsigned char instrumentID, unsigned char step, DrumStep stepData);
     virtual void getActivesAndMutesForNote(unsigned char instrumentID, unsigned char windowIndex, unsigned char * data);
+    virtual void setDataReference(unsigned char * dataReference);
 private:
-    unsigned char data_[288];
+    unsigned char * data_;
 };
+
+inline void NoVelocityStepMemory::setDataReference(unsigned char * dataReference) {
+	data_ = dataReference;
+}
 
 #endif // FLASHSTEPMEMORY_H
