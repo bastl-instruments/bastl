@@ -40,6 +40,11 @@ void RadioButtons::update() {
 
 void RadioButtons::setSelectedButton(unsigned char selectedButton) {
 	selectedButton_ = selectedButton;
+	buttonSelected_ = true;
+}
+
+void RadioButtons::resetSelection() {
+	buttonSelected_ = false;
 }
 
 

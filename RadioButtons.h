@@ -11,6 +11,7 @@ public:
     bool getSelectedButton(unsigned char & selectedButton);
     void setSelectedButton(unsigned char selectedButton);
     void update();
+    void resetSelection();
 
 private:
     IButtonHW * hwLayer_;
