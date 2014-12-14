@@ -3,14 +3,21 @@
 
 #include "RackInstrumentDefinitions.h"
 #include "DrumStep.h"
+#include "BitArrayOperations.h"
 
 class PlayerSettings
 {
 public:
+
+	enum DrumInstrumentEventType {TRIGGER, GATE};
+
     PlayerSettings();
 
     unsigned char getDrumInstrumentNote(unsigned char instrumentID);
     void setDrumInstrumentNote(unsigned char instrumentID, unsigned char note);
+
+    DrumInstrumentEventType getDrumInstrumentEventType(unsigned char instrumentID);
+    void setDrumInstrumentEventType(unsigned char instrumentID, DrumInstrumentEventType eventType);
 
     unsigned char getInstrumentChannel(Step::InstrumentType type, unsigned char instrumentID);
     void setInstrumentChannel(Step::InstrumentType type, unsigned char instrumentID, unsigned char channel);
@@ -28,6 +35,7 @@ public:
 
 private:
     unsigned char drumInstrumentNotes_[DRUM_INSTRUMENTS];
+    unsigned char drumInstrumentEventTypes_;
     unsigned char instrumentChannels_[(DRUM_INSTRUMENTS + MONO_INSTRUMENTS) / 2];
     unsigned char instrumentStatuses_[ALL_INSTRUMENTS_IN_BYTES];
     unsigned char upDrumVelocity_;
@@ -35,6 +43,16 @@ private:
     unsigned char normalDrumVelocity_;
     unsigned char currentPattern_;
 };
+
+inline PlayerSettings::DrumInstrumentEventType PlayerSettings::getDrumInstrumentEventType(unsigned char instrumentID)
+{
+	return GETBIT(drumInstrumentEventTypes_, instrumentID) ? GATE : TRIGGER;
+}
+
+inline void PlayerSettings::setDrumInstrumentEventType(unsigned char instrumentID, DrumInstrumentEventType eventType)
+{
+	SETBIT(drumInstrumentEventTypes_, instrumentID, eventType == GATE);
+}
 
 inline unsigned char PlayerSettings::getDrumInstrumentNote(unsigned char instrumentID)
 {
