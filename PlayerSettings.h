@@ -33,6 +33,8 @@ public:
 
     bool getDrumInstrumentIndexFromMIDIMessage(unsigned char channel, unsigned char note, unsigned char & drumInstrumentID);
 
+    void setPatternChangedCallback(void (*patternChangedCallback)(unsigned char patternIndex));
+
 private:
     unsigned char drumInstrumentNotes_[DRUM_INSTRUMENTS];
     unsigned char drumInstrumentEventTypes_;
@@ -42,6 +44,7 @@ private:
     unsigned char downDrumVelocity_;
     unsigned char normalDrumVelocity_;
     unsigned char currentPattern_;
+    void (*patternChangedCallback_)(unsigned char patternIndex);
 };
 
 inline PlayerSettings::DrumInstrumentEventType PlayerSettings::getDrumInstrumentEventType(unsigned char instrumentID)
@@ -72,14 +75,21 @@ inline void PlayerSettings::setMIDIVelocitiesForDrumVelocities(unsigned char upD
 }
 
 inline void PlayerSettings::setCurrentPattern(unsigned char pattern) {
-	currentPattern_ = pattern;
+	if (currentPattern_ != pattern) {
+		currentPattern_ = pattern;
+		if (patternChangedCallback_) {
+			patternChangedCallback_(currentPattern_);
+		}
+	}
 }
 
 inline unsigned char PlayerSettings::getCurrentPattern() {
 	return currentPattern_;
 }
 
-
+inline void PlayerSettings::setPatternChangedCallback(void (*patternChangedCallback)(unsigned char patternIndex)) {
+	patternChangedCallback_ = patternChangedCallback;
+}
 
 
 #endif // PLAYERSETTINGS_H
