@@ -6,7 +6,7 @@
 #include <iostream>
 #endif
 
-RadioButtons::RadioButtons(IHWLayer *hwLayer, unsigned char * buttonIndexes, unsigned char count) :
+RadioButtons::RadioButtons(IButtonHW *hwLayer, unsigned char * buttonIndexes, unsigned char count) :
     hwLayer_(hwLayer), buttonIndexes_(buttonIndexes), buttonCount_(count), selectedButton_(0), lastDownButton_(255), buttonSelected_(false)
 {
 
@@ -14,7 +14,7 @@ RadioButtons::RadioButtons(IHWLayer *hwLayer, unsigned char * buttonIndexes, uns
 
 void RadioButtons::update() {
     for (unsigned char i = 0; i < buttonCount_; i++) {
-        bool buttonDown = hwLayer_->getButtonState(buttonIndexes_[i]) == IHWLayer::DOWN;
+        bool buttonDown = hwLayer_->getButtonState(buttonIndexes_[i]) == IButtonHW::DOWN;
 #ifdef DEBUG
         printf("Button: %i %s Last button down: %i\n", buttonIndexes_[i], buttonDown ? "DOWN" : "UP", lastDownButton_);
 #endif
@@ -40,6 +40,11 @@ void RadioButtons::update() {
 
 void RadioButtons::setSelectedButton(unsigned char selectedButton) {
 	selectedButton_ = selectedButton;
+	buttonSelected_ = true;
+}
+
+void RadioButtons::resetSelection() {
+	buttonSelected_ = false;
 }
 
 

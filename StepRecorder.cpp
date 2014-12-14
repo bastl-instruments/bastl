@@ -20,7 +20,7 @@ void StepRecorder::init(Player* player, IStepMemory * memory, PlayerSettings* pl
 void StepRecorder::recordNote(unsigned char instrumentIndex) {
 	unsigned char currentStep = player_->getCurrentInstrumentStep(instrumentIndex);
 	unsigned char currentSubStep = player_->getCurrentInstrumentSubStep(instrumentIndex);
-	DrumStep step = memory_->getDrumStep(instrumentIndex, 0, currentStep);
+	DrumStep step = memory_->getDrumStep(instrumentIndex, currentStep);
 
 	if (step.isMuted() || step.getSubStep(currentSubStep) == DrumStep::OFF) {
 		if (step.isMuted()) {
@@ -30,7 +30,7 @@ void StepRecorder::recordNote(unsigned char instrumentIndex) {
 			}
 		}
 		step.setSubStep(currentSubStep, DrumStep::NORMAL);
-		memory_->setDrumStep(instrumentIndex, 0, currentStep, step);
+		memory_->setDrumStep(instrumentIndex, currentStep, step);
 		player_->playNote(instrumentIndex, DrumStep::NORMAL);
 	}
 }

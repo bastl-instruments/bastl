@@ -13,11 +13,11 @@ Switches::Switches() :
     buttonCount_(0),
     lastStates_(0),
     statuses_(0),
-    changeOnEvent_(IHWLayer::DOWN)
+    changeOnEvent_(IButtonHW::DOWN)
 {
 }
 
-void Switches::init(IHWLayer *hwLayer, unsigned char * buttonIndexes, unsigned char count, IHWLayer::ButtonState changeOnEvent) {
+void Switches::init(IButtonHW *hwLayer, unsigned char * buttonIndexes, unsigned char count, IButtonHW::ButtonState changeOnEvent) {
 	hwLayer_ = hwLayer;
 	buttonIndexes_ = buttonIndexes;
 	buttonCount_ = count;
@@ -26,9 +26,9 @@ void Switches::init(IHWLayer *hwLayer, unsigned char * buttonIndexes, unsigned c
 
 void Switches::update() {
     for (unsigned char i = 0; i < buttonCount_; i++) {
-        bool buttonDown = hwLayer_->getButtonState(buttonIndexes_[i]) == IHWLayer::DOWN;
-        if (((changeOnEvent_ == IHWLayer::DOWN) && !GETBIT(lastStates_, i) && buttonDown) ||
-        	((changeOnEvent_ == IHWLayer::UP) && GETBIT(lastStates_, i) && !buttonDown)	) {
+        bool buttonDown = hwLayer_->getButtonState(buttonIndexes_[i]) == IButtonHW::DOWN;
+        if (((changeOnEvent_ == IButtonHW::DOWN) && !GETBIT(lastStates_, i) && buttonDown) ||
+        	((changeOnEvent_ == IButtonHW::UP) && GETBIT(lastStates_, i) && !buttonDown)	) {
             if (GETBIT(statuses_, i)) {
                 SETBITFALSE(statuses_, i);
             } else {

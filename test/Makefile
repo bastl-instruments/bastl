@@ -3,16 +3,33 @@
 CPP_FILES = tst.cpp 
 #OBJ_FILES = tst_step.o
 #LD_FLAGS=
-CC_FLAGS=-c -Wall
+CC_FLAGS=-c -Wall -g
 
 #test: $(OBJ_FILES) $(OBJ_FILES_CLASS)
 #	g++ $(LD_FLAGS) -o $@ $^
 
-.PHONY : check
+.PHONY : check test
 
-check : obj/tst.o obj/Tapper.o obj/StepDivider.o obj/StepMultiplier.o obj/StepGenerator.o obj/BastlStepper.o obj/DrumStep.o obj/NoVelocityStepMemory.o obj/Step.o
+check : test radioButtonTest
+	./test
+	./radioButtonTest
+
+test : obj/tst.o obj/Tapper.o obj/StepDivider.o obj/StepMultiplier.o obj/StepGenerator.o obj/BastlStepper.o obj/DrumStep.o obj/NoVelocityStepMemory.o obj/Step.o
 	g++ -o $@ $^
-	./check
+	./test
+
+radioButtonTest : obj/radioButtonTest.o obj/RadioButtons.o obj/HWLayerMock.o
+	g++ -o $@ $^
+	./radioButtonTest
+
+obj/radioButtonTest.o : tstRadioButton.cpp
+	g++ $(CC_FLAGS) -o $@ $<
+
+obj/RadioButtons.o : ../RadioButtons.cpp
+	g++ $(CC_FLAGS) -o $@ $<
+
+obj/HWLayerMock.o : HWLayerMock.cpp
+	g++ $(CC_FLAGS) -o $@ $<
 
 obj/tst.o : tst.cpp
 	g++ $(CC_FLAGS) -o $@ $<

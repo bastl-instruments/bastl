@@ -7,10 +7,10 @@
 
 #include "BPMConverter.h"
 
-unsigned char BPMConverter::bpmToTimeUnits(unsigned int bpm, unsigned int timeUnitsPerSecond) {
-	return (timeUnitsPerSecond * 60) / bpm;
+uint16_t BPMConverter::bpmToTimeUnits(uint16_t bpm, uint16_t timeUnitsPerSecond) {
+	return ((timeUnitsPerSecond * 60) / bpm)/16;
 }
 
-unsigned char BPMConverter::timeUnitsToBPM(unsigned int timeUnitsPerBeat, unsigned int timeUnitsPerSecond) {
+uint16_t BPMConverter::timeUnitsToBPM(uint16_t timeUnitsPerBeat, uint16_t timeUnitsPerSecond) {
 	return (timeUnitsPerSecond * 60) / timeUnitsPerBeat;
 }

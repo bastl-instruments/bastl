@@ -2,7 +2,7 @@
 #ifndef SWITCHES_H
 #define SWITCHES_H
 
-#include "IHWLayer.h"
+#include "IButtonHW.h"
 
 /**
  * This class handles maximum 8 independent switches
@@ -24,7 +24,7 @@ public:
 	 * @param count number of buttons in this button array
 	 * @param changeOnEvent event to change state on (Default is on button down)
 	 */
-    void init(IHWLayer *hwLayer, unsigned char * buttonIndexes, unsigned char count, IHWLayer::ButtonState changeOnEvent = IHWLayer::DOWN);
+    void init(IButtonHW *hwLayer, unsigned char * buttonIndexes, unsigned char count, IButtonHW::ButtonState changeOnEvent = IButtonHW::DOWN);
 
     /**
      * get the status of the button at the index in the switches array
@@ -46,7 +46,7 @@ public:
     void update();
 
 private:
-    IHWLayer * hwLayer_;
+    IButtonHW * hwLayer_;
     unsigned char * buttonIndexes_;
     unsigned char buttonCount_;
     unsigned int lastStates_;

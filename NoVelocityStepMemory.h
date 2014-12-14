@@ -21,14 +21,17 @@ class NoVelocityStepMemory : public IStepMemory
 {
 public:
 	NoVelocityStepMemory();
-    virtual DrumStep getDrumStep( unsigned char instrumentID, unsigned char pattern, unsigned char step);
-    virtual bool getNextActiveDrumStep( unsigned char instrumentID, unsigned char pattern, unsigned char & step, DrumStep & drumStep);
-    virtual bool setDrumStep(unsigned char instrumentID, unsigned char pattern, unsigned char step, DrumStep stepData);
-    virtual void getActivesAndMutesForNote(unsigned char instrumentID, unsigned char pattern, unsigned char windowIndex, unsigned char * data);
-    virtual void getPatternSettings(unsigned char patternIndex, unsigned char * settings);
-    virtual void setPatternSettings(unsigned char patternIndex, unsigned char * settings);
+    virtual DrumStep getDrumStep( unsigned char instrumentID, unsigned char step);
+    virtual bool getNextActiveDrumStep( unsigned char instrumentID, unsigned char & step, DrumStep & drumStep);
+    virtual bool setDrumStep(unsigned char instrumentID, unsigned char step, DrumStep stepData);
+    virtual void getActivesAndMutesForNote(unsigned char instrumentID, unsigned char windowIndex, unsigned char * data);
+    virtual void setDataReference(unsigned char * dataReference);
 private:
-    unsigned char data_[289];
+    unsigned char * data_;
 };
+
+inline void NoVelocityStepMemory::setDataReference(unsigned char * dataReference) {
+	data_ = dataReference;
+}
 
 #endif // FLASHSTEPMEMORY_H

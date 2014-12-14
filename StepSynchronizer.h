@@ -11,15 +11,15 @@
 class StepSynchronizer {
 public:
 	StepSynchronizer();
-	void setCycleLength(unsigned char cycleLength);
+	void setCycleLength(unsigned int cycleLength);
 	void doStep();
 	unsigned char getCurrentStepNumber();
 private:
-	unsigned char cycleLength_;
+	unsigned int cycleLength_;
 	unsigned char currentStepNumber_;
 };
 
-inline void StepSynchronizer::setCycleLength(unsigned char cycleLength) {
+inline void StepSynchronizer::setCycleLength(unsigned int cycleLength) {
 	cycleLength_ = cycleLength;
 }
 

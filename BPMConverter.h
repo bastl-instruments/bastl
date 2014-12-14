@@ -8,10 +8,12 @@
 #ifndef BPMCONVERTER_H_
 #define BPMCONVERTER_H_
 
+#include <inttypes.h>
+
 class BPMConverter {
 public:
-	static unsigned char bpmToTimeUnits(unsigned int bpm, unsigned int timeUnitsPerSecond);
-	static unsigned char timeUnitsToBPM(unsigned int timeUnits, unsigned int timeUnitsPerSecond);
+	static uint16_t bpmToTimeUnits(uint16_t bpm, uint16_t timeUnitsPerSecond);
+	static uint16_t timeUnitsToBPM(uint16_t timeUnits, uint16_t timeUnitsPerSecond);
 };
 
 #endif /* BPMCONVERTER_H_ */

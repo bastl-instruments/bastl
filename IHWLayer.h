@@ -6,20 +6,16 @@
 #define BUTTON_DRUM_3 18
 
 #include <inttypes.h>
+#include "ILEDHW.h"
 
-class IHWLayer {
+class IHWLayer : public ILEDHW {
 public:
 
-	enum LedState{ON,OFF, BLINK, BLINK_INVERT, DULLON};
 	enum ButtonState{UP, DOWN};
 	enum EventType {EMPTY, BTN_DOWN, BTN_UP, KNOB_TWIST};
 
 	// Buttons //
     virtual ButtonState getButtonState(unsigned char index) = 0;
-
-    // LEDs //
-    virtual void setLED(unsigned char index, LedState state) = 0;
-    //virtual void setLED(unsigned char index, unsigned char brightness, unsigned char blinkTime = 0) = 0;
 
     // Knobs //
     virtual unsigned char getKnobValue(unsigned char index) = 0;
