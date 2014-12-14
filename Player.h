@@ -38,7 +38,6 @@ private:
     StepSynchronizer * synchronizer_;
     unsigned char currentSteps_[INSTRUMENTS];
     unsigned char playingInstruments[ALL_INSTRUMENTS_IN_BYTES];
-    unsigned char currentPatterns_[1];
     bool isStopped_;
 
     void stepDrumInstruments();

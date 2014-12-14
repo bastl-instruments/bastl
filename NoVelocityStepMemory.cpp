@@ -14,13 +14,12 @@ NoVelocityStepMemory::NoVelocityStepMemory()
 {
 }
 
-DrumStep NoVelocityStepMemory::getDrumStep(unsigned char instrumentID, unsigned char pattern, unsigned char step)
+DrumStep NoVelocityStepMemory::getDrumStep(unsigned char instrumentID, unsigned char step)
 {
     unsigned char byteIndex = step / 8;
     unsigned char bitIndex = step % 8;
 
-    long instrumentOffset = (64 * 6 * pattern) /* patterbs offset */ +
-                            (64 * instrumentID) /* instruments offset */ ;
+    long instrumentOffset = (64 * instrumentID) /* instruments offset */ ;
 
     instrumentOffset  = (instrumentOffset * 6) / 8;
 
@@ -49,14 +48,13 @@ DrumStep NoVelocityStepMemory::getDrumStep(unsigned char instrumentID, unsigned 
 
 
 
-bool NoVelocityStepMemory::getNextActiveDrumStep(unsigned char instrumentID, unsigned char pattern, unsigned char &step, DrumStep &drumStep)
+bool NoVelocityStepMemory::getNextActiveDrumStep(unsigned char instrumentID, unsigned char &step, DrumStep &drumStep)
 {
     unsigned char byteIndex = step / 8;
     unsigned char originalByteIndex = byteIndex;
     unsigned char bitIndex = step % 8;
 
-    long instrumentOffset = (64 * 6 * pattern) /* patterbs offset */ +
-                            (64 * instrumentID) /* instruments offset */ ;
+    long instrumentOffset = (64 * instrumentID) /* instruments offset */ ;
 
     instrumentOffset  = (instrumentOffset * 6) / 8;
 
@@ -92,18 +90,17 @@ bool NoVelocityStepMemory::getNextActiveDrumStep(unsigned char instrumentID, uns
 
     step = byteIndex * 8 + bitIndex;
 
-    drumStep = getDrumStep(instrumentID, pattern, step);
+    drumStep = getDrumStep(instrumentID, step);
     return true;
 }
 
-bool NoVelocityStepMemory::setDrumStep(unsigned char instrumentID, unsigned char pattern, unsigned char step, DrumStep stepData)
+bool NoVelocityStepMemory::setDrumStep(unsigned char instrumentID, unsigned char step, DrumStep stepData)
 {
 
     unsigned char byteIndex = step / 8;
     unsigned char bitIndex = step % 8;
 
-    long instrumentOffset = (64 * 6 * pattern) +
-    			    (64 * instrumentID);
+    long instrumentOffset = (64 * instrumentID);
 
     #ifdef DEBUG
 	printf("Instrument offset is: %d \n", (int)instrumentOffset);
@@ -147,9 +144,8 @@ bool NoVelocityStepMemory::setDrumStep(unsigned char instrumentID, unsigned char
     return true;
 }
 
-void NoVelocityStepMemory::getActivesAndMutesForNote(unsigned char instrumentID, unsigned char pattern, unsigned char windowIndex, unsigned char * data) {
-	long instrumentOffset = (64 * 6 * pattern) /* patterbs offset */ +
-	                            (64 * instrumentID) /* instruments offset */ ;
+void NoVelocityStepMemory::getActivesAndMutesForNote(unsigned char instrumentID, unsigned char windowIndex, unsigned char * data) {
+	long instrumentOffset = (64 * instrumentID) /* instruments offset */ ;
 
 	instrumentOffset  = (instrumentOffset * 6) / 8;
 
@@ -157,12 +153,5 @@ void NoVelocityStepMemory::getActivesAndMutesForNote(unsigned char instrumentID,
 	data[1] = data_[instrumentOffset + windowIndex + 1];
 	data[2] = data_[instrumentOffset + windowIndex + 8];
 	data[3] = data_[instrumentOffset + windowIndex + 9];
-}
-
-void NoVelocityStepMemory::getPatternSettings(unsigned char patternIndex, unsigned char * settings) {
-	settings[0] = data_[DRUM_BYTES];
-}
-void NoVelocityStepMemory::setPatternSettings(unsigned char patternIndex, unsigned char * settings) {
-	data_[DRUM_BYTES] = settings[0];
 }
 
