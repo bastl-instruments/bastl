@@ -8,26 +8,10 @@
 #ifndef RANDOM_H_
 #define RANDOM_H_
 
-//// Taken from Mozzi library to remove dependency on Arduino
-//// Should be rethought and -written
+#include <inttypes.h>
 
-unsigned long xorshift96();
-
-void xorshiftSeed(unsigned long seed);
-
-
-char rand(char minval, char maxval);
-char rand(char maxval);
-
-unsigned char rand(unsigned char minval, unsigned char maxval);
-unsigned char rand(unsigned char maxval);
-
-int rand(int minval, int maxval);
-int rand(int maxval);
-
-unsigned int rand(unsigned int minval, unsigned int maxval);
-unsigned int rand(unsigned int maxval);
-
-unsigned char randMidiNote();
-
-#endif /* RANDOM_H_ */
+namespace bastlRandom {
+	uint8_t byte();
+	uint8_t range(uint8_t min, uint8_t max);
+}
+#endif
