@@ -2,17 +2,17 @@
 
 HWLayerMock::HWLayerMock()
 {
-    for (unsigned char i = 0; i < 16; i++) {
+    for (unsigned char i = 0; i < 32; i++) {
         buttonStates_[i] = false;
     }
 }
 
 IButtonHW::ButtonState HWLayerMock::getButtonState(unsigned char index)
 {
-    return buttonStates_[index / 2] ? IButtonHW::DOWN : IButtonHW::UP ;
+    return buttonStates_[index] ? IButtonHW::DOWN : IButtonHW::UP ;
 }
 
 void HWLayerMock::setButtonState(unsigned char buttonIndex, bool newState)
 {
-    buttonStates_[buttonIndex / 2] = newState;
+    buttonStates_[buttonIndex] = newState;
 }

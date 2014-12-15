@@ -11,7 +11,7 @@ public:
     virtual IButtonHW::ButtonState getButtonState(unsigned char index);
     void setButtonState(unsigned char buttonIndex, bool newState);
 private:
-    bool buttonStates_[16];
+    bool buttonStates_[32];
 
 };
 

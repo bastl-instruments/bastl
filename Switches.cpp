@@ -4,7 +4,7 @@
 //#define DEBUG
 
 #ifdef DEBUG
-#include <iostream>
+#include <cstdio>
 #endif
 
 Switches::Switches() :
@@ -27,6 +27,9 @@ void Switches::init(IButtonHW *hwLayer, unsigned char * buttonIndexes, unsigned 
 void Switches::update() {
     for (unsigned char i = 0; i < buttonCount_; i++) {
         bool buttonDown = hwLayer_->getButtonState(buttonIndexes_[i]) == IButtonHW::DOWN;
+		#ifdef DEBUG
+		printf("Button %d(%d) %s\n", i, buttonIndexes_[i], buttonDown ? "down" : "up");
+        #endif
         if (((changeOnEvent_ == IButtonHW::DOWN) && !GETBIT(lastStates_, i) && buttonDown) ||
         	((changeOnEvent_ == IButtonHW::UP) && GETBIT(lastStates_, i) && !buttonDown)	) {
             if (GETBIT(statuses_, i)) {

@@ -10,13 +10,24 @@ CC_FLAGS=-c -Wall -g
 
 .PHONY : check test
 
-check : test radioButtonTest
+check : test radioButtonTest switchesTest
 	./test
 	./radioButtonTest
+	./switchesTest
 
 test : obj/tst.o obj/Tapper.o obj/StepDivider.o obj/StepMultiplier.o obj/StepGenerator.o obj/BastlStepper.o obj/DrumStep.o obj/NoVelocityStepMemory.o obj/Step.o
 	g++ -o $@ $^
 	./test
+
+switchesTest : obj/switchesTest.o obj/Switches.o obj/HWLayerMock.o
+	g++ -o $@ $^
+	./switchesTest
+
+obj/switchesTest.o : tstSwitches.cpp
+	g++ $(CC_FLAGS) -o $@ $<
+
+obj/Switches.o : ../Switches.cpp
+	g++ $(CC_FLAGS) -o $@ $<
 
 radioButtonTest : obj/radioButtonTest.o obj/RadioButtons.o obj/HWLayerMock.o
 	g++ -o $@ $^
