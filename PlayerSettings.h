@@ -10,8 +10,12 @@ class PlayerSettings
 public:
 
 	enum DrumInstrumentEventType {TRIGGER, GATE};
+	enum QuantizationType {_1_64, _1_32, _1_16, _1_8};
 
     PlayerSettings();
+
+    QuantizationType getRecordQuantizationType();
+    void setRecordQuantizationType(QuantizationType quatizationType);
 
     unsigned char getDrumInstrumentNote(unsigned char instrumentID);
     void setDrumInstrumentNote(unsigned char instrumentID, unsigned char note);
@@ -45,6 +49,7 @@ private:
     unsigned char normalDrumVelocity_;
     unsigned char currentPattern_;
     void (*patternChangedCallback_)(unsigned char patternIndex);
+    QuantizationType recordQunatizationType_;
 };
 
 inline PlayerSettings::DrumInstrumentEventType PlayerSettings::getDrumInstrumentEventType(unsigned char instrumentID)
@@ -89,6 +94,14 @@ inline unsigned char PlayerSettings::getCurrentPattern() {
 
 inline void PlayerSettings::setPatternChangedCallback(void (*patternChangedCallback)(unsigned char patternIndex)) {
 	patternChangedCallback_ = patternChangedCallback;
+}
+
+inline PlayerSettings::QuantizationType PlayerSettings::getRecordQuantizationType() {
+	return recordQunatizationType_;
+}
+
+inline void PlayerSettings::setRecordQuantizationType(PlayerSettings::QuantizationType quatizationType) {
+	recordQunatizationType_ = quatizationType;
 }
 
 

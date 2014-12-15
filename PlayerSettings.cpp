@@ -1,6 +1,7 @@
 #include "PlayerSettings.h"
 
-PlayerSettings::PlayerSettings() : drumInstrumentEventTypes_(0), upDrumVelocity_(253), downDrumVelocity_(64), normalDrumVelocity_(128)
+PlayerSettings::PlayerSettings() : drumInstrumentEventTypes_(0), upDrumVelocity_(253), downDrumVelocity_(64),
+								   normalDrumVelocity_(128), patternChangedCallback_(0), recordQunatizationType_(_1_64)
 {
     for (unsigned char i = 0; i < DRUM_INSTRUMENTS; i++) {
         drumInstrumentNotes_[i] = 0;
