@@ -13,6 +13,7 @@ public:
 	StepSynchronizer();
 	void setCycleLength(unsigned int cycleLength);
 	void doStep();
+	void reset();
 	unsigned char getCurrentStepNumber();
 private:
 	unsigned int cycleLength_;
@@ -29,6 +30,10 @@ inline void StepSynchronizer::doStep() {
 
 inline unsigned char StepSynchronizer::getCurrentStepNumber() {
 	return currentStepNumber_;
+}
+
+inline void StepSynchronizer::reset() {
+	currentStepNumber_ = 0;
 }
 
 #endif /* STEPSYNCHRONIZER_H_ */

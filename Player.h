@@ -30,7 +30,7 @@ public:
     void changeActivesForCurrentStep(unsigned char instrumentID, unsigned char numberOfActiveSteps);
     unsigned char getCurrentInstrumentSubStep(unsigned char instrumentID);
     void playNote(unsigned char instrumentID, DrumStep::DrumVelocityType velocityType);
-
+    void resetAllInstruments();
 private:
     IStepMemory * memory_;
     IMIDICommandProcessor * midiProcessor_;

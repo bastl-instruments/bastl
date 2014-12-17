@@ -92,3 +92,10 @@ void Player::stepDrumInstruments()
 void Player::changeActivesForCurrentStep(unsigned char instrumentID, unsigned char numberOfActiveSteps) {
 	setCurrentInstrumentStep(instrumentID, (synchronizer_->getCurrentStepNumber() / 4) % numberOfActiveSteps);
 }
+
+void Player::resetAllInstruments() {
+	for (unsigned char i = 0; i < 6; i++) {
+		sendNoteOffIfPlaying(i);
+		currentSteps_[i] = 0;
+	}
+}
