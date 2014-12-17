@@ -155,3 +155,26 @@ void NoVelocityStepMemory::getActivesAndMutesForNote(unsigned char instrumentID,
 	data[3] = data_[instrumentOffset + windowIndex + 9];
 }
 
+void NoVelocityStepMemory::getAllInstrumentActivesFor16Steps(unsigned char windowIndex, ActiveMultiStatus * result) {
+	bool firstInstrument = true;
+	for (unsigned char instrument = 0; instrument < 6; instrument++) {
+		long instrumentOffset = (64 * instrument) /* instruments offset */ ;
+		instrumentOffset  = (instrumentOffset * 6) / 8;
+		for (unsigned char step = 0; step < 16; step++) {
+			unsigned char data = step < 8 ? data_[instrumentOffset + windowIndex] :
+											data_[instrumentOffset + windowIndex + 1];
+			bool active = GETBIT(data, step % 8);
+			if (firstInstrument) {
+				result[step] = active ? ALLACTIVE : ALLINACTIVE;
+			} else {
+				if (result[step] == ALLACTIVE && !active) {
+					result[step] = MIXED;
+				} else if (result[step] == ALLINACTIVE && active) {
+					result[step] = MIXED;
+				}
+			}
+		}
+		firstInstrument = false;
+	}
+}
+
