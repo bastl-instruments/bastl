@@ -178,3 +178,22 @@ void NoVelocityStepMemory::getAllInstrumentActivesFor16Steps(unsigned char windo
 	}
 }
 
+void NoVelocityStepMemory::getActiveWindowBitArray(unsigned char instrument, bool * result) {
+	for (unsigned char pan = 0; pan < 4; pan++) {
+		long instrumentOffset = (64 * instrument) /* instruments offset */ ;
+		instrumentOffset  = (instrumentOffset * 6) / 8;
+		result[pan] = (data_[instrumentOffset + pan * 2] != 0) || (data_[instrumentOffset + pan * 2 + 1] != 0);
+	}
+}
+
+void NoVelocityStepMemory::getAllInstrumentsActiveWindowBitArray(bool * result) {
+	result[0] = result[1] = result[2] = result[3] = false;
+	for (unsigned char instrument = 0; instrument < 6; instrument++) {
+		for (unsigned char pan = 0; pan < 4; pan++) {
+			long instrumentOffset = (64 * instrument) /* instruments offset */ ;
+			instrumentOffset  = (instrumentOffset * 6) / 8;
+			result[pan] = result[pan] || (data_[instrumentOffset + pan * 2] != 0) || (data_[instrumentOffset + pan * 2 + 1] != 0);
+		}
+	}
+}
+
