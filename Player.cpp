@@ -93,6 +93,12 @@ void Player::changeActivesForCurrentStep(unsigned char instrumentID, unsigned ch
 	setCurrentInstrumentStep(instrumentID, (synchronizer_->getCurrentStepNumber() / 4) % numberOfActiveSteps);
 }
 
+void Player::changeActivesForCurrentStepInAllInstrunents(unsigned char numberOfActiveSteps) {
+	for (unsigned char instrument = 0; instrument < 6; instrument++) {
+		changeActivesForCurrentStep(instrument, numberOfActiveSteps);
+	}
+}
+
 void Player::resetAllInstruments() {
 	for (unsigned char i = 0; i < 6; i++) {
 		sendNoteOffIfPlaying(i);

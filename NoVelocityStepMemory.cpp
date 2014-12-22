@@ -197,3 +197,19 @@ void NoVelocityStepMemory::getAllInstrumentsActiveWindowBitArray(bool * result) 
 	}
 }
 
+void NoVelocityStepMemory::makeActiveUpTo(unsigned char instrument, unsigned char indexUpTo) {
+	for (int stepIndex = 0; stepIndex < 64; stepIndex++) {
+		bool newState = stepIndex <= indexUpTo;
+		DrumStep step = getDrumStep(instrument, stepIndex);
+		step.setActive(newState);
+		setDrumStep(instrument, stepIndex, step);
+	}
+}
+
+void NoVelocityStepMemory::makeAllInstrumentsActiveUpTo(unsigned char indexUpTo) {
+	for (unsigned char instrument = 0; instrument < 6; instrument++) {
+		makeActiveUpTo(instrument, indexUpTo);
+	}
+
+}
+

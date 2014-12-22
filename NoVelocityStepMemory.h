@@ -29,6 +29,8 @@ public:
     virtual void getAllInstrumentActivesFor16Steps(unsigned char windowIndex, ActiveMultiStatus * result);
     virtual void getActiveWindowBitArray(unsigned char instrument, bool * result);
     virtual void getAllInstrumentsActiveWindowBitArray(bool * result);
+    virtual void makeActiveUpTo(unsigned char instrument, unsigned char indexUpTo);
+    virtual void makeAllInstrumentsActiveUpTo(unsigned char indexUpTo);
 private:
     unsigned char * data_;
 };

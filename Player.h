@@ -28,6 +28,8 @@ public:
     unsigned char getCurrentInstrumentStep(unsigned char instrumentID);
     void setCurrentInstrumentStep(unsigned char instrumentID, unsigned char step);
     void changeActivesForCurrentStep(unsigned char instrumentID, unsigned char numberOfActiveSteps);
+    void changeActivesForCurrentStepInAllInstrunents(unsigned char numberOfActiveSteps);
+
     unsigned char getCurrentInstrumentSubStep(unsigned char instrumentID);
     void playNote(unsigned char instrumentID, DrumStep::DrumVelocityType velocityType);
     void resetAllInstruments();
