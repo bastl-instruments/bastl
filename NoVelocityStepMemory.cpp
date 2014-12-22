@@ -213,3 +213,35 @@ void NoVelocityStepMemory::makeAllInstrumentsActiveUpTo(unsigned char indexUpTo)
 
 }
 
+bool NoVelocityStepMemory::isInDefaultState(unsigned char instrumentID) {
+	bool isDefault = true;
+	long instrumentOffset = (64 * instrumentID) /* instruments offset */ ;
+	instrumentOffset  = (instrumentOffset * 6) / 8;
+
+	for (unsigned char index = 2; index < 8; index++) {
+		if (data_[instrumentOffset + 8 + index] != 255) {
+			return false;
+		}
+	}
+	//go through all the steps (1 step = 4 bits)
+	for (unsigned char step = 8; step < 32; step++) {
+		if (data_[instrumentOffset + 16 + step] != 0) {
+			return false;
+		}
+	}
+	return true;
+}
+
+void NoVelocityStepMemory::copyPan(unsigned char instrumentID, unsigned char panFrom, unsigned char panTo) {
+
+	long instrumentOffset = (64 * instrumentID) /* instruments offset */ ;
+	instrumentOffset  = (instrumentOffset * 6) / 8;
+
+	data_[instrumentOffset + 8 + panTo * 2] = data_[instrumentOffset + 8 + panFrom * 2];
+	data_[instrumentOffset + 8 + panTo * 2 + 1] = data_[instrumentOffset + 8 + panFrom * 2 + 1];
+
+	// copy 16 steps (4 bits per step = 8 bytes)
+	for (unsigned char step = 0; step < 8; step++) {
+		data_[instrumentOffset + 16 + panTo * 8 + step] = data_[instrumentOffset + 16 + panFrom * 8 + step];
+	}
+}

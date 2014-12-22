@@ -17,6 +17,8 @@ public:
     virtual void getAllInstrumentsActiveWindowBitArray(bool * result);
     virtual void makeActiveUpTo(unsigned char instrument, unsigned char indexUpTo) = 0;
     virtual void makeAllInstrumentsActiveUpTo(unsigned char indexUpTo) = 0;
+    virtual bool isInDefaultState(unsigned char instrument) = 0;
+    virtual void copyPan(unsigned char instrumentID, unsigned char panFrom, unsigned char panTo) = 0;
 };
 
 
