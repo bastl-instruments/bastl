@@ -10,17 +10,18 @@
 
 #include <inttypes.h>
 #include "movingAverage.h"
+#include "ITapper.h"
 
-class Tapper {
+class Tapper : ITapper {
 public:
 	Tapper();
-	~Tapper();
+	virtual ~Tapper();
 	void init(uint16_t maxStepLengthInTimeUnits, uint8_t averageWidth = 4, uint8_t maxRelativeDeviation=20);
-	void tap(uint16_t tapTime);
-	void setStepsPerTap(uint8_t stepsPerTap);
-	uint16_t getTimeUnitsPerStep();
-	void setStepCallBack(void (*makeStep)());
-
+	virtual void tap(uint16_t tapTime);
+	virtual void setStepsPerTap(uint8_t stepsPerTap);
+	virtual uint16_t getTimeUnitsPerStep();
+	virtual void setStepCallBack(void (*makeStep)());
+	virtual bool anyStepDetected();
 private:
 
 	MovingAverageLinear<uint16_t>* history;
@@ -42,6 +43,10 @@ inline uint16_t Tapper::getTimeUnitsPerStep() {
 
 inline void Tapper::setStepCallBack(void (*makeStep)()) {
 	makeStep_ = makeStep;
+}
+
+inline bool Tapper::anyStepDetected() {
+	return history->getFillCount() > 0;
 }
 
 #endif /* TAPPER_H_ */
