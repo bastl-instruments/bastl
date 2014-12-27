@@ -104,4 +104,5 @@ void Player::resetAllInstruments() {
 		sendNoteOffIfPlaying(i);
 		currentSteps_[i] = 0;
 	}
+	isStopped_ = true;
 }
