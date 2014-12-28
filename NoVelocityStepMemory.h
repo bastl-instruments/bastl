@@ -31,6 +31,8 @@ public:
     virtual void getAllInstrumentsActiveWindowBitArray(bool * result);
     virtual void makeActiveUpTo(unsigned char instrument, unsigned char indexUpTo);
     virtual void makeAllInstrumentsActiveUpTo(unsigned char indexUpTo);
+    virtual void clearStepsForInstrument(unsigned char instrument);
+    virtual void clearStepsForAllInstruments();
     virtual bool isInDefaultState(unsigned char instrument);
     virtual void copyPan(unsigned char instrumentID, unsigned char panFrom, unsigned char panTo);
 private:

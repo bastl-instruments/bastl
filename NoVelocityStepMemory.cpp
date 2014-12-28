@@ -245,3 +245,20 @@ void NoVelocityStepMemory::copyPan(unsigned char instrumentID, unsigned char pan
 		data_[instrumentOffset + 16 + panTo * 8 + step] = data_[instrumentOffset + 16 + panFrom * 8 + step];
 	}
 }
+
+void NoVelocityStepMemory::clearStepsForInstrument(unsigned char instrument) {
+	for (unsigned char step = 0; step < 64; step++) {
+		DrumStep stepData = getDrumStep(instrument, step);
+		stepData.setMuted(true);
+		for (unsigned char substep = 0; substep < 4; substep++) {
+			stepData.setSubStep(substep, DrumStep::OFF);
+		}
+		setDrumStep(instrument, step, stepData);
+	}
+}
+
+void NoVelocityStepMemory::clearStepsForAllInstruments() {
+	for (unsigned char instrument = 0; instrument < 6; instrument++) {
+		clearStepsForInstrument(instrument);
+	}
+}
