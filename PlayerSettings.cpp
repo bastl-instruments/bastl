@@ -80,3 +80,10 @@ bool PlayerSettings::getDrumInstrumentIndexFromMIDIMessage(unsigned char channel
 	}
 	return false;
 }
+
+void PlayerSettings::setBPM(unsigned int bpm, bool raiseCallback) {
+	bpm_ = bpm;
+	if (raiseCallback && bpmChangedCallback_) {
+		bpmChangedCallback_(bpm);
+	}
+}

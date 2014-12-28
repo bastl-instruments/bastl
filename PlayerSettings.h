@@ -44,6 +44,10 @@ public:
     void setMultiplication(MultiplicationType multiplication);
     void setMultiplicationChangedCallback(void (*multiplicationChangedCallback)(MultiplicationType multiplication));
 
+    unsigned int getBPM();
+    void setBPM(unsigned int bpm, bool raiseCallback = true);
+    void setBPMChangedCallback(void (*bpmChangedCallback)(unsigned int bpm));
+
 private:
     unsigned char drumInstrumentNotes_[DRUM_INSTRUMENTS];
     unsigned char drumInstrumentEventTypes_;
@@ -57,6 +61,8 @@ private:
     QuantizationType recordQunatizationType_;
     MultiplicationType multiplication_;
     void (*multiplicationChangedCallback_)(MultiplicationType multiplication);
+    unsigned int bpm_;
+    void (*bpmChangedCallback_)(unsigned int bpm);
 };
 
 inline PlayerSettings::DrumInstrumentEventType PlayerSettings::getDrumInstrumentEventType(unsigned char instrumentID)
@@ -126,5 +132,12 @@ inline void PlayerSettings::setMultiplicationChangedCallback(void (*multiplicati
 	multiplicationChangedCallback_ = multiplicationChangedCallback;
 }
 
+inline unsigned int PlayerSettings::getBPM() {
+	return bpm_;
+}
+
+inline void PlayerSettings::setBPMChangedCallback(void (*bpmChangedCallback)(unsigned int bpm)) {
+	bpmChangedCallback_ = bpmChangedCallback;
+}
 
 #endif // PLAYERSETTINGS_H
