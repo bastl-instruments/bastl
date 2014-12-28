@@ -11,6 +11,7 @@ public:
 
 	enum DrumInstrumentEventType {TRIGGER, GATE};
 	enum QuantizationType {_1_64, _1_32, _1_16, _1_8};
+	enum MultiplicationType {_1, _2, _4, _8};
 
     PlayerSettings();
 
@@ -39,6 +40,10 @@ public:
 
     void setPatternChangedCallback(void (*patternChangedCallback)(unsigned char patternIndex));
 
+    MultiplicationType getMultiplication();
+    void setMultiplication(MultiplicationType multiplication);
+    void setMultiplicationChangedCallback(void (*multiplicationChangedCallback)(MultiplicationType multiplication));
+
 private:
     unsigned char drumInstrumentNotes_[DRUM_INSTRUMENTS];
     unsigned char drumInstrumentEventTypes_;
@@ -50,6 +55,8 @@ private:
     unsigned char currentPattern_;
     void (*patternChangedCallback_)(unsigned char patternIndex);
     QuantizationType recordQunatizationType_;
+    MultiplicationType multiplication_;
+    void (*multiplicationChangedCallback_)(MultiplicationType multiplication);
 };
 
 inline PlayerSettings::DrumInstrumentEventType PlayerSettings::getDrumInstrumentEventType(unsigned char instrumentID)
@@ -102,6 +109,21 @@ inline PlayerSettings::QuantizationType PlayerSettings::getRecordQuantizationTyp
 
 inline void PlayerSettings::setRecordQuantizationType(PlayerSettings::QuantizationType quatizationType) {
 	recordQunatizationType_ = quatizationType;
+}
+
+inline PlayerSettings::MultiplicationType PlayerSettings::getMultiplication() {
+	return multiplication_;
+}
+
+inline void PlayerSettings::setMultiplication(PlayerSettings::MultiplicationType multiplication) {
+	multiplication_ = multiplication;
+	if (multiplicationChangedCallback_ != 0) {
+		multiplicationChangedCallback_(multiplication_);
+	}
+}
+
+inline void PlayerSettings::setMultiplicationChangedCallback(void (*multiplicationChangedCallback)(PlayerSettings::MultiplicationType multiplication)) {
+	multiplicationChangedCallback_ = multiplicationChangedCallback;
 }
 
 
