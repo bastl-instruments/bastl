@@ -54,7 +54,6 @@ void Player::stepDrumInstruments()
         DrumStep nextStep;
         unsigned char nextSubStepIndex = (currentSteps_[i] + 1) % (SUBSTEPS_PER_STEP * STEPS_PER_PATTERN);
         if (isStopped_ ) {
-        	isStopped_ = false;
         	nextSubStepIndex = currentSteps_[i];
         }
         bool nextStepExists = true;
@@ -87,6 +86,7 @@ void Player::stepDrumInstruments()
         }
         //printf("\n");
     }
+    isStopped_ = false;
 }
 
 void Player::changeActivesForCurrentStep(unsigned char instrumentID, unsigned char numberOfActiveSteps) {
