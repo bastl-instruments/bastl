@@ -23,12 +23,10 @@ void RadioButtons::update() {
             if (lastDownButton_ == i) {
                 return;
             }
-            if (buttonSelected_ && selectedButton_ == i)
-            {
-                buttonSelected_ = false;
+            if (!buttonSelected_ || selectedButton_ != i) {
+            	setSelectedButton(i);
             } else {
-                buttonSelected_ = true;
-                selectedButton_ = i;
+            	resetSelection();
             }
             lastDownButton_ = i;
             return;
@@ -39,6 +37,7 @@ void RadioButtons::update() {
 }
 
 void RadioButtons::setSelectedButton(unsigned char selectedButton) {
+	resetSelection();
 	selectedButton_ = selectedButton;
 	buttonSelected_ = true;
 }

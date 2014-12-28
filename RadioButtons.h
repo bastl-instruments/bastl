@@ -8,12 +8,13 @@ class RadioButtons
 {
 public:
     RadioButtons(IButtonHW * hwLayer, unsigned char * buttonIndexes, unsigned char count);
+    virtual ~RadioButtons() {}
     bool getSelectedButton(unsigned char & selectedButton);
-    void setSelectedButton(unsigned char selectedButton);
+    virtual void setSelectedButton(unsigned char selectedButton);
     void update();
-    void resetSelection();
+    virtual void resetSelection();
 
-private:
+protected:
     IButtonHW * hwLayer_;
     unsigned char * buttonIndexes_;
     unsigned char buttonCount_;
