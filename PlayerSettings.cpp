@@ -2,7 +2,8 @@
 
 PlayerSettings::PlayerSettings() : drumInstrumentEventTypes_(0), upDrumVelocity_(253), downDrumVelocity_(64),
 								   normalDrumVelocity_(128), patternChangedCallback_(0), recordQunatizationType_(_1_64),
-								   multiplication_(_8), multiplicationChangedCallback_(0)
+								   multiplication_(_8), multiplicationChangedCallback_(0), playerMode_ (MASTER),
+								   playerModeChangedCallback_(0)
 {
     for (unsigned char i = 0; i < DRUM_INSTRUMENTS; i++) {
         drumInstrumentNotes_[i] = 0;

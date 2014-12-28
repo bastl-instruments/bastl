@@ -12,6 +12,7 @@ public:
 	enum DrumInstrumentEventType {TRIGGER, GATE};
 	enum QuantizationType {_1_64, _1_32, _1_16, _1_8};
 	enum MultiplicationType {_1, _2, _4, _8};
+	enum PlayerMode {MASTER, SLAVE};
 
     PlayerSettings();
 
@@ -48,6 +49,10 @@ public:
     void setBPM(unsigned int bpm, bool raiseCallback = true);
     void setBPMChangedCallback(void (*bpmChangedCallback)(unsigned int bpm));
 
+    PlayerMode getPlayerMode();
+    void setPlayerMode(PlayerMode playerMode);
+    void setPlayerModeChangedCallback(void (*playerModeChangedCallback)(PlayerMode playerMode));
+
 private:
     unsigned char drumInstrumentNotes_[DRUM_INSTRUMENTS];
     unsigned char drumInstrumentEventTypes_;
@@ -63,6 +68,9 @@ private:
     void (*multiplicationChangedCallback_)(MultiplicationType multiplication);
     unsigned int bpm_;
     void (*bpmChangedCallback_)(unsigned int bpm);
+    PlayerMode playerMode_;
+    void (*playerModeChangedCallback_)(PlayerMode playerMode);
+
 };
 
 inline PlayerSettings::DrumInstrumentEventType PlayerSettings::getDrumInstrumentEventType(unsigned char instrumentID)
@@ -138,6 +146,21 @@ inline unsigned int PlayerSettings::getBPM() {
 
 inline void PlayerSettings::setBPMChangedCallback(void (*bpmChangedCallback)(unsigned int bpm)) {
 	bpmChangedCallback_ = bpmChangedCallback;
+}
+
+inline PlayerSettings::PlayerMode PlayerSettings::getPlayerMode() {
+	return playerMode_;
+}
+
+inline void PlayerSettings::setPlayerMode(PlayerSettings::PlayerMode playerMode) {
+	playerMode_ = playerMode;
+	if (playerModeChangedCallback_) {
+		playerModeChangedCallback_(playerMode_);
+	}
+}
+
+inline void PlayerSettings::setPlayerModeChangedCallback(void (*playerModeChangedCallback)(PlayerSettings::PlayerMode playerMode)) {
+	playerModeChangedCallback_ = playerModeChangedCallback;
 }
 
 #endif // PLAYERSETTINGS_H
