@@ -69,13 +69,10 @@ void Player::stepDrumInstruments()
             //if (nextStepExists) printf("NextStepExists index %i\n", currentStepIndex);
             nextSubStepIndex = SUBSTEPS_PER_STEP * currentStepIndex;
         }
-
+    	sendNoteOffIfPlaying(i);
         if (nextStepExists) {
             if (settings_->isInstrumentOn(Step::DRUM, i)) {
-            	sendNoteOffIfPlaying(i);
                 if (!nextStep.isMuted()) {
-                    //printf("Not muted");
-
                     DrumStep::DrumVelocityType type = nextStep.getSubStep(nextSubStepIndex % SUBSTEPS_PER_STEP);
                     if (type != DrumStep::OFF) {
                     	playNote(i, type) ;
