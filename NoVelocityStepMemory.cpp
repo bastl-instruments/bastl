@@ -98,13 +98,12 @@ void NoVelocityStepMemory::getActivesAndMutesForNote(unsigned char instrumentID,
 	data[3] = data_[instrumentOffset + windowIndex + 9];
 }
 
-void NoVelocityStepMemory::getAllInstrumentActivesFor16Steps(unsigned char windowIndex, ActiveMultiStatus * result) {
-	unsigned char windowOffset = windowIndex * 16;
+void NoVelocityStepMemory::getAllInstrumentActivesFor16Steps(unsigned char fromIndex, ActiveMultiStatus * result) {
 	for (unsigned char step = 0; step < 16; step++) {
 		unsigned char actives = 0;
 		unsigned char inactives = 0;
 		for (unsigned char instrument = 0; instrument < 6; instrument++) {
-			bool active = getDrumStep(instrument, windowOffset + step).isActive();
+			bool active = getDrumStep(instrument, fromIndex + step).isActive();
 			if (active) {
 				actives++;
 			} else {
@@ -112,9 +111,9 @@ void NoVelocityStepMemory::getAllInstrumentActivesFor16Steps(unsigned char windo
 			}
 		}
 		if (actives == 0) {
-			result[step] = ALLACTIVE;
-		} else if (inactives == 0) {
 			result[step] = ALLINACTIVE;
+		} else if (inactives == 0) {
+			result[step] = ALLACTIVE;
 		} else {
 			result[step] = MIXED;
 		}

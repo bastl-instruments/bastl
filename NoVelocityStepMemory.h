@@ -27,7 +27,7 @@ public:
     virtual bool setDrumStep(unsigned char instrumentID, unsigned char step, DrumStep stepData);
     virtual void getActivesAndMutesForNote(unsigned char instrumentID, unsigned char windowIndex, unsigned char * data);
     virtual void setDataReference(unsigned char * dataReference);
-    virtual void getAllInstrumentActivesFor16Steps(unsigned char windowIndex, ActiveMultiStatus * result);
+    virtual void getAllInstrumentActivesFor16Steps(unsigned char fromIndex, ActiveMultiStatus * result);
     virtual void getActiveWindowBitArray(unsigned char instrument, bool * result);
     virtual void getAllInstrumentsActiveWindowBitArray(bool * result);
     virtual void makeActiveUpTo(unsigned char instrument, unsigned char indexUpTo);
