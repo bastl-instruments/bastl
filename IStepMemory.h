@@ -13,8 +13,8 @@ public:
     virtual void getActivesAndMutesForNote(unsigned char instrumentID, unsigned char windowIndex, unsigned char * data) = 0;
     virtual void setDataReference(unsigned char * dataReference) = 0;
     virtual void getAllInstrumentActivesFor16Steps(unsigned char windowIndex, ActiveMultiStatus * result) = 0;
-    virtual void getActiveWindowBitArray(unsigned char instrument, bool * result);
-    virtual void getAllInstrumentsActiveWindowBitArray(bool * result);
+    virtual void getActiveWindowBitArray(unsigned char instrument, bool * result) = 0;
+    virtual void getAllInstrumentsActiveWindowBitArray(bool * result) = 0;
     virtual void makeActiveUpTo(unsigned char instrument, unsigned char indexUpTo) = 0;
     virtual void makeAllInstrumentsActiveUpTo(unsigned char indexUpTo) = 0;
     virtual void clearStepsForInstrument(unsigned char instrument) = 0;

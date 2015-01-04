@@ -12,11 +12,11 @@
 
 class ITapper {
 public:
-	virtual void tap(uint16_t tapTime);
-	virtual void setStepsPerTap(uint8_t stepsPerTap);
-	virtual uint16_t getTimeUnitsPerStep();
-	virtual void setStepCallBack(void (*makeStep)());
-	virtual bool anyStepDetected();
+	virtual void tap(uint16_t tapTime) = 0;
+	virtual void setStepsPerTap(uint8_t stepsPerTap) = 0;
+	virtual uint16_t getTimeUnitsPerStep() = 0;
+	virtual void setStepCallBack(void (*makeStep)()) = 0;
+	virtual bool anyStepDetected() = 0;
 
 };
 
