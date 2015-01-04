@@ -21,6 +21,7 @@ class NoVelocityStepMemory : public IStepMemory
 {
 public:
 	NoVelocityStepMemory();
+	virtual ~NoVelocityStepMemory();
     virtual DrumStep getDrumStep( unsigned char instrumentID, unsigned char step);
     virtual bool getNextActiveDrumStep( unsigned char instrumentID, unsigned char & step, DrumStep & drumStep);
     virtual bool setDrumStep(unsigned char instrumentID, unsigned char step, DrumStep stepData);
@@ -37,10 +38,20 @@ public:
     virtual void copyPan(unsigned char instrumentID, unsigned char panFrom, unsigned char panTo);
 private:
     unsigned char * data_;
+    void getDrumStepDataPointers(unsigned char instrumentID, unsigned char step,
+    										   unsigned char *& mutes, unsigned char *& actives,
+    										   unsigned char *& data);
+    unsigned int getInstrumentDataOffset(unsigned char instrumentID);
 };
 
 inline void NoVelocityStepMemory::setDataReference(unsigned char * dataReference) {
 	data_ = dataReference;
+}
+
+
+inline unsigned int NoVelocityStepMemory::getInstrumentDataOffset(unsigned char instrumentID) {
+	// 64 steps, 6 bits per step = 384 bits = 48 bytes
+	return (unsigned int)instrumentID * 48;
 }
 
 #endif // FLASHSTEPMEMORY_H
