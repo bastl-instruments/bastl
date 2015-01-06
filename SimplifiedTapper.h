@@ -14,7 +14,7 @@ class SimplifiedTapper {
 public:
 	SimplifiedTapper();
 	virtual ~SimplifiedTapper();
-	virtual void init(unsigned int maxStepLengthInTimeUnits = 200, unsigned int  maxStepDeviationInTImeUnits = 50);
+	virtual void init(unsigned int maxStepLengthInTimeUnits, unsigned int  maxStepDeviationInTImeUnits);
 	virtual void tap(unsigned int tapTime);
 	virtual void setStepsPerTap(unsigned char stepsPerTap);
 	virtual unsigned char getTimeUnitsPerStep();
@@ -45,7 +45,7 @@ inline void SimplifiedTapper::setStepCallBack(void (*makeStep)()) {
 }
 
 inline bool SimplifiedTapper::anyStepDetected() {
-	return stepsInRow_ != 0;
+	return stepsInRow_ > 1;
 }
 
 #endif /* TAPPER_H_ */
