@@ -100,15 +100,6 @@ inline void PlayerSettings::setMIDIVelocitiesForDrumVelocities(unsigned char upD
     normalDrumVelocity_ = normalDrumVelocity;
 }
 
-inline void PlayerSettings::setCurrentPattern(unsigned char pattern) {
-	if (currentPattern_ != pattern) {
-		currentPattern_ = pattern;
-		if (patternChangedCallback_) {
-			patternChangedCallback_(currentPattern_);
-		}
-	}
-}
-
 inline unsigned char PlayerSettings::getCurrentPattern() {
 	return currentPattern_;
 }
@@ -152,6 +143,13 @@ inline PlayerSettings::PlayerMode PlayerSettings::getPlayerMode() {
 	return playerMode_;
 }
 
+inline void PlayerSettings::setBPM(unsigned int bpm, bool raiseCallback) {
+	bpm_ = bpm;
+	if (raiseCallback && bpmChangedCallback_) {
+		bpmChangedCallback_(bpm);
+	}
+}
+
 inline void PlayerSettings::setPlayerMode(PlayerSettings::PlayerMode playerMode) {
 	playerMode_ = playerMode;
 	if (playerModeChangedCallback_) {
@@ -161,6 +159,10 @@ inline void PlayerSettings::setPlayerMode(PlayerSettings::PlayerMode playerMode)
 
 inline void PlayerSettings::setPlayerModeChangedCallback(void (*playerModeChangedCallback)(PlayerSettings::PlayerMode playerMode)) {
 	playerModeChangedCallback_ = playerModeChangedCallback;
+}
+
+inline unsigned char PlayerSettings::getMIDIVelocityFromDrumVelocity(DrumStep::DrumVelocityType type) {
+	return normalDrumVelocity_;
 }
 
 #endif // PLAYERSETTINGS_H

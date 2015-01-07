@@ -4,9 +4,7 @@
 //#define DEBUG
 
 #include "IStepMemory.h"
-#include "MIDICommand.h"
 #include "RackInstrumentDefinitions.h"
-#include "IMIDICommandProcessor.h"
 #include "PlayerSettings.h"
 #include "StepSynchronizer.h"
 
@@ -23,7 +21,13 @@
 class Player
 {
 public:
-    Player(IStepMemory * memory, IMIDICommandProcessor* midiProcessor, PlayerSettings * settings, StepSynchronizer * synchronizer);
+    Player(IStepMemory * memory,
+    	   PlayerSettings * settings,
+    	   StepSynchronizer * synchronizer,
+    	   void (*instrumentEventCallback)(unsigned char instrumentID,
+    			   	   	   	   	   	   	   DrumStep::DrumVelocityType velocityType,
+    			   	   	   	   	   	   	   bool isOn)
+    	   );
     void stepFourth();
     unsigned char getCurrentInstrumentStep(unsigned char instrumentID);
     void setCurrentInstrumentStep(unsigned char instrumentID, unsigned char step);
@@ -35,13 +39,12 @@ public:
     void resetAllInstruments();
 private:
     IStepMemory * memory_;
-    IMIDICommandProcessor * midiProcessor_;
     PlayerSettings * settings_;
     StepSynchronizer * synchronizer_;
     unsigned char currentSteps_[INSTRUMENTS];
     unsigned char playingInstruments[ALL_INSTRUMENTS_IN_BYTES];
     bool isStopped_;
-
+    void (*instrumentEventCallback_)(unsigned char instrumentID, DrumStep::DrumVelocityType velocityType, bool isOn);
     void stepDrumInstruments();
     bool isInstrumentPlaying(unsigned char instrumentID);
     void setInstrumentPlaying(unsigned char instrumentID, bool isPlaying);
@@ -85,5 +88,4 @@ inline void Player::setInstrumentPlaying(unsigned char instrumentID, bool isPlay
         playingInstruments[instrumentID / 8] = playingInstruments[instrumentID / 8] & ~(1 << (instrumentID % 8));
     }
 }
-
 #endif // PLAYER_H

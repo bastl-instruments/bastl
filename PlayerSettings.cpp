@@ -54,7 +54,7 @@ void PlayerSettings::setInstrumentChannel(Step::InstrumentType type, unsigned ch
 
 
 
-unsigned char PlayerSettings::getMIDIVelocityFromDrumVelocity(DrumStep::DrumVelocityType type) {
+/*unsigned char PlayerSettings::getMIDIVelocityFromDrumVelocity(DrumStep::DrumVelocityType type) {
     switch (type) {
         case DrumStep::UP:
             return upDrumVelocity_;
@@ -68,7 +68,8 @@ unsigned char PlayerSettings::getMIDIVelocityFromDrumVelocity(DrumStep::DrumVelo
         default:
             return 0;
     }
-}
+	return normalDrumVelocity_;
+}*/
 
 bool PlayerSettings::getDrumInstrumentIndexFromMIDIMessage(unsigned char channel, unsigned char note, unsigned char & drumInstrumentID) {
 	for (unsigned char instrumentID = 0; instrumentID < DRUM_INSTRUMENTS; instrumentID++) {
@@ -82,9 +83,11 @@ bool PlayerSettings::getDrumInstrumentIndexFromMIDIMessage(unsigned char channel
 	return false;
 }
 
-void PlayerSettings::setBPM(unsigned int bpm, bool raiseCallback) {
-	bpm_ = bpm;
-	if (raiseCallback && bpmChangedCallback_) {
-		bpmChangedCallback_(bpm);
+void PlayerSettings::setCurrentPattern(unsigned char pattern) {
+	if (currentPattern_ != pattern) {
+		currentPattern_ = pattern;
+		if (patternChangedCallback_) {
+			patternChangedCallback_(currentPattern_);
+		}
 	}
 }
