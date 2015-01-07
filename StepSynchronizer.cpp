@@ -7,5 +7,5 @@
 
 #include "StepSynchronizer.h"
 
-StepSynchronizer::StepSynchronizer() : cycleLength_(1), currentStepNumber_ (0) {
+StepSynchronizer::StepSynchronizer() : cycleLength_(256), currentStepNumber_ (0) {
 }
