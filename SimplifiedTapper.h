@@ -10,14 +10,14 @@
 
 #include "ITapper.h"
 
-class SimplifiedTapper {
+class SimplifiedTapper : public ITapper {
 public:
 	SimplifiedTapper();
 	virtual ~SimplifiedTapper();
 	virtual void init(unsigned int maxStepLengthInTimeUnits, unsigned int  maxStepDeviationInTImeUnits);
 	virtual void tap(unsigned int tapTime);
 	virtual void setStepsPerTap(unsigned char stepsPerTap);
-	virtual unsigned char getTimeUnitsPerStep();
+	virtual unsigned int getTimeUnitsPerStep();
 	virtual void setStepCallBack(void (*makeStep)());
 	virtual bool anyStepDetected();
 	unsigned int lastTapTime;
@@ -36,7 +36,7 @@ inline void SimplifiedTapper::setStepsPerTap(unsigned char stepsPerTap) {
 	stepsPerTap_ = stepsPerTap;
 }
 
-inline unsigned char SimplifiedTapper::getTimeUnitsPerStep() {
+inline unsigned int SimplifiedTapper::getTimeUnitsPerStep() {
 	return currentTapTime_ / stepsPerTap_;
 }
 
