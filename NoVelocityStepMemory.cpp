@@ -139,9 +139,8 @@ void NoVelocityStepMemory::getAllInstrumentsActiveWindowBitArray(bool * result) 
 
 void NoVelocityStepMemory::makeActiveUpTo(unsigned char instrument, unsigned char indexUpTo) {
 	for (int stepIndex = 0; stepIndex < 64; stepIndex++) {
-		bool newState = stepIndex <= indexUpTo;
 		DrumStep step = getDrumStep(instrument, stepIndex);
-		step.setActive(newState);
+		step.setActive(stepIndex <= indexUpTo);
 		setDrumStep(instrument, stepIndex, step);
 	}
 }
