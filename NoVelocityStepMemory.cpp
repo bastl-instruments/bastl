@@ -21,12 +21,12 @@ NoVelocityStepMemory::~NoVelocityStepMemory()
 void NoVelocityStepMemory::getDrumStepDataPointers(unsigned char instrumentID, unsigned char step,
 										   unsigned char *& mutes, unsigned char *& actives,
 										   unsigned char *& data) {
-	unsigned char byteIndex = step / 8;
-	unsigned int instrumentOffset  = getInstrumentDataOffset(instrumentID);
 
-	actives = &data_[instrumentOffset + byteIndex];
-	mutes = &data_[instrumentOffset + byteIndex + 8];
-	data = &data_[instrumentOffset + 16 + (step / 2)];
+	unsigned int offset  = getDataOffset(instrumentID, step / 16);
+
+	actives = &data_[offset + (step / 8) % 2 ];
+	mutes = &data_[offset + 2 + (step / 8) % 2];
+	data = &data_[offset + 4 + ((step % 16) / 2)];
 }
 
 DrumStep NoVelocityStepMemory::getDrumStep(unsigned char instrumentID, unsigned char step)
@@ -88,14 +88,10 @@ bool NoVelocityStepMemory::setDrumStep(unsigned char instrumentID, unsigned char
     return true;
 }
 
-void NoVelocityStepMemory::getActivesAndMutesForNote(unsigned char instrumentID, unsigned char windowIndex, unsigned char * data) {
+void NoVelocityStepMemory::getActivesAndMutesForNote(unsigned char instrumentID, unsigned char windowIndex, unsigned char *& data) {
 
-	unsigned int instrumentOffset  = getInstrumentDataOffset(instrumentID);
-
-	data[0] = data_[instrumentOffset + windowIndex];
-	data[1] = data_[instrumentOffset + windowIndex + 1];
-	data[2] = data_[instrumentOffset + windowIndex + 8];
-	data[3] = data_[instrumentOffset + windowIndex + 9];
+	unsigned int offset  = getDataOffset(instrumentID, windowIndex);
+	data = &data_[offset];
 }
 
 void NoVelocityStepMemory::getAllInstrumentActivesFor16Steps(unsigned char fromIndex, ActiveMultiStatus * result) {
@@ -122,8 +118,8 @@ void NoVelocityStepMemory::getAllInstrumentActivesFor16Steps(unsigned char fromI
 
 void NoVelocityStepMemory::getActiveWindowBitArray(unsigned char instrument, bool * result) {
 	for (unsigned char pan = 0; pan < 4; pan++) {
-		unsigned int instrumentOffset  = getInstrumentDataOffset(instrument);
-		result[pan] = (data_[instrumentOffset + pan * 2] != 0) || (data_[instrumentOffset + pan * 2 + 1] != 0);
+		unsigned int offset  = getDataOffset(instrument, pan);
+		result[pan] = (data_[offset] != 0) || (data_[offset + 1] != 0);
 	}
 }
 
@@ -131,8 +127,8 @@ void NoVelocityStepMemory::getAllInstrumentsActiveWindowBitArray(bool * result) 
 	result[0] = result[1] = result[2] = result[3] = false;
 	for (unsigned char instrument = 0; instrument < 6; instrument++) {
 		for (unsigned char pan = 0; pan < 4; pan++) {
-			unsigned int instrumentOffset  = getInstrumentDataOffset(instrument);
-			result[pan] = result[pan] || (data_[instrumentOffset + pan * 2] != 0) || (data_[instrumentOffset + pan * 2 + 1] != 0);
+			unsigned int offset  = getDataOffset(instrument, pan);
+			result[pan] = result[pan] || (data_[offset] != 0) || (data_[offset + 1] != 0);
 		}
 	}
 }
@@ -152,36 +148,6 @@ void NoVelocityStepMemory::makeAllInstrumentsActiveUpTo(unsigned char indexUpTo)
 
 }
 
-bool NoVelocityStepMemory::isInDefaultState(unsigned char instrumentID) {
-
-	unsigned int instrumentOffset  = getInstrumentDataOffset(instrumentID);
-	for (unsigned char index = 2; index < 8; index++) {
-		if (data_[instrumentOffset + 8 + index] != 255) {
-			return false;
-		}
-	}
-	//go through all the steps (1 step = 4 bits)
-	for (unsigned char step = 8; step < 32; step++) {
-		if (data_[instrumentOffset + 16 + step] != 0) {
-			return false;
-		}
-	}
-	return true;
-}
-
-void NoVelocityStepMemory::copyPan(unsigned char instrumentID, unsigned char panFrom, unsigned char panTo) {
-
-	unsigned int instrumentOffset  = getInstrumentDataOffset(instrumentID);
-
-	data_[instrumentOffset + 8 + panTo * 2] = data_[instrumentOffset + 8 + panFrom * 2];
-	data_[instrumentOffset + 8 + panTo * 2 + 1] = data_[instrumentOffset + 8 + panFrom * 2 + 1];
-
-	// copy 16 steps (4 bits per step = 8 bytes)
-	for (unsigned char step = 0; step < 8; step++) {
-		data_[instrumentOffset + 16 + panTo * 8 + step] = data_[instrumentOffset + 16 + panFrom * 8 + step];
-	}
-}
-
 void NoVelocityStepMemory::clearStepsForInstrument(unsigned char instrument) {
 	for (unsigned char step = 0; step < 64; step++) {
 		DrumStep stepData = getDrumStep(instrument, step);
@@ -197,4 +163,9 @@ void NoVelocityStepMemory::clearStepsForAllInstruments() {
 	for (unsigned char instrument = 0; instrument < 6; instrument++) {
 		clearStepsForInstrument(instrument);
 	}
+}
+
+unsigned int NoVelocityStepMemory::getDataOffset(unsigned char instrumentID, unsigned char pan) {
+	// 64 steps, 6 bits per step = 384 bits = 48 bytes
+	return (unsigned int)instrumentID * 48 + (unsigned int)pan * 12;
 }
