@@ -37,6 +37,8 @@ public:
     unsigned char getCurrentInstrumentSubStep(unsigned char instrumentID);
     void playNote(unsigned char instrumentID, DrumStep::DrumVelocityType velocityType);
     void resetAllInstruments();
+    void startLoop(unsigned char step);
+    void stopLoop();
 private:
     IStepMemory * memory_;
     PlayerSettings * settings_;
@@ -44,6 +46,8 @@ private:
     unsigned char currentSteps_[INSTRUMENTS];
     unsigned char playingInstruments[ALL_INSTRUMENTS_IN_BYTES];
     bool isStopped_;
+    bool inLoop_;
+    unsigned char loopedStep_;
     void (*instrumentEventCallback_)(unsigned char instrumentID, DrumStep::DrumVelocityType velocityType, bool isOn);
     void stepDrumInstruments();
     bool isInstrumentPlaying(unsigned char instrumentID);
@@ -51,6 +55,15 @@ private:
     void sendNoteOffIfPlaying(unsigned char instrumentID);
 
 };
+
+inline void Player::startLoop(unsigned char step) {
+	inLoop_ = true;
+	loopedStep_ = step;
+}
+
+inline void Player::stopLoop() {
+	inLoop_ = false;
+}
 
 inline unsigned char Player::getCurrentInstrumentStep(unsigned char instrumentID) {
 	return currentSteps_[instrumentID] / 4;
@@ -63,7 +76,6 @@ inline void Player::setCurrentInstrumentStep(unsigned char instrumentID, unsigne
 inline unsigned char Player::getCurrentInstrumentSubStep(unsigned char instrumentID) {
 	return currentSteps_[instrumentID] % 4;
 }
-
 
 inline bool Player::isInstrumentPlaying(unsigned char instrumentID)
 {

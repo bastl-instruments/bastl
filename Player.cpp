@@ -11,6 +11,8 @@ Player::Player(IStepMemory * memory,
 			   	   settings_(settings),
 			   	   synchronizer_(synchronizer),
 			   	   isStopped_(true),
+			   	   inLoop_(false),
+			   	   loopedStep_(6),
 			   	   instrumentEventCallback_(instrumentEventCallback)
 {
     for (unsigned char i = 0; i < INSTRUMENTS; i++) {
@@ -58,21 +60,25 @@ void Player::stepDrumInstruments()
             //printf("calling currentStep on for %i index is %i \n", i, nextStepIndex);
             nextStep = memory_->getDrumStep(i, nextStepIndex);
         } else {
-            unsigned char currentStepIndex = nextSubStepIndex / 4;
-            //printf("calling nextStep on for %i index is %i \n", i, currentStepIndex);
-            nextStepExists = memory_->getNextActiveDrumStep(i, currentStepIndex, nextStep);
-            //if (nextStepExists) printf("NextStepExists index %i\n", currentStepIndex);
-            nextSubStepIndex = 4 * currentStepIndex;
+        	if (inLoop_) {
+        		nextStep = memory_->getDrumStep(i, loopedStep_);
+        		nextSubStepIndex = 4 * loopedStep_;
+        	} else {
+        		unsigned char currentStepIndex = nextSubStepIndex / 4;
+        		//printf("calling nextStep on for %i index is %i \n", i, currentStepIndex);
+        		nextStepExists = memory_->getNextActiveDrumStep(i, currentStepIndex, nextStep);
+        		//if (nextStepExists) printf("NextStepExists index %i\n", currentStepIndex);
+        		nextSubStepIndex = 4 * currentStepIndex;
+        	}
         }
     	sendNoteOffIfPlaying(i);
         if (nextStepExists) {
-            if (settings_->isInstrumentOn(Step::DRUM, i)) {
-                if (!nextStep.isMuted()) {
-                    DrumStep::DrumVelocityType type = nextStep.getSubStep(nextSubStepIndex % 4);
-                    if (type != DrumStep::OFF) {
-                    	playNote(i, type) ;
-                    }
+            if (settings_->isInstrumentOn(Step::DRUM, i) && !nextStep.isMuted() && nextStep.isActive()) {
+                DrumStep::DrumVelocityType type = nextStep.getSubStep(nextSubStepIndex % 4);
+                if (type != DrumStep::OFF) {
+                	playNote(i, type) ;
                 }
+
             }
             currentSteps_[i] = nextSubStepIndex;
         }
