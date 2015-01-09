@@ -39,7 +39,7 @@ public:
 
     bool getDrumInstrumentIndexFromMIDIMessage(unsigned char channel, unsigned char note, unsigned char & drumInstrumentID);
 
-    void setPatternChangedCallback(void (*patternChangedCallback)(unsigned char patternIndex));
+    void setPatternChangedCallback(void (*patternChangedCallback)(unsigned char originalPatternIndex, unsigned char newPatternIndex));
 
     MultiplicationType getMultiplication();
     void setMultiplication(MultiplicationType multiplication);
@@ -62,7 +62,7 @@ private:
     unsigned char downDrumVelocity_;
     unsigned char normalDrumVelocity_;
     unsigned char currentPattern_;
-    void (*patternChangedCallback_)(unsigned char patternIndex);
+    void (*patternChangedCallback_)(unsigned char originalPatternIndex, unsigned char newPatternIndex);
     QuantizationType recordQunatizationType_;
     MultiplicationType multiplication_;
     void (*multiplicationChangedCallback_)(MultiplicationType multiplication);
@@ -104,7 +104,7 @@ inline unsigned char PlayerSettings::getCurrentPattern() {
 	return currentPattern_;
 }
 
-inline void PlayerSettings::setPatternChangedCallback(void (*patternChangedCallback)(unsigned char patternIndex)) {
+inline void PlayerSettings::setPatternChangedCallback(void (*patternChangedCallback)(unsigned char originalPatternIndex, unsigned char newPatternIndex)) {
 	patternChangedCallback_ = patternChangedCallback;
 }
 

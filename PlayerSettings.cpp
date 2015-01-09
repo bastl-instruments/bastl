@@ -84,10 +84,11 @@ bool PlayerSettings::getDrumInstrumentIndexFromMIDIMessage(unsigned char channel
 }
 
 void PlayerSettings::setCurrentPattern(unsigned char pattern) {
+	unsigned char originalPattern = currentPattern_;
 	if (currentPattern_ != pattern) {
 		currentPattern_ = pattern;
 		if (patternChangedCallback_) {
-			patternChangedCallback_(currentPattern_);
+			patternChangedCallback_(originalPattern, currentPattern_);
 		}
 	}
 }
