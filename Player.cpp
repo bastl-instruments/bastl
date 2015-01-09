@@ -73,7 +73,7 @@ void Player::stepDrumInstruments()
         }
     	sendNoteOffIfPlaying(i);
         if (nextStepExists) {
-            if (settings_->isInstrumentOn(Step::DRUM, i) && !nextStep.isMuted() && nextStep.isActive()) {
+            if (settings_->isInstrumentOn(i) && !nextStep.isMuted() && nextStep.isActive()) {
                 DrumStep::DrumVelocityType type = nextStep.getSubStep(nextSubStepIndex % 4);
                 if (type != DrumStep::OFF) {
                 	playNote(i, type) ;

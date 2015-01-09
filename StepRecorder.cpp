@@ -86,7 +86,7 @@ void StepRecorder::stopRecordNote(unsigned char instrumentIndex) {
 
 void StepRecorder::recordMIDINote(unsigned char channel, unsigned char note) {
 	unsigned char instrumentID = 0;
-	bool instrumentMapped = playerSettings_->getDrumInstrumentIndexFromMIDIMessage(channel, note, instrumentID);
+	bool instrumentMapped = false;//playerSettings_->getDrumInstrumentIndexFromMIDIMessage(channel, note, instrumentID);
 	if (instrumentMapped) {
 		startRecordNote(instrumentID);
 		stopRecordNote(instrumentID);
