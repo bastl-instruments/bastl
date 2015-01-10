@@ -42,10 +42,6 @@ void RadioButtons::setSelectedButton(unsigned char selectedButton) {
 	buttonSelected_ = true;
 }
 
-void RadioButtons::resetSelection() {
-	buttonSelected_ = false;
-}
-
 
 bool RadioButtons::getSelectedButton(unsigned char &selectedButton)
 {

@@ -17,6 +17,14 @@
 class BitArrayOperations {
 
 public:
+	static void setBit(unsigned int & bitArray, unsigned char bitIndex, bool value) {
+		if (value) {
+			bitArray = bitArray | (1 << bitIndex);
+		} else {
+			bitArray = bitArray & ~(1 << bitIndex);
+		}
+	}
+
 	static void setBit(unsigned char & bitArray, unsigned char bitIndex, bool value) {
 		if (value) {
 			bitArray = bitArray | (1 << bitIndex);

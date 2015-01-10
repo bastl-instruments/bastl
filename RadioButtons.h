@@ -23,4 +23,8 @@ protected:
     bool buttonSelected_;
 };
 
+inline void RadioButtons::resetSelection() {
+	buttonSelected_ = false;
+}
+
 #endif // RADIOBUTTONS_H
