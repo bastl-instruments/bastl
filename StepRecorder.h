@@ -19,7 +19,7 @@ public:
 	void init(Player * player, IStepMemory * memory, PlayerSettings * playerSettings, BastlStepper * stepper);
 	void update();
 	void record(bool record);
-	void startRecordNote(unsigned char instrumentIndex);
+	unsigned int startRecordNote(unsigned char instrumentIndex);
 	void stopRecordNote(unsigned char instrumentIndex);
 	void recordMIDINote(unsigned char channel, unsigned char note);
 	void setCurrentStepper(BastlStepper * stepper);

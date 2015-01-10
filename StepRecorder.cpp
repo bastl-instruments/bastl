@@ -37,13 +37,14 @@ unsigned char StepRecorder::getCurrentQuantizedSubstep(unsigned char instrumentI
 	return (unsigned char) doubleSubstepValue;
 }
 
-void StepRecorder::startRecordNote(unsigned char instrumentIndex) {
+unsigned int StepRecorder::startRecordNote(unsigned char instrumentIndex) {
 
 	recordInstrumentStatuses_[instrumentIndex] = true;
 	if (playerSettings_->getDrumInstrumentEventType(instrumentIndex) == PlayerSettings::TRIGGER) {
 		stopRecordNote(instrumentIndex);
 	}
 	player_->playNote(instrumentIndex, DrumStep::NORMAL);
+	return getCurrentQuantizedSubstep(instrumentIndex);
 }
 
 void StepRecorder::update() {
