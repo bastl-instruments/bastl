@@ -16,6 +16,7 @@ public:
 	enum ButtonState{UP, DOWN};
 
     virtual ButtonState getButtonState(unsigned char index) = 0;
+    virtual bool isButtonDown(unsigned char index) = 0;
 
 };
 
