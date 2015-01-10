@@ -147,9 +147,14 @@ inline PlayerSettings::PlayerMode PlayerSettings::getPlayerMode() {
 }
 
 inline void PlayerSettings::setBPM(unsigned int bpm, bool raiseCallback) {
-	bpm_ = bpm;
-	if (raiseCallback && bpmChangedCallback_) {
-		bpmChangedCallback_(bpm);
+	if (bpm_ != bpm) {
+		bpm_ = bpm;
+		if (raiseCallback && bpmChangedCallback_) {
+			bpmChangedCallback_(bpm);
+		}
+		if (settingsChangedCallback_) {
+			settingsChangedCallback_();
+		}
 	}
 }
 

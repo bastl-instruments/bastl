@@ -33,6 +33,8 @@ void PlayerSettings::getInByteArray(unsigned char * data) {
 	data[3] = (unsigned char)recordQunatizationType_;
 	data[4] = (unsigned char)multiplication_;
 	data[5] = playerMode_;
+	data[6] = (unsigned char)bpm_;
+	data[7] = (unsigned char)(bpm_ >> 8);
 }
 
 void PlayerSettings::loadFromByteArray(unsigned char * data) {
@@ -42,4 +44,6 @@ void PlayerSettings::loadFromByteArray(unsigned char * data) {
 	recordQunatizationType_ = 	(QuantizationType)(data[3]);
 	multiplication_ = 			(MultiplicationType)(data[4]);
 	playerMode_ = 				(PlayerMode)(data[5]);
+	bpm_ = 						data[6];
+	bpm_ +=						(((unsigned int)data[7]) << 8);
 }
