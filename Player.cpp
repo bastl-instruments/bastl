@@ -28,12 +28,25 @@ void Player::stepFourth()
     stepDrumInstruments();
 }
 
+void Player::update(unsigned int elapsedTimeUnits) {
+	if (isStopped_ && (elapsedTimeUnits - lastDummyPlayInstrumentTimeUnits_) > 20) {
+		resetAllInstruments();
+	}
+	lastElapsedTimeUnits_ = elapsedTimeUnits;
+}
+
 void Player::playNote(unsigned char instrumentID, DrumStep::DrumVelocityType velocityType) {
 	sendNoteOffIfPlaying(instrumentID);
-	if (instrumentEventCallback_) {
+	if (isStopped_) {
 		instrumentEventCallback_(instrumentID, velocityType, true);
+		setInstrumentPlaying(instrumentID, true);
+		lastDummyPlayInstrumentTimeUnits_ = lastElapsedTimeUnits_;
+	} else {
+		if (instrumentEventCallback_) {
+			instrumentEventCallback_(instrumentID, velocityType, true);
+		}
+		setInstrumentPlaying(instrumentID, true);
 	}
-	setInstrumentPlaying(instrumentID, true);
 }
 
 void Player::sendNoteOffIfPlaying(unsigned char instrumentID) {

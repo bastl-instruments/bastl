@@ -39,6 +39,8 @@ public:
     void resetAllInstruments();
     void startLoop(unsigned char step);
     void stopLoop();
+    bool isPlaying();
+    void update(unsigned int elapsedTimeUnits);
 private:
     IStepMemory * memory_;
     PlayerSettings * settings_;
@@ -49,6 +51,8 @@ private:
     bool inLoop_;
     unsigned char loopedStep_;
     void (*instrumentEventCallback_)(unsigned char instrumentID, DrumStep::DrumVelocityType velocityType, bool isOn);
+    unsigned int lastElapsedTimeUnits_;
+    unsigned int lastDummyPlayInstrumentTimeUnits_;
     void stepDrumInstruments();
     bool isInstrumentPlaying(unsigned char instrumentID);
     void setInstrumentPlaying(unsigned char instrumentID, bool isPlaying);
@@ -99,5 +103,9 @@ inline void Player::setInstrumentPlaying(unsigned char instrumentID, bool isPlay
 #endif
         playingInstruments[instrumentID / 8] = playingInstruments[instrumentID / 8] & ~(1 << (instrumentID % 8));
     }
+}
+
+inline bool Player::isPlaying() {
+	return !isStopped_;
 }
 #endif // PLAYER_H
