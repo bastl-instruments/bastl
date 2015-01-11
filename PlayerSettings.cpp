@@ -12,17 +12,20 @@ PlayerSettings::PlayerSettings() : drumInstrumentEventTypes_(0),
 								   playerModeChangedCallback_(0)
 {}
 
+void PlayerSettings::resetManipulatedPatterns() {
+	for (unsigned char pattern = 0; pattern < 4; pattern++) {
+		manipulatedPatterns_[pattern] = 0;
+	}
+	SETBIT(manipulatedPatterns_[currentPattern_ / 16], currentPattern_ % 16, true);
+}
 
 void PlayerSettings::setCurrentPattern(unsigned char pattern) {
 	unsigned char originalPattern = currentPattern_;
 	if (currentPattern_ != pattern) {
 		currentPattern_ = pattern;
-		if (patternChangedCallback_) {
-			patternChangedCallback_(originalPattern, currentPattern_);
-		}
-		if (settingsChangedCallback_) {
-			settingsChangedCallback_();
-		}
+		SETBIT(manipulatedPatterns_[pattern / 16], pattern % 16, true);
+		patternChangedCallback_(originalPattern, currentPattern_);
+		settingsChangedCallback_();
 	}
 }
 
@@ -46,4 +49,5 @@ void PlayerSettings::loadFromByteArray(unsigned char * data) {
 	playerMode_ = 				(PlayerMode)(data[5]);
 	bpm_ = 						data[6];
 	bpm_ +=						(((unsigned int)data[7]) << 8);
+	resetManipulatedPatterns();
 }

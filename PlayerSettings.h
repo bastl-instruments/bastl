@@ -46,7 +46,8 @@ public:
     void getInByteArray(unsigned char * data);
 
     void setSettingsChangedCallback(void (*settingsChangedCallback)());
-
+    unsigned int * getManipulatedPatternsBitArray();
+    void resetManipulatedPatterns();
 private:
     unsigned char drumInstrumentEventTypes_;
     unsigned char instrumentStatuses_;
@@ -60,16 +61,19 @@ private:
     PlayerMode playerMode_;
     void (*playerModeChangedCallback_)(PlayerMode playerMode);
     void (*settingsChangedCallback_)();
+    unsigned int manipulatedPatterns_[4];
 
 };
+
+inline unsigned int * PlayerSettings::getManipulatedPatternsBitArray() {
+	return manipulatedPatterns_;
+}
 
 inline void PlayerSettings::setInstrumentOn(unsigned char instrumentID, bool isOn)
 {
 	if (isInstrumentOn(instrumentID) != isOn) {
 		BitArrayOperations::setBit(instrumentStatuses_, instrumentID, isOn);
-		if (settingsChangedCallback_) {
-			settingsChangedCallback_();
-		}
+		settingsChangedCallback_();
 	}
 }
 
@@ -87,9 +91,7 @@ inline void PlayerSettings::setDrumInstrumentEventType(unsigned char instrumentI
 {
 	if (getDrumInstrumentEventType(instrumentID) != eventType) {
 		SETBIT(drumInstrumentEventTypes_, instrumentID, eventType == GATE);
-		if (settingsChangedCallback_) {
-			settingsChangedCallback_();
-		}
+		settingsChangedCallback_();
 	}
 }
 
@@ -108,9 +110,7 @@ inline PlayerSettings::QuantizationType PlayerSettings::getRecordQuantizationTyp
 inline void PlayerSettings::setRecordQuantizationType(PlayerSettings::QuantizationType quatizationType) {
 	if (recordQunatizationType_ != quatizationType) {
 		recordQunatizationType_ = quatizationType;
-		if (settingsChangedCallback_) {
-			settingsChangedCallback_();
-		}
+		settingsChangedCallback_();
 	}
 }
 
@@ -121,12 +121,8 @@ inline PlayerSettings::MultiplicationType PlayerSettings::getMultiplication() {
 inline void PlayerSettings::setMultiplication(PlayerSettings::MultiplicationType multiplication) {
 	if (multiplication_ != multiplication) {
 		multiplication_ = multiplication;
-		if (multiplicationChangedCallback_ != 0) {
-			multiplicationChangedCallback_(multiplication_);
-		}
-		if (settingsChangedCallback_) {
-			settingsChangedCallback_();
-		}
+		multiplicationChangedCallback_(multiplication_);
+		settingsChangedCallback_();
 	}
 }
 
@@ -149,24 +145,18 @@ inline PlayerSettings::PlayerMode PlayerSettings::getPlayerMode() {
 inline void PlayerSettings::setBPM(unsigned int bpm, bool raiseCallback) {
 	if (bpm_ != bpm) {
 		bpm_ = bpm;
-		if (raiseCallback && bpmChangedCallback_) {
+		if (raiseCallback) {
 			bpmChangedCallback_(bpm);
 		}
-		if (settingsChangedCallback_) {
-			settingsChangedCallback_();
-		}
+		settingsChangedCallback_();
 	}
 }
 
 inline void PlayerSettings::setPlayerMode(PlayerSettings::PlayerMode playerMode) {
 	if (playerMode_ != playerMode) {
 		playerMode_ = playerMode;
-		if (playerModeChangedCallback_) {
-			playerModeChangedCallback_(playerMode_);
-		}
-		if (settingsChangedCallback_) {
-			settingsChangedCallback_();
-		}
+		playerModeChangedCallback_(playerMode_);
+		settingsChangedCallback_();
 	}
 }
 
