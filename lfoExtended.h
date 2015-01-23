@@ -172,8 +172,8 @@ uint8_t lfoExtended<UPDATEFREQ>::getCurrentValue() {
 			if (currentTime != 0) {
 				currentTime--;
 			} else {
-				currentSlope = rand((char)-maxStepSize,(char)maxStepSize);
-				currentTime = rand(minTime,maxTime);
+			//	currentSlope = rand((char)-maxStepSize,(char)maxStepSize);
+			//	currentTime = rand(minTime,maxTime);
 			}
 
 
