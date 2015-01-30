@@ -22,13 +22,13 @@ int main( int argc, const char* argv[] ) {
 		LFOs[index].setWaveform(RANDOM,false,false);
 		LFOs[index].setToStep(0,40);
 		LFOs[index].setResolution(0);
-		LFOs[index].setThreshold(100);
+		LFOs[index].setThreshold(255);
 	}
 
 
 	uint32_t timeStamp = 0;
 
-	for (uint16_t index=0; index < 200; index++) {
+	for (uint16_t index=0; index < 100; index++) {
 		timeStamp += 1;
 
 		printf("%u ",timeStamp);
