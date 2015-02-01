@@ -15,6 +15,8 @@ class simpleSerialDecoder {
 	public:
 		void init(uint16_t baudrate);
 		void update();
+		void sendPairMessage();
+
 		void sendClock(uint8_t _number);
 		void sendStep(uint8_t _number);
 		void sendGate(uint8_t _number);
@@ -22,6 +24,7 @@ class simpleSerialDecoder {
 		void sendStart(uint8_t _number);
 		void sendStop(uint8_t _number);
 		void sendRestart(uint8_t _number);
+		void sendSelect(uint8_t _number);
 
 		void sendChannelTrigger(uint8_t _channel, uint8_t _number);
 		void sendChannelGate(uint8_t _channel, uint8_t _number);
@@ -40,6 +43,7 @@ class simpleSerialDecoder {
 		void attachStartCallback(void(*startCallback)(uint8_t number));
 		void attachStopCallback(void(*stopCallback)(uint8_t number));
 		void attachRestartCallback(void(*restartCallback)(uint8_t number));
+		void attachSelectCallback(void(*selectCallback)(uint8_t number));
 		void attachChannelTriggerCallback(void(*channelTriggerCallback)(uint8_t channel, uint8_t number));
 		void attachChannelGateCallback(void(*channelGateCallback)(uint8_t channel, uint8_t number));
 		void attachChannelCVCallback(void(*channelCVCallback)(uint8_t channel, uint8_t number));
@@ -59,6 +63,7 @@ class simpleSerialDecoder {
 		void (*startCallback)(uint8_t number);
 		void (*stopCallback)(uint8_t number);
 		void (*restartCallback)(uint8_t number);
+		void (*selectCallback)(uint8_t number);
 		void (*channelTriggerCallback)(uint8_t channel, uint8_t number);
 		void (*channelGateCallback)(uint8_t channel, uint8_t number);
 		void (*channelCVCallback)(uint8_t channel, uint8_t number);

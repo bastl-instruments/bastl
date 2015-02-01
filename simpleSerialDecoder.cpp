@@ -16,6 +16,7 @@
 #define START 5
 #define STOP 6
 #define RESTART 7
+#define SELECT 8
 
 #define CHANNEL_TRIGGER 10
 #define CHANNEL_GATE 20
@@ -39,9 +40,11 @@ simpleSerialDecoder::simpleSerialDecoder(){
 void simpleSerialDecoder::init(uint16_t baudrate){
 	_serial.init(baudrate);
 }
-
+void simpleSerialDecoder::sendPairMessage(){
+	_serial.pairMessage();
+}
 void simpleSerialDecoder::sendClock(uint8_t _number=0){
-	_serial.transferMessage(CLOCK,_number);
+	_serial.transferMessage(CLOCK,CLOCK);
 }
 void simpleSerialDecoder::sendStep(uint8_t _number=0){
 	_serial.transferMessage(STEP,_number);
@@ -61,6 +64,10 @@ void simpleSerialDecoder::sendStop(uint8_t _number=0){
 }
 void simpleSerialDecoder::sendRestart(uint8_t _number=0){
 	_serial.transferMessage(RESTART,_number);
+}
+
+void simpleSerialDecoder::sendSelect(uint8_t _number=0){
+	_serial.transferMessage(SELECT,_number);
 }
 
 void simpleSerialDecoder::sendChannelTrigger(uint8_t _channel, uint8_t _number){
@@ -90,12 +97,15 @@ void simpleSerialDecoder::sendChannelValue(uint8_t _channel, uint8_t _value, uin
 
 
 void simpleSerialDecoder::update(){
-	if(_serial.recieveMessage()){
-	//	Serial.println("rcv");
+	while(_serial.recieveMessage()){
+
 		uint8_t _type=_serial.getMessageType();
 		uint8_t _value=_serial.getMessageValue();
 		switch(_type){
 		case CLOCK :
+			if(_value!=CLOCK){
+				_serial.sync();
+			}
 			if(clockInCallback!=0){
 				clockInCallback(_value);
 			}
@@ -130,6 +140,11 @@ void simpleSerialDecoder::update(){
 				restartCallback(_value);
 			}
 			break;
+		case SELECT:
+			if(selectCallback!=0){
+				selectCallback(_value);
+			}
+			break;
 		default:
 			if(_type>=CHANNEL_TRIGGER && _type < CHANNEL_TRIGGER+10){
 				if(channelTriggerCallback!=0){
@@ -139,6 +154,11 @@ void simpleSerialDecoder::update(){
 			else if(_type>=CHANNEL_GATE && _type < CHANNEL_GATE+10){
 				if(channelGateCallback!=0){
 					channelGateCallback(_type-CHANNEL_GATE,_value);
+				}
+			}
+			else if(_type>=CHANNEL_CV && _type < CHANNEL_CV+10){
+				if(channelCVCallback!=0){
+					channelCVCallback(_type-CHANNEL_CV,_value);
 				}
 			}
 			else if(_type>=CHANNEL_INTERPOLATE_FROM && _type < CHANNEL_INTERPOLATE_FROM+10){
@@ -197,6 +217,9 @@ void simpleSerialDecoder::attachStopCallback(void(*stopCallback)(uint8_t number)
 }
 void simpleSerialDecoder::attachRestartCallback(void(*restartCallback)(uint8_t number)){
 	this->restartCallback = restartCallback;
+}
+void simpleSerialDecoder::attachSelectCallback(void(*selectCallback)(uint8_t number)){
+	this->selectCallback = selectCallback;
 }
 void simpleSerialDecoder::attachChannelTriggerCallback(void(*channelTriggerCallback)(uint8_t channel, uint8_t number)){
 	this->channelTriggerCallback = channelTriggerCallback;

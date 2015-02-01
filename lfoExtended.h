@@ -16,7 +16,7 @@
 
 
 #include "fixedMath.h"
-#include "random.h"
+#include <random.h>
 
 typedef Q8n8 phaseType;
 const uint16_t numbSteps = 256;
@@ -28,47 +28,51 @@ enum LFOThresholdType {OVERFLOW,FOLDING};
 template <unsigned int UPDATEFREQ>
 class lfoExtended {
 
-public:
-	void init();
+	public:
+		void init();
 
-public:
-	void setFreq(phaseType freq);
-	void setWaveform(LFOBasicWaveform waveform, bool invert = false, bool flop = false, LFOThresholdType type = FOLDING);
-	void setPhase(uint8_t position);
-	void setToStart();
-	void setResolution(uint8_t numbStepsToSkip);
-	void setThreshold(uint8_t thres);
-	void setCurrentValue(uint8_t);
+	public:
+		void setFreq(phaseType freq);
+		void setPeriodInSteps(uint32_t steps);
+		void setWaveform(LFOBasicWaveform waveform, bool invert = false, bool flop = false, LFOThresholdType type = FOLDING);
+		void setPhase(uint8_t position);
+		void setToStart();
+		void setResolution(uint8_t numbStepsToSkip);
+		void setThreshold(uint8_t thres);
+		void setCurrentValue(uint8_t);
+		void sync();
 
-public:
-	LFOBasicWaveform getWaveform();
-	uint8_t getCurrentValue();
-	void step();
+	public:
+		LFOBasicWaveform getWaveform();
+		uint8_t getCurrentValue();
+		void step();
 
-	void dumpSettings();
+		void dumpSettings();
 
 
-private:
-	void incrementPhase();
-	//void calcCurrentValue();
+	private:
+		void incrementPhase();
+		//void calcCurrentValue();
 
-	LFOBasicWaveform currentWaveform;
-	bool invertWaveform;
-	bool flopWaveform;
+		LFOBasicWaveform currentWaveform;
+		bool invertWaveform;
+		bool flopWaveform;
 
-	phaseType currentPhase;
-	uint8_t currentValue;
+		phaseType currentPhase;
+		uint8_t currentValue;
 
-	uint8_t threshold;
-	LFOThresholdType thresholdType;
+		uint8_t threshold;
+		LFOThresholdType thresholdType;
 
-	phaseType phaseIncrement;
+		phaseType phaseIncrement;
 
-	uint8_t numbStepsToSkip;
-	uint8_t lastUnskippedStep;
+		uint8_t numbStepsToSkip;
+		uint8_t lastUnskippedStep;
 };
-
-
+template <unsigned int UPDATEFREQ>
+void lfoExtended<UPDATEFREQ>::sync(){
+	currentPhase=0;
+}
 
 template <unsigned int UPDATEFREQ>
 void lfoExtended<UPDATEFREQ>::init() {
@@ -86,6 +90,11 @@ void lfoExtended<UPDATEFREQ>::init() {
 template <unsigned int UPDATEFREQ>
 void lfoExtended<UPDATEFREQ>::setFreq(phaseType freq) {
 	phaseIncrement = (((uint32_t)freq*numbSteps))/UPDATEFREQ;
+	//Serial.println(phaseIncrement);
+}
+template <unsigned int UPDATEFREQ>
+void lfoExtended<UPDATEFREQ>::setPeriodInSteps(uint32_t steps) {
+	phaseIncrement = ((uint32_t)numbSteps<<numbFBits)/((uint32_t)steps);
 	//Serial.println(phaseIncrement);
 }
 
@@ -133,9 +142,6 @@ uint8_t lfoExtended<UPDATEFREQ>::getCurrentValue() {
 
 	const uint8_t flopBit = 3;
 
-
-
-
 	// calculate step from phase
 	uint8_t currentIndex = currentPhase>>numbFBits;
 
@@ -172,8 +178,8 @@ uint8_t lfoExtended<UPDATEFREQ>::getCurrentValue() {
 			if (currentTime != 0) {
 				currentTime--;
 			} else {
-			//	currentSlope = rand((char)-maxStepSize,(char)maxStepSize);
-			//	currentTime = rand(minTime,maxTime);
+				currentSlope = random((char)-maxStepSize,(char)maxStepSize);
+				currentTime = random(minTime,maxTime);
 			}
 
 
