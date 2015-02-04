@@ -55,7 +55,9 @@ void lfoExtended::setThreshold(uint8_t thres) {
 
 void lfoExtended::setToStep(uint8_t step, uint8_t timestamp) {
 	timestampOffset = timestamp - ((step*bastlCyclesPerPeriod)>>8);
+	#ifdef TESTING
 	printf("Offset: %u\n",timestampOffset);
+	#endif
 }
 
 
