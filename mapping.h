@@ -64,6 +64,14 @@ inline uint16_t mapProgmemU8U16(uint8_t input, const uint16_t table[]) {
 }
 #endif
 
+// General mapping from arduino
+
+int32_t map(int32_t x, int32_t in_min, int32_t in_max, int32_t out_min, int32_t out_max) {
+	return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+
+/********** Do we actually neeed this stuff? ************/
+
 
 // maps the range of a input byte to a given range of an unsigned int
 // this is fast but NOT fully reaching the end value!
