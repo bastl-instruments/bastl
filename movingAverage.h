@@ -8,17 +8,38 @@
 #ifndef MOVINGAVERAGE_H_
 #define MOVINGAVERAGE_H_
 
+// A linear Moving Average Class
+//
+// the size of the buffer is passed in the constructor
+// datatype is set by a template parameter
+//
+// Values are weightened by index*(255-(255/size))
+//
+// works only for uint8_t and uint16_t!
+
 template <typename type>
 class MovingAverageLinear {
 public:
+
+	// construct an object with the given buffer size
 	MovingAverageLinear(uint8_t size);
+
 	~MovingAverageLinear();
 
+	// add another value to the buffer
 	void add(type value);
+
+	// calculate current average of all elements in buffer
 	type getAverage();
+
+	// delete all elements from buffer but set a value that is returned as average
+	// this dummy elements is removed if a first value is written to buffer by add()
 	void clear(uint8_t value = 0);
 
+	// returns the number of valid elements in the buffer
 	uint8_t getFillCount() { return fillCount;}
+
+	// individual access to buffer elements
 	type operator[](uint8_t index) {return values[index];}
 
 private:

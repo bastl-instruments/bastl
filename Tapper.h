@@ -8,15 +8,24 @@
 #ifndef TAPPER_H_
 #define TAPPER_H_
 
-#include <inttypes.h>
+#include "basic.h"
 #include "movingAverage.h"
+
 
 class Tapper {
 public:
 	Tapper();
 	~Tapper();
+
+	// Initialize class.
+	// maxStepLengthInTimeUnits defines the the slowest tap tempo that is tracked
+	// maxRelativeDeviation define how easily a tap cycle is restarted
 	void init(uint16_t maxStepLengthInTimeUnits, uint8_t averageWidth = 4, uint8_t maxRelativeDeviation=20);
+
+	// tap it!
 	void tap(uint16_t tapTime);
+
+
 	void setStepsPerTap(uint8_t stepsPerTap);
 	uint16_t getTimeUnitsPerStep();
 	void setStepCallBack(void (*makeStep)());
