@@ -8,8 +8,11 @@
 #ifndef MAPPING_H_
 #define MAPPING_H_
 
-#include <inttypes.h>
+#include "basic.h"
+
+#ifndef TESTING
 #include <avr/pgmspace.h>
+
 
 const uint16_t expByteToWord_Table[256] PROGMEM =
 {
@@ -59,6 +62,33 @@ inline uint8_t mapProgmemU8U8(uint8_t input, const uint8_t table[]) {
 inline uint16_t mapProgmemU8U16(uint8_t input, const uint16_t table[]) {
 	return pgm_read_word_near(table + input);
 }
+#endif
+
+
+// maps the range of a input byte to a given range of an unsigned int
+// this is fast but NOT fully reaching the end value!
+inline uint16_t mapLinearRuntimeFastU8U16(uint8_t input, uint16_t start, uint16_t end) {
+	return (((int32_t)input*(end-start))>>8)+start;
+}
+
+// maps the range of a input byte to a given range of an unsigned int
+// this is slower but reaching the end value
+inline uint16_t mapLinearRuntimePreciseU8U16(uint8_t input, uint16_t start, uint16_t end) {
+	return (((int32_t)input*(end-start))/255)+start;
+}
+
+// maps the range of a input byte to a given range of an signed int
+// this is fast but NOT fully reaching the end value!
+inline int16_t mapLinearRuntimeFastU8S16(uint8_t input, int16_t start, int16_t end) {
+	return (((int32_t)input*(end-start))>>8)+start;
+}
+
+// maps the range of a input byte to a given range of an signed int
+// this is slower but reaching the end value
+inline int16_t mapLinearRuntimePreciseU8S16(uint8_t input, int16_t start, int16_t end) {
+	return (((int32_t)input*(end-start))/255)+start;
+}
+
 
 
 #endif /* MAPPING_H_ */
