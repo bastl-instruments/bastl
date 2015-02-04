@@ -1,0 +1,8 @@
+*~
+test/*.o
+test/build
+test/obj
+test/*.pdf
+test/*.log
+test/*.csv
+test/*.png
