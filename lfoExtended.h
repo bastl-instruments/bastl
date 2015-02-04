@@ -8,12 +8,8 @@
 #ifndef LFOEXTENDED_H_
 #define LFOEXTENDED_H_
 
-// dependencies on arduino removed
-#define min(a,b) ((a)<(b)?(a):(b))
-#define max(a,b) ((a)>(b)?(a):(b))
-#define abs(x) ((x)>0?(x):-(x))
 
-
+#include "basic.h"
 #include "random.h"
 
 #ifdef TESTING
