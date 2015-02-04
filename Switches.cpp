@@ -13,36 +13,34 @@ Switches::Switches() :
     buttonCount_(0),
     lastStates_(0),
     statuses_(0),
-    changeOnEvent_(IButtonHW::DOWN)
+    changeOnEvent_(IButtonHW::DOWN),
+    useLEDs_(false)
 {
 }
 
-void Switches::init(IButtonHW *hwLayer, unsigned char * buttonIndexes, unsigned char count, IButtonHW::ButtonState changeOnEvent) {
+void Switches::init(ILEDsAndButtonsHW *hwLayer,
+					unsigned char * buttonIndexes,
+					unsigned char count,
+					bool useLEDs,
+					IButtonHW::ButtonState changeOnEvent) {
 	hwLayer_ = hwLayer;
 	buttonIndexes_ = buttonIndexes;
 	buttonCount_ = count;
 	changeOnEvent_ = changeOnEvent;
+	useLEDs_ = useLEDs;
 }
 
 void Switches::update() {
-    for (unsigned char i = 0; i < buttonCount_; i++) {
-        bool buttonDown = hwLayer_->getButtonState(buttonIndexes_[i]) == IButtonHW::DOWN;
+	for (unsigned char i = 0; i < buttonCount_; i++) {
+    	bool buttonDown = hwLayer_->getButtonState(buttonIndexes_[i]) == IButtonHW::DOWN;
 		#ifdef DEBUG
 		printf("Button %d(%d) %s\n", i, buttonIndexes_[i], buttonDown ? "down" : "up");
         #endif
         if (((changeOnEvent_ == IButtonHW::DOWN) && !GETBIT(lastStates_, i) && buttonDown) ||
         	((changeOnEvent_ == IButtonHW::UP) && GETBIT(lastStates_, i) && !buttonDown)	) {
-            if (GETBIT(statuses_, i)) {
-                SETBITFALSE(statuses_, i);
-            } else {
-                SETBITTRUE(statuses_, i);
-            }
+            setStatus(i, !GETBIT(statuses_, i));
         }
-        if (buttonDown) {
-            SETBITTRUE(lastStates_, i);
-        } else {
-            SETBITFALSE(lastStates_, i);
-        }
+        BitArrayOperations::setBit(lastStates_, i, buttonDown);
     }
 }
 
@@ -57,5 +55,8 @@ void Switches::setStatus(unsigned char buttonIndex, bool value)
         SETBITTRUE(statuses_, buttonIndex);
     } else {
         SETBITFALSE(statuses_, buttonIndex);
+    }
+    if (useLEDs_) {
+    	hwLayer_->setLED(buttonIndexes_[buttonIndex], value ? ILEDHW::ON : ILEDHW::OFF);
     }
 }

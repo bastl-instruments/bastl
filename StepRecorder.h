@@ -17,8 +17,10 @@ class StepRecorder {
 public:
 	StepRecorder();
 	void init(Player * player, IStepMemory * memory, PlayerSettings * playerSettings, BastlStepper * stepper);
+	void update();
 	void record(bool record);
-	void recordNote(unsigned char instrumentIndex);
+	unsigned int startRecordNote(unsigned char instrumentIndex);
+	void stopRecordNote(unsigned char instrumentIndex);
 	void recordMIDINote(unsigned char channel, unsigned char note);
 	void setCurrentStepper(BastlStepper * stepper);
 private:
@@ -28,6 +30,12 @@ private:
 	BastlStepper * stepper_;
 
 	bool record_;
+	bool recordInstrumentStatuses_[6];
+
+	unsigned char getCurrentQuantizedSubstep(unsigned char instrumentIndex);
+	void recordSubstep(unsigned char instrumentIndex, unsigned char subStepIndex);
+
+
 };
 
 inline void StepRecorder::record(bool record) {

@@ -21,24 +21,34 @@ class NoVelocityStepMemory : public IStepMemory
 {
 public:
 	NoVelocityStepMemory();
+	virtual ~NoVelocityStepMemory();
     virtual DrumStep getDrumStep( unsigned char instrumentID, unsigned char step);
     virtual bool getNextActiveDrumStep( unsigned char instrumentID, unsigned char & step, DrumStep & drumStep);
     virtual bool setDrumStep(unsigned char instrumentID, unsigned char step, DrumStep stepData);
-    virtual void getActivesAndMutesForNote(unsigned char instrumentID, unsigned char windowIndex, unsigned char * data);
+    virtual void getActivesAndMutesForNote(unsigned char instrumentID, unsigned char windowIndex, unsigned char *& data);
     virtual void setDataReference(unsigned char * dataReference);
-    virtual void getAllInstrumentActivesFor16Steps(unsigned char windowIndex, ActiveMultiStatus * result);
+    virtual unsigned char * getDataReference();
+    virtual void getAllInstrumentActivesFor16Steps(unsigned char fromIndex, ActiveMultiStatus * result);
     virtual void getActiveWindowBitArray(unsigned char instrument, bool * result);
     virtual void getAllInstrumentsActiveWindowBitArray(bool * result);
     virtual void makeActiveUpTo(unsigned char instrument, unsigned char indexUpTo);
     virtual void makeAllInstrumentsActiveUpTo(unsigned char indexUpTo);
-    virtual bool isInDefaultState(unsigned char instrument);
-    virtual void copyPan(unsigned char instrumentID, unsigned char panFrom, unsigned char panTo);
+    virtual void clearStepsForInstrument(unsigned char instrument);
+    virtual void clearStepsForAllInstruments();
 private:
     unsigned char * data_;
+    void getDrumStepDataPointers(unsigned char instrumentID, unsigned char step,
+    										   unsigned char *& mutes, unsigned char *& actives,
+    										   unsigned char *& data);
+    unsigned int getDataOffset(unsigned char instrumentID, unsigned char pan);
 };
 
 inline void NoVelocityStepMemory::setDataReference(unsigned char * dataReference) {
 	data_ = dataReference;
+}
+
+inline unsigned char * NoVelocityStepMemory::getDataReference() {
+	return data_;
 }
 
 #endif // FLASHSTEPMEMORY_H

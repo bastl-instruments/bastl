@@ -1,81 +1,53 @@
 #include "PlayerSettings.h"
 
-PlayerSettings::PlayerSettings() : drumInstrumentEventTypes_(0), upDrumVelocity_(253), downDrumVelocity_(64),
-								   normalDrumVelocity_(128), patternChangedCallback_(0), recordQunatizationType_(_1_64)
-{
-    for (unsigned char i = 0; i < DRUM_INSTRUMENTS; i++) {
-        drumInstrumentNotes_[i] = 0;
-    }
-    for (unsigned char i = 0; i < (DRUM_INSTRUMENTS + MONO_INSTRUMENTS) / 2; i++) {
-        instrumentChannels_[i] = 0;
-    }
-    for (unsigned char i = 0; i < ALL_INSTRUMENTS_IN_BYTES; i++) {
-        instrumentStatuses_[i] = ~0;
-    }
-}
+PlayerSettings::PlayerSettings() : drumInstrumentEventTypes_(0),
+								   instrumentStatuses_(255),
+								   currentPattern_(0),
+								   patternChangedCallback_(0),
+								   recordQunatizationType_(_1_64),
+								   multiplication_(_8),
+								   multiplicationChangedCallback_(0),
+								   bpm_(120),
+								   playerMode_ (MASTER),
+								   playerModeChangedCallback_(0)
+{}
 
-void PlayerSettings::setInstrumentOn(Step::InstrumentType type, unsigned char instrumentID, bool isOn)
-{
-    unsigned char position = (type == Step::MONO) ? 20 : 0 + instrumentID;
-    if (isOn) {
-        instrumentStatuses_[position / 8] = instrumentStatuses_[position / 8] | (1 << (position % 8));
-    } else {
-        instrumentStatuses_[position / 8] = instrumentStatuses_[position / 8] & ~(1 << (position % 8));
-    }
-
-}
-
-bool PlayerSettings::isInstrumentOn(Step::InstrumentType type, unsigned char instrumentID)
-{
-    unsigned char position = (type == Step::MONO) ? 20 : 0 + instrumentID;
-    unsigned char value = instrumentStatuses_[position / 8];
-    return (((1 << (position % 8)) & value) >> (position % 8) == 1);
-}
-
-unsigned char PlayerSettings::getInstrumentChannel(Step::InstrumentType type, unsigned char instrumentID) {
-    unsigned char position = (type == Step::MONO) ? 20 : 0 + instrumentID;
-    unsigned char instrumentShift = ((position % 2) * 4);
-
-    // we have only 16 channels so one byte contains information for two instruments
-    return ((15 << instrumentShift) & instrumentChannels_[position / 2]) >> instrumentShift;
-
-}
-
-void PlayerSettings::setInstrumentChannel(Step::InstrumentType type, unsigned char instrumentID, unsigned char channel)
-{
-    unsigned char position = (type == Step::MONO) ? 20 : 0 + instrumentID;
-    unsigned char instrumentShift = ((position % 2) * 4);
-
-    // we have only 16 channels so one byte contains information for two instruments
-    instrumentChannels_[position / 2] = instrumentChannels_[position / 2] | channel << instrumentShift;
-}
-
-
-
-unsigned char PlayerSettings::getMIDIVelocityFromDrumVelocity(DrumStep::DrumVelocityType type) {
-    switch (type) {
-        case DrumStep::UP:
-            return upDrumVelocity_;
-        break;
-        case DrumStep::DOWN:
-            return downDrumVelocity_;
-        break;
-        case DrumStep::NORMAL:
-            return normalDrumVelocity_;
-        break;
-        default:
-            return 0;
-    }
-}
-
-bool PlayerSettings::getDrumInstrumentIndexFromMIDIMessage(unsigned char channel, unsigned char note, unsigned char & drumInstrumentID) {
-	for (unsigned char instrumentID = 0; instrumentID < DRUM_INSTRUMENTS; instrumentID++) {
-		if (drumInstrumentNotes_[instrumentID] == note) {
-			if (getInstrumentChannel(Step::DRUM, instrumentID) == channel) {
-				drumInstrumentID = instrumentID;
-				return true;
-			}
-		}
+void PlayerSettings::resetManipulatedPatterns() {
+	for (unsigned char pattern = 0; pattern < 4; pattern++) {
+		manipulatedPatterns_[pattern] = 0;
 	}
-	return false;
+	SETBIT(manipulatedPatterns_[currentPattern_ / 16], currentPattern_ % 16, true);
+}
+
+void PlayerSettings::setCurrentPattern(unsigned char pattern) {
+	unsigned char originalPattern = currentPattern_;
+	if (currentPattern_ != pattern) {
+		currentPattern_ = pattern;
+		SETBIT(manipulatedPatterns_[pattern / 16], pattern % 16, true);
+		patternChangedCallback_(originalPattern, currentPattern_);
+		settingsChangedCallback_();
+	}
+}
+
+void PlayerSettings::getInByteArray(unsigned char * data) {
+	data[0] = drumInstrumentEventTypes_;
+	data[1] = instrumentStatuses_;
+	data[2] = currentPattern_;
+	data[3] = (unsigned char)recordQunatizationType_;
+	data[4] = (unsigned char)multiplication_;
+	data[5] = playerMode_;
+	data[6] = (unsigned char)bpm_;
+	data[7] = (unsigned char)(bpm_ >> 8);
+}
+
+void PlayerSettings::loadFromByteArray(unsigned char * data) {
+	drumInstrumentEventTypes_ = data[0];
+	instrumentStatuses_ = 		data[1];
+	currentPattern_ = 			data[2];
+	recordQunatizationType_ = 	(QuantizationType)(data[3]);
+	multiplication_ = 			(MultiplicationType)(data[4]);
+	playerMode_ = 				(PlayerMode)(data[5]);
+	bpm_ = 						data[6];
+	bpm_ +=						(((unsigned int)data[7]) << 8);
+	resetManipulatedPatterns();
 }

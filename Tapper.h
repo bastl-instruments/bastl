@@ -10,6 +10,7 @@
 
 #include "basic.h"
 #include "movingAverage.h"
+#include "ITapper.h"
 
 
 class Tapper {
@@ -51,6 +52,10 @@ inline uint16_t Tapper::getTimeUnitsPerStep() {
 
 inline void Tapper::setStepCallBack(void (*makeStep)()) {
 	makeStep_ = makeStep;
+}
+
+inline bool Tapper::anyStepDetected() {
+	return history->getFillCount() > 0;
 }
 
 #endif /* TAPPER_H_ */

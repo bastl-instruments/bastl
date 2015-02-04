@@ -14,175 +14,112 @@ NoVelocityStepMemory::NoVelocityStepMemory()
 {
 }
 
+NoVelocityStepMemory::~NoVelocityStepMemory()
+{
+}
+
+void NoVelocityStepMemory::getDrumStepDataPointers(unsigned char instrumentID, unsigned char step,
+										   unsigned char *& mutes, unsigned char *& actives,
+										   unsigned char *& data) {
+
+	unsigned int offset  = getDataOffset(instrumentID, step / 16);
+
+	actives = &data_[offset + (step / 8) % 2 ];
+	mutes = &data_[offset + 2 + (step / 8) % 2];
+	data = &data_[offset + 4 + ((step % 16) / 2)];
+}
+
 DrumStep NoVelocityStepMemory::getDrumStep(unsigned char instrumentID, unsigned char step)
 {
-    unsigned char byteIndex = step / 8;
+    unsigned char * data;
+    unsigned char * actives;
+    unsigned char * mutes;
+
     unsigned char bitIndex = step % 8;
+    getDrumStepDataPointers(instrumentID, step, mutes, actives, data);
 
-    long instrumentOffset = (64 * instrumentID) /* instruments offset */ ;
-
-    instrumentOffset  = (instrumentOffset * 6) / 8;
-
-    unsigned char actives = data_[instrumentOffset + byteIndex];
-    unsigned char mutes = data_[instrumentOffset + byteIndex + 8];
-    unsigned char data = data_[instrumentOffset + 16 + (step / 2)];
-
-	#ifdef DEBUG
-    printf("Getting data at index %d to value %d \n", instrumentOffset + 16 + (step / 2), data);
-	#endif
-
-    bool mute = ((mutes & (1 << bitIndex)) >> bitIndex) == 1;
-    bool active = ((actives & (1 << bitIndex)) >> bitIndex) == 1;
-
-    DrumStep::DrumVelocityType subSteps[4] = {DrumStep::OFF, DrumStep::OFF, DrumStep::OFF, DrumStep::OFF};
+    DrumStep::DrumVelocityType subSteps[4];
     for (unsigned char i = 0; i < 4; i++) {
     	unsigned char offset = ((step % 2) * 4) + i;
     	#ifdef DEBUG
-    	bool bitAtPosition = GETBIT(data, offset);
+    	bool bitAtPosition = BitArrayOperations::getBit(* data, offset);
     	printf("Getting bit at index %d to value %s \n", offset, bitAtPosition ? "True": "False");
 		#endif
-        subSteps[i] = GETBIT(data, offset) ? DrumStep::NORMAL : DrumStep::OFF;
+        subSteps[i] = BitArrayOperations::getBit(* data, offset) ? DrumStep::NORMAL : DrumStep::OFF;
     }
-    return DrumStep(active, mute, subSteps);
+    return DrumStep(BitArrayOperations::getBit(* actives, bitIndex), BitArrayOperations::getBit(* mutes, bitIndex), subSteps);
 }
 
 
 
 bool NoVelocityStepMemory::getNextActiveDrumStep(unsigned char instrumentID, unsigned char &step, DrumStep &drumStep)
 {
-    unsigned char byteIndex = step / 8;
-    unsigned char originalByteIndex = byteIndex;
-    unsigned char bitIndex = step % 8;
-
-    long instrumentOffset = (64 * instrumentID) /* instruments offset */ ;
-
-    instrumentOffset  = (instrumentOffset * 6) / 8;
-
-    // Searching for first active
-
-    unsigned char actives = data_[instrumentOffset + byteIndex];
-
-    unsigned char nextActives = actives >> bitIndex;
-
-
-    while (nextActives == 0) {
-		#ifdef DEBUG
-    	printf("Next active byte 0 trying to find next one \n");
-		#endif
-    	bitIndex = 0;
-        byteIndex = ((byteIndex + 1) % 8);
-        nextActives = data_[instrumentOffset + byteIndex];
-        if (byteIndex == originalByteIndex && nextActives == 0) {
-            return false;
-        }
-    }
-
-    actives = nextActives;
-
-    //Find first non zero bit in the array
-    while (actives % 2 == 0) {
-		#ifdef DEBUG
-    	printf("Next step (%d) inactive trying to find next one \n", bitIndex);
-		#endif
-        actives = actives >> 1;
-        bitIndex++;
-    }
-
-    step = byteIndex * 8 + bitIndex;
-
-    drumStep = getDrumStep(instrumentID, step);
-    return true;
+	unsigned char originalStep = step;
+	drumStep = getDrumStep(instrumentID, step);
+	while (!drumStep.isActive()) {
+		step = (step + 1) % 64;
+		if (step == originalStep) {
+			return false;
+		}
+		drumStep = getDrumStep(instrumentID, step);
+	}
+	return true;
 }
 
 bool NoVelocityStepMemory::setDrumStep(unsigned char instrumentID, unsigned char step, DrumStep stepData)
 {
+	unsigned char * mutes;
+	unsigned char * actives;
+	unsigned char * data;
 
-    unsigned char byteIndex = step / 8;
-    unsigned char bitIndex = step % 8;
+	unsigned char bitIndex = step % 8;
 
-    long instrumentOffset = (64 * instrumentID);
+	getDrumStepDataPointers(instrumentID, step, mutes, actives, data);
 
-    #ifdef DEBUG
-	printf("Instrument offset is: %d \n", (int)instrumentOffset);
-    #endif
-
-    instrumentOffset  = (instrumentOffset * 6) / 8;
-
-    #ifdef DEBUG
-	printf("Instrument offset is: %d \n", (int)instrumentOffset);
-    #endif
-
-    unsigned char actives = data_[instrumentOffset + byteIndex];
-    unsigned char mutes = data_[instrumentOffset + byteIndex + 8];
-    unsigned char data = data_[instrumentOffset + 16 + (step / 2)];
-
-    if (stepData.isActive()) {
-        actives = actives | 1 << bitIndex;
-    } else {
-        actives = actives & ~(1 << bitIndex);
-    }
-
-    if (stepData.isMuted()) {
-        mutes = mutes | 1 << bitIndex;
-    } else {
-        mutes = mutes & ~(1 << bitIndex);
-    }
-
+	BitArrayOperations::setBit(*actives, bitIndex, stepData.isActive());
+	BitArrayOperations::setBit(*mutes, bitIndex, stepData.isMuted());
+	unsigned char offset = ((step % 2) * 4);
     for (int i = 0; i < 4 ; i++) {
-    	unsigned char offset = ((step % 2) * 4) + i;
-    	SETBIT(data, offset, stepData.getSubStep(i) == DrumStep::NORMAL);
+    	BitArrayOperations::setBit(*data, offset + i, stepData.getSubStep(i) == DrumStep::NORMAL);
 		#ifdef DEBUG
-    	printf("Setting bit at index %d to value %s \n", offset, stepData.getSubStep(i) == DrumStep::NORMAL ? "True": "False");
+    	//printf("Setting bit at index %d to value %s \n", offset, stepData.getSubStep(i) == DrumStep::NORMAL ? "True": "False");
 		#endif
     }
-    data_[instrumentOffset + byteIndex] = actives;
-    data_[instrumentOffset + byteIndex + 8] = mutes;
-	#ifdef DEBUG
-	printf("Setting data at index %d to value %d \n", instrumentOffset + 16 + (step / 2), data);
-    #endif
-    data_[instrumentOffset + 16 + (step / 2)] = data;
     return true;
 }
 
-void NoVelocityStepMemory::getActivesAndMutesForNote(unsigned char instrumentID, unsigned char windowIndex, unsigned char * data) {
-	long instrumentOffset = (64 * instrumentID) /* instruments offset */ ;
+void NoVelocityStepMemory::getActivesAndMutesForNote(unsigned char instrumentID, unsigned char windowIndex, unsigned char *& data) {
 
-	instrumentOffset  = (instrumentOffset * 6) / 8;
-
-	data[0] = data_[instrumentOffset + windowIndex];
-	data[1] = data_[instrumentOffset + windowIndex + 1];
-	data[2] = data_[instrumentOffset + windowIndex + 8];
-	data[3] = data_[instrumentOffset + windowIndex + 9];
+	unsigned int offset  = getDataOffset(instrumentID, windowIndex);
+	data = &data_[offset];
 }
 
-void NoVelocityStepMemory::getAllInstrumentActivesFor16Steps(unsigned char windowIndex, ActiveMultiStatus * result) {
-	bool firstInstrument = true;
-	for (unsigned char instrument = 0; instrument < 6; instrument++) {
-		long instrumentOffset = (64 * instrument) /* instruments offset */ ;
-		instrumentOffset  = (instrumentOffset * 6) / 8;
-		for (unsigned char step = 0; step < 16; step++) {
-			unsigned char data = step < 8 ? data_[instrumentOffset + windowIndex] :
-											data_[instrumentOffset + windowIndex + 1];
-			bool active = GETBIT(data, step % 8);
-			if (firstInstrument) {
-				result[step] = active ? ALLACTIVE : ALLINACTIVE;
+void NoVelocityStepMemory::getAllInstrumentActivesFor16Steps(unsigned char fromIndex, ActiveMultiStatus * result) {
+	for (unsigned char step = 0; step < 16; step++) {
+		unsigned char actives = 0;
+		unsigned char inactives = 0;
+		for (unsigned char instrument = 0; instrument < 6; instrument++) {
+			bool active = getDrumStep(instrument, fromIndex + step).isActive();
+			if (active) {
+				actives++;
 			} else {
-				if (result[step] == ALLACTIVE && !active) {
-					result[step] = MIXED;
-				} else if (result[step] == ALLINACTIVE && active) {
-					result[step] = MIXED;
-				}
+				inactives++;
 			}
 		}
-		firstInstrument = false;
+		if (actives == 0) {
+			result[step] = ALLINACTIVE;
+		} else if (inactives == 0) {
+			result[step] = ALLACTIVE;
+		} else {
+			result[step] = MIXED;
+		}
 	}
 }
 
 void NoVelocityStepMemory::getActiveWindowBitArray(unsigned char instrument, bool * result) {
 	for (unsigned char pan = 0; pan < 4; pan++) {
-		long instrumentOffset = (64 * instrument) /* instruments offset */ ;
-		instrumentOffset  = (instrumentOffset * 6) / 8;
-		result[pan] = (data_[instrumentOffset + pan * 2] != 0) || (data_[instrumentOffset + pan * 2 + 1] != 0);
+		unsigned int offset  = getDataOffset(instrument, pan);
+		result[pan] = (data_[offset] != 0) || (data_[offset + 1] != 0);
 	}
 }
 
@@ -190,18 +127,16 @@ void NoVelocityStepMemory::getAllInstrumentsActiveWindowBitArray(bool * result) 
 	result[0] = result[1] = result[2] = result[3] = false;
 	for (unsigned char instrument = 0; instrument < 6; instrument++) {
 		for (unsigned char pan = 0; pan < 4; pan++) {
-			long instrumentOffset = (64 * instrument) /* instruments offset */ ;
-			instrumentOffset  = (instrumentOffset * 6) / 8;
-			result[pan] = result[pan] || (data_[instrumentOffset + pan * 2] != 0) || (data_[instrumentOffset + pan * 2 + 1] != 0);
+			unsigned int offset  = getDataOffset(instrument, pan);
+			result[pan] = result[pan] || (data_[offset] != 0) || (data_[offset + 1] != 0);
 		}
 	}
 }
 
 void NoVelocityStepMemory::makeActiveUpTo(unsigned char instrument, unsigned char indexUpTo) {
 	for (int stepIndex = 0; stepIndex < 64; stepIndex++) {
-		bool newState = stepIndex <= indexUpTo;
 		DrumStep step = getDrumStep(instrument, stepIndex);
-		step.setActive(newState);
+		step.setActive(stepIndex <= indexUpTo);
 		setDrumStep(instrument, stepIndex, step);
 	}
 }
@@ -213,35 +148,24 @@ void NoVelocityStepMemory::makeAllInstrumentsActiveUpTo(unsigned char indexUpTo)
 
 }
 
-bool NoVelocityStepMemory::isInDefaultState(unsigned char instrumentID) {
-	bool isDefault = true;
-	long instrumentOffset = (64 * instrumentID) /* instruments offset */ ;
-	instrumentOffset  = (instrumentOffset * 6) / 8;
-
-	for (unsigned char index = 2; index < 8; index++) {
-		if (data_[instrumentOffset + 8 + index] != 255) {
-			return false;
+void NoVelocityStepMemory::clearStepsForInstrument(unsigned char instrument) {
+	for (unsigned char step = 0; step < 64; step++) {
+		DrumStep stepData = getDrumStep(instrument, step);
+		stepData.setMuted(true);
+		for (unsigned char substep = 0; substep < 4; substep++) {
+			stepData.setSubStep(substep, DrumStep::OFF);
 		}
+		setDrumStep(instrument, step, stepData);
 	}
-	//go through all the steps (1 step = 4 bits)
-	for (unsigned char step = 8; step < 32; step++) {
-		if (data_[instrumentOffset + 16 + step] != 0) {
-			return false;
-		}
-	}
-	return true;
 }
 
-void NoVelocityStepMemory::copyPan(unsigned char instrumentID, unsigned char panFrom, unsigned char panTo) {
-
-	long instrumentOffset = (64 * instrumentID) /* instruments offset */ ;
-	instrumentOffset  = (instrumentOffset * 6) / 8;
-
-	data_[instrumentOffset + 8 + panTo * 2] = data_[instrumentOffset + 8 + panFrom * 2];
-	data_[instrumentOffset + 8 + panTo * 2 + 1] = data_[instrumentOffset + 8 + panFrom * 2 + 1];
-
-	// copy 16 steps (4 bits per step = 8 bytes)
-	for (unsigned char step = 0; step < 8; step++) {
-		data_[instrumentOffset + 16 + panTo * 8 + step] = data_[instrumentOffset + 16 + panFrom * 8 + step];
+void NoVelocityStepMemory::clearStepsForAllInstruments() {
+	for (unsigned char instrument = 0; instrument < 6; instrument++) {
+		clearStepsForInstrument(instrument);
 	}
+}
+
+unsigned int NoVelocityStepMemory::getDataOffset(unsigned char instrumentID, unsigned char pan) {
+	// 64 steps, 6 bits per step = 384 bits = 48 bytes
+	return (unsigned int)instrumentID * 48 + (unsigned int)pan * 12;
 }
