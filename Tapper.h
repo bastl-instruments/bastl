@@ -30,6 +30,7 @@ public:
 	void setStepsPerTap(uint8_t stepsPerTap);
 	uint16_t getTimeUnitsPerStep();
 	void setStepCallBack(void (*makeStep)());
+	bool anyStepDetected();
 
 private:
 
