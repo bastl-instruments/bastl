@@ -11,7 +11,9 @@
 // some basic stuff that used to reside in Arduino.h
 // this has been moved to a separate file to remove dependency on Arduino.h where possible
 
+
 #include <inttypes.h>
+
 
 #define min(a,b) ((a)<(b)?(a):(b))
 #define max(a,b) ((a)>(b)?(a):(b))
