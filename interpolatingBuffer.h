@@ -2,7 +2,6 @@
 #ifndef INTERPOLATING_BUFFER_H_
 #define INTERPOLATING_BUFFER_H_
 
-#include "fixedMath.h"
 #include <random.h>
 
 
