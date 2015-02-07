@@ -7,8 +7,8 @@
 
 
 #include "random.h"
+#include "basic.h"
 
-#define min(a,b) ((a)<(b)?(a):(b))
 
 
 uint8_t bastlRandom::byte() {
