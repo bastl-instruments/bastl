@@ -82,7 +82,7 @@ void Tapper::tap(uint16_t tapTime)
 			#ifdef TESTING
 			printf("  Tap Difference %u out of window (Deviation of %u)\n   -> Restarting cycle\n",thisTapDifference,deviation);
 			#endif
-			history->clear(history->getAverage());
+			history->clear();
 		}
 
 	} else {

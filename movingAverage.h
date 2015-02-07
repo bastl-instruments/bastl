@@ -33,8 +33,7 @@ public:
 	type getAverage();
 
 	// delete all elements from buffer but set a value that is returned as average
-	// this dummy elements is removed if a first value is written to buffer by add()
-	void clear(uint8_t value = 0);
+	void clear();
 
 	// returns the number of valid elements in the buffer
 	uint8_t getFillCount() { return fillCount;}
@@ -66,10 +65,8 @@ MovingAverageLinear<type>::~MovingAverageLinear() {
 }
 
 template <typename type>
-void MovingAverageLinear<type>::clear(uint8_t value) {
-	average = value;
+void MovingAverageLinear<type>::clear() {
 	fillCount = 0;
-	needUpdate = true;
 }
 
 template <typename type>
