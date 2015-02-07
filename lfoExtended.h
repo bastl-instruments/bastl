@@ -22,25 +22,39 @@ enum LFOThresholdType {OVERFLOW,FOLDING};
 
 
 
-
-
 class lfoExtended {
 
-	public:
-		void init();
+public:
+	// Initialize all settings
+	void init();
 
 
 public:
+	// set the base frequency of the LFO by its period length
 	void setBastlCyclesPerPeriod(uint16_t bastlCyclesPerPeriod);
+
+	// associate a step number with a timestamp
+	// this acts like a phase shift
 	void setToStep(uint8_t stepNumber,uint8_t timestamp);
 
-	void setWaveform(LFOBasicWaveform waveform, bool invert = false, bool flop = false, LFOThresholdType type = FOLDING);
-	void setResolution(uint8_t numbStepsToSkip);
-	void setThreshold(uint8_t thres);
+	// set the basic waveform
+	void setWaveform(LFOBasicWaveform waveform);
 
+	// the output value is XORed with xorBits
+	void setXOR(uint8_t xorBits);
+
+	// set the output to zero of any of the flopBits are set in the current step number
+	void setFlop(uint8_t flopBits);
+
+	// the output value stays constant for numbStepsToSkip steps
+	void setResolution(uint8_t numbStepsToSkip);
+
+	// when the output reaches zero or thres, it is either folded or oveflows
+	void setThreshold(uint8_t thres, LFOThresholdType type = FOLDING);
 
 
 public:
+	// get the output value associated with the timstamp
 	uint8_t getValue(uint16_t timestamp);
 
 
@@ -48,29 +62,32 @@ private:
 
 	// Waveform
 	LFOBasicWaveform currentWaveform;
-	bool invertWaveform;
-	bool flopWaveform;
+	uint8_t xorBits;
+	uint8_t flopBits;
+
+	// Threshold
 	uint8_t threshold;
 	LFOThresholdType thresholdType;
 
+	// Timing
 	uint8_t currentStep;
 	uint8_t lastStep;
-
 	uint16_t timestampOffset;
 	uint16_t bastlCyclesPerPeriod;
+	uint16_t lastTimestamp;
+
+	uint8_t numbStepsToSkip;
+	uint8_t lastUnskippedStep;
 
 	uint8_t currentOutput;
 
 
-	uint8_t numbStepsToSkip;
-	uint8_t lastUnskippedStep;
+
 
 	// parameters
 	static const uint8_t maxAbsoluteSlope = 3;
 	static const uint8_t maxStepsBetweenSlopeChange = 30;
 	static const uint8_t minStepsBetweenSlopeChange = maxStepsBetweenSlopeChange/2;
-
-	static const uint8_t flopBit = 3;
 
 	// random
 	int8_t currentSlope;

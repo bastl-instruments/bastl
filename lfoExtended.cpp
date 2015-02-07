@@ -10,13 +10,15 @@
 
 void lfoExtended::init() {
 	currentWaveform = SAW;
-	//currentValue = 0;
 	numbStepsToSkip = 0;
 	threshold = 255;
 	currentStep = 0;
 	lastUnskippedStep=0;
 	timestampOffset=0;
+	lastTimestamp=0;
 	currentSlope = 0;
+	xorBits = 0;
+	flopBits=0;
 
 }
 
@@ -24,39 +26,31 @@ void lfoExtended::setBastlCyclesPerPeriod(uint16_t bastlCyclesPerPeriod) {
 	this->bastlCyclesPerPeriod = bastlCyclesPerPeriod;
 }
 
-/*void lfoExtended::step(uint16_t timestamp) {
-	currentStep += ((uint16_t)(timestamp - lastTimestamp)<<8) / (bastlCyclesPerPeriod);
-	#ifdef TESTING
-	//printf("now %u, before %u, pos %u\n",timestamp,lastTimestamp,currentPosition);
-	#endif
-
-	bastlCyclesToNextSlopePick -= (timestamp - lastTimestamp);
-
-	lastTimestamp = timestamp;
-
-
-}*/
-
-void lfoExtended::setWaveform(LFOBasicWaveform waveform, bool invert, bool flop,LFOThresholdType type) {
+void lfoExtended::setWaveform(LFOBasicWaveform waveform) {
 	currentWaveform = waveform;
-	invertWaveform = invert;
-	flopWaveform = flop;
-	thresholdType = type;
+}
+void lfoExtended::setXOR(uint8_t xorBits) {
+	this->xorBits = xorBits;
+}
+
+void lfoExtended::setFlop(uint8_t flopBits) {
+	this->flopBits = flopBits;
 }
 
 void lfoExtended::setResolution(uint8_t numbStepsToSkip) {
 	this->numbStepsToSkip = numbStepsToSkip;
 }
 
-void lfoExtended::setThreshold(uint8_t thres) {
+void lfoExtended::setThreshold(uint8_t thres,LFOThresholdType type) {
 	threshold = thres;
+	thresholdType = type;
 }
 
 
 void lfoExtended::setToStep(uint8_t step, uint8_t timestamp) {
 	timestampOffset = timestamp - ((step*bastlCyclesPerPeriod)>>8);
 	#ifdef TESTING
-	printf("Offset: %u\n",timestampOffset);
+	//printf("Offset: %u\n",timestampOffset);
 	#endif
 }
 
@@ -67,8 +61,12 @@ void lfoExtended::setToStep(uint8_t step, uint8_t timestamp) {
 
 uint8_t lfoExtended::getValue(uint16_t timestamp) {
 
+	if (timestamp <= lastTimestamp) timestampOffset+=bastlCyclesPerPeriod;
+	lastTimestamp = timestamp;
+
 	// calculate the current step of LFO waveform
-	uint8_t currentStep = (((timestamp - timestampOffset)<<8) / bastlCyclesPerPeriod) & 0xFF;
+	uint8_t currentStep = ((((uint16_t)(timestamp - timestampOffset)<<8)) / bastlCyclesPerPeriod);
+
 
 	uint8_t stepsSinceLast = currentStep-lastUnskippedStep;
 
@@ -76,7 +74,6 @@ uint8_t lfoExtended::getValue(uint16_t timestamp) {
 	if ((uint8_t)(currentStep-lastUnskippedStep) <= numbStepsToSkip) {
 		return currentOutput;
 	}
-
 	lastUnskippedStep = currentStep;
 
 
@@ -94,7 +91,9 @@ uint8_t lfoExtended::getValue(uint16_t timestamp) {
 			stepsUntilNextSlopePick = bastlRandom::range(minStepsBetweenSlopeChange,maxStepsBetweenSlopeChange);
 		}
 
+		#ifdef TESTING
 		//printf("Slope: %i\n",currentSlope);
+		#endif
 
 
 		// check direction of slope if folding
@@ -133,14 +132,6 @@ uint8_t lfoExtended::getValue(uint16_t timestamp) {
 			default: break;
 		}
 
-		// Invert Waveform
-		if (invertWaveform) {
-			currentOutput = 255-currentOutput;
-		}
-
-
-
-
 	}
 
 	// Apply Overflowing
@@ -149,11 +140,14 @@ uint8_t lfoExtended::getValue(uint16_t timestamp) {
 		//if (thresholdType == FOLDING)  currentOutput = threshold - (currentOutput % threshold);
 	}
 
+	// apply XOR Bits
+	currentOutput ^= xorBits;
 
-	// Apply Flopping
-	if ((flopWaveform) && (currentOutput & (1<<flopBit))) {
+	// check if flopping is taken affect
+	if (currentStep & flopBits) {
 		return 0;
 	}
+
 
 	return currentOutput;
 }
