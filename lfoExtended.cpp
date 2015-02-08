@@ -12,8 +12,9 @@ void lfoExtended::init() {
 	currentWaveform = SAW;
 	numbStepsToSkip = 0;
 	threshold = 255;
+	thresholdType = FOLDING;
 	currentStep = 0;
-	lastUnskippedStep=0;
+	lastUnskippedStep=currentStep-128;
 	timestampOffset=0;
 	lastTimestamp=0;
 	currentSlope = 0;
@@ -71,7 +72,7 @@ uint8_t lfoExtended::getValue(uint16_t timestamp) {
 	uint8_t stepsSinceLast = currentStep-lastUnskippedStep;
 
 	// check if step will be skipped due to resolution
-	if ((uint8_t)(currentStep-lastUnskippedStep) <= numbStepsToSkip) {
+	if ((uint8_t)(currentStep-lastUnskippedStep) < numbStepsToSkip) {
 		return currentOutput;
 	}
 	lastUnskippedStep = currentStep;
