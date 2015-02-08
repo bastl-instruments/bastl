@@ -7,7 +7,7 @@
 const uint8_t numbObjects = 4;
 
 float frequencies[numbObjects] = {0.1,1,3.2,4};
-uint16_t bastlCyclesPerSecond = 3000;
+uint16_t bastlCyclesPerSecond = 4000;
 
 lfoExtended LFOs[numbObjects];
 
@@ -16,7 +16,7 @@ public:
 
 	static void setToFile(std::string filename) {
 
-		const std::string subfolder = "data";
+	static const std::string subfolder = "data";
 
 		filename = subfolder + "/" + filename;
 
@@ -34,9 +34,9 @@ public:
 private:
 	static FILE *fp;
 
-
 };
 
+FILE* RedirStdOut::fp;
 
 
 
@@ -49,7 +49,7 @@ int main( int argc, const char* argv[] ) {
 
 	// Timestamp overflow region
 	printf("# Checking region of timestamp overflow\n");
-	setStdOut("lfoTimeOverflow.csv");
+	RedirStdOut::setToFile("lfoTimeOverflow.csv");
 
 	printf("Timestamp ");
 	for (uint8_t index=0; index<numbObjects; index++) {
@@ -71,15 +71,14 @@ int main( int argc, const char* argv[] ) {
 	}
 
 	// Basic Waveforms
-	resetStdOut();
+	RedirStdOut::setToConsole();
 	printf("# Different waveforms\n");
-	setStdOut("lfoWaveforms.csv");
+	RedirStdOut::setToFile("lfoWaveforms.csv");
 
 
 	for (uint8_t index=0; index<numbObjects; index++) {
 		LFOs[index].init();
-		uint16_t bastlCyclesPerPeriod = (float)bastlCyclesPerSecond/3;
-		LFOs[index].setBastlCyclesPerPeriod(bastlCyclesPerPeriod);
+		LFOs[index].setBastlCyclesPerPeriod((float)bastlCyclesPerSecond/3);
 	}
 	printf("Timestamp ");
 	LFOs[0].setWaveform(SAW);
@@ -100,15 +99,14 @@ int main( int argc, const char* argv[] ) {
 
 
 	// Basic Waveforms
-	resetStdOut();
+	RedirStdOut::setToConsole();
 	printf("# Resolution\n");
-	setStdOut("lfoResolution.csv");
+	RedirStdOut::setToFile("lfoResolution.csv");
 
 	printf("Timestamp ");
 	for (uint8_t index=0; index<numbObjects; index++) {
 		LFOs[index].init();
-		uint16_t bastlCyclesPerPeriod = (float)bastlCyclesPerSecond/3;
-		LFOs[index].setBastlCyclesPerPeriod(bastlCyclesPerPeriod);
+		LFOs[index].setBastlCyclesPerPeriod((float)bastlCyclesPerSecond/3);
 
 		uint8_t res = 1<<(2*(index)+3);
 		LFOs[index].setResolution(res);
@@ -125,18 +123,17 @@ int main( int argc, const char* argv[] ) {
 		printf("\n");
 	}
 
-	resetStdOut();
+	RedirStdOut::setToConsole();
 
 	// XOR
-	resetStdOut();
+	RedirStdOut::setToConsole();
 	printf("# XOR\n");
-	setStdOut("lfoXOR.csv");
+	RedirStdOut::setToFile("lfoXOR.csv");
 
 	printf("Timestamp ");
 	for (uint8_t index=0; index<numbObjects; index++) {
 		LFOs[index].init();
-		uint16_t bastlCyclesPerPeriod = (float)bastlCyclesPerSecond/3;
-		LFOs[index].setBastlCyclesPerPeriod(bastlCyclesPerPeriod);
+		LFOs[index].setBastlCyclesPerPeriod((float)bastlCyclesPerSecond/3);
 
 		uint8_t XorBits = (1<<(index+2))+index;
 		LFOs[index].setXOR(XorBits);
@@ -152,18 +149,17 @@ int main( int argc, const char* argv[] ) {
 		printf("\n");
 	}
 
-	resetStdOut();
+
 
 	// XOR
-	resetStdOut();
+	RedirStdOut::setToConsole();
 	printf("# Flop\n");
-	setStdOut("lfoFlop.csv");
+	RedirStdOut::setToFile("lfoFlop.csv");
 
 	printf("Timestamp ");
 	for (uint8_t index=0; index<numbObjects; index++) {
 		LFOs[index].init();
-		uint16_t bastlCyclesPerPeriod = (float)bastlCyclesPerSecond/3;
-		LFOs[index].setBastlCyclesPerPeriod(bastlCyclesPerPeriod);
+		LFOs[index].setBastlCyclesPerPeriod((float)bastlCyclesPerSecond/3);
 		LFOs[index].setWaveform(TRIANGLE);
 
 		uint8_t FlopBit = 4;
@@ -180,6 +176,43 @@ int main( int argc, const char* argv[] ) {
 		printf("\n");
 	}
 
-	resetStdOut();
+
+	// Threshold
+	RedirStdOut::setToConsole();
+	printf("# Threshold\n");
+	RedirStdOut::setToFile("lfoThres.csv");
+
+
+	for (uint8_t index=0; index<numbObjects; index++) {
+		LFOs[index].init();
+		LFOs[index].setBastlCyclesPerPeriod((float)bastlCyclesPerSecond/3);
+		LFOs[index].setWaveform(TRIANGLE);
+	}
+
+	printf("Timestamp ");
+	uint8_t thres;
+	thres = 200;
+	LFOs[0].setThreshold(thres);
+	printf("%u ",thres);
+	thres = 60;
+	LFOs[1].setThreshold(thres);
+	printf("%u ",thres);
+	thres = 200;
+	LFOs[2].setThreshold(thres,OVERFLOW);
+	printf("%u ",thres);
+	thres = 60;
+	LFOs[3].setThreshold(thres,OVERFLOW);
+	printf("%u ",thres);
+
+	printf("\n");
+
+	for (uint32_t timeStamp = 1; timeStamp < 4000; timeStamp+=1) {
+		printf("%u ",timeStamp);
+		for (uint8_t index=0; index<numbObjects; index++) {
+			printf("%u ",LFOs[index].getValue(timeStamp));
+		}
+		printf("\n");
+	}
+
 
 }

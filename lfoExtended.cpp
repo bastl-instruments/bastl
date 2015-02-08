@@ -111,8 +111,6 @@ uint8_t lfoExtended::getValue(uint16_t timestamp) {
 
 	} else {
 
-
-
 		// render Basic Waveform
 		switch(currentWaveform) {
 
@@ -137,8 +135,14 @@ uint8_t lfoExtended::getValue(uint16_t timestamp) {
 
 	// Apply Overflowing
 	if (currentOutput > threshold) {
-		if (thresholdType == OVERFLOW) currentOutput = currentOutput % threshold;
-		//if (thresholdType == FOLDING)  currentOutput = threshold - (currentOutput % threshold);
+		if (thresholdType == OVERFLOW) {
+			currentOutput = currentOutput % threshold;
+		} else {
+			// FOLDING
+			uint8_t sectorNumber = currentOutput/threshold;
+			if (sectorNumber & 1) currentOutput = threshold - (currentOutput % threshold);
+			else currentOutput = currentOutput = currentOutput % threshold;
+		}
 	}
 
 	// apply XOR Bits
