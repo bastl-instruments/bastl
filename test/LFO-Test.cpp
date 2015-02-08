@@ -45,6 +45,7 @@ FILE* RedirStdOut::fp;
 
 int main( int argc, const char* argv[] ) {
 
+	printf("### Size: %u Bytes\n",(uint16_t)sizeof(lfoExtended));
 	printf("### Running with %u bastl cycle Frequency\n",bastlCyclesPerSecond);
 
 	// Timestamp overflow region
@@ -123,7 +124,7 @@ int main( int argc, const char* argv[] ) {
 		printf("\n");
 	}
 
-	RedirStdOut::setToConsole();
+
 
 	// XOR
 	RedirStdOut::setToConsole();
@@ -212,6 +213,28 @@ int main( int argc, const char* argv[] ) {
 			printf("%u ",LFOs[index].getValue(timeStamp));
 		}
 		printf("\n");
+	}
+
+	// Internal parameters
+	RedirStdOut::setToConsole();
+	printf("# Internal Parameters\n");
+	RedirStdOut::setToFile("lfoInternal.csv");
+
+	LFOs[0].init();
+	LFOs[0].setBastlCyclesPerPeriod(1250);
+
+	printf("Timestamp ");
+	printf("TimestampU16 ");
+	printf("LastTimestamp ");
+	printf("TimestampOffset ");
+	printf("CurrentStep ");
+	printf("Output");
+	printf("\n");
+
+	for (uint32_t timeStamp = 64000; timeStamp < 69000; timeStamp+=1) {
+		printf("%u ",timeStamp);
+		uint8_t val = LFOs[0].getValue(timeStamp);
+		printf("%u\n",val);
 	}
 
 
