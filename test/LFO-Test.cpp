@@ -186,7 +186,7 @@ int main( int argc, const char* argv[] ) {
 
 	for (uint8_t index=0; index<numbObjects; index++) {
 		LFOs[index].init();
-		LFOs[index].setBastlCyclesPerPeriod((float)bastlCyclesPerSecond/3);
+		LFOs[index].setBastlCyclesPerPeriod(bastlCyclesPerSecond/3);
 		LFOs[index].setWaveform(TRIANGLE);
 	}
 
@@ -215,6 +215,52 @@ int main( int argc, const char* argv[] ) {
 		printf("\n");
 	}
 
+
+
+	// RANDOM Waveform
+	RedirStdOut::setToConsole();
+	printf("# Random Waveform\n");
+	RedirStdOut::setToFile("lfoRandom.csv");
+
+
+	for (uint8_t index=0; index<numbObjects; index++) {
+		LFOs[index].init();
+		LFOs[index].setWaveform(RANDOM);
+	}
+
+	printf("Timestamp ");
+	uint16_t period;
+
+	period = 200;
+	LFOs[0].setBastlCyclesPerPeriod(period);
+	printf("%u ",period);
+
+	period = 20;
+	LFOs[0].setBastlCyclesPerPeriod(period);
+	printf("%u ",period);
+
+	period = 1000;
+	LFOs[0].setBastlCyclesPerPeriod(period);
+	printf("%u ",period);
+
+	period = 3000;
+	LFOs[0].setBastlCyclesPerPeriod(period);
+	printf("%u ",period);
+
+
+	printf("\n");
+
+	for (uint32_t timeStamp = 1; timeStamp < 4000; timeStamp+=1) {
+		printf("%u ",timeStamp);
+		for (uint8_t index=0; index<numbObjects; index++) {
+			printf("%u ",LFOs[index].getValue(timeStamp));
+		}
+		printf("\n");
+	}
+
+
+
+#ifdef INTERNAL
 	// Internal parameters
 	RedirStdOut::setToConsole();
 	printf("# Internal Parameters\n");
@@ -236,6 +282,7 @@ int main( int argc, const char* argv[] ) {
 		uint8_t val = LFOs[0].getValue(timeStamp);
 		printf("%u\n",val);
 	}
+#endif
 
 
 }

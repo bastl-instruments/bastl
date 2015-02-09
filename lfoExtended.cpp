@@ -58,7 +58,7 @@ void lfoExtended::setToStep(uint8_t step, uint8_t timestamp) {
 
 
 
-#define VERBOSE
+//#define VERBOSE
 
 uint8_t lfoExtended::getValue(uint16_t timestamp) {
 
@@ -67,11 +67,11 @@ uint8_t lfoExtended::getValue(uint16_t timestamp) {
 	printf("%u ",lastTimestamp);
 	#endif
 
-	if (timestamp <= lastTimestamp) timestampOffset+=bastlCyclesPerPeriod;
+	if (timestamp <= lastTimestamp) setToStep(currentStep,timestamp);
 	lastTimestamp = timestamp;
 
 	// calculate the current step of LFO waveform
-	uint8_t currentStep = ((((uint16_t)(timestamp - timestampOffset)<<8)) / bastlCyclesPerPeriod);
+	currentStep = ((((uint16_t)(timestamp - timestampOffset)<<8)) / bastlCyclesPerPeriod);
 
 	#ifdef VERBOSE
 	printf("%u ",timestampOffset);
