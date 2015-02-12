@@ -13,6 +13,8 @@
 #include "ITapper.h"
 
 
+
+
 class Tapper {
 public:
 	Tapper();
@@ -40,6 +42,7 @@ private:
 	uint8_t stepsPerTap_;
 	uint16_t maxStepLengthInTimeUnits;
 	uint8_t maxRelativeDeviation;
+	uint8_t firstOfCycle;
 	void (*makeStep_)();
 };
 

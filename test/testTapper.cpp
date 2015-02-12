@@ -41,5 +41,33 @@ int main( int argc, const char* argv[] ) {
 	tapper.tap(1500);
 	printf("--> speed: %u\n",tapper.getTimeUnitsPerStep());
 
+	printf("\nTestdata\n");
+	tapper.init(2000*60.0/30,1,255);
+	tapper.tap(49982);
+	printf("--> speed: %u\n",tapper.getTimeUnitsPerStep());
+	tapper.tap(50395);
+	printf("--> speed: %u\n",tapper.getTimeUnitsPerStep());
+	tapper.tap(50767);
+	printf("--> speed: %u\n",tapper.getTimeUnitsPerStep());
+	tapper.tap(51181);
+	printf("--> speed: %u\n",tapper.getTimeUnitsPerStep());
+	tapper.tap(21912);
+	printf("--> speed: %u\n",tapper.getTimeUnitsPerStep());
+	tapper.tap(24713);
+	printf("--> speed: %u\n",tapper.getTimeUnitsPerStep());
+	tapper.tap(27311);
+	printf("--> speed: %u\n",tapper.getTimeUnitsPerStep());
+	tapper.tap(30396);
+	printf("--> speed: %u\n",tapper.getTimeUnitsPerStep());
+	tapper.tap(33319);
+	printf("--> speed: %u\n",tapper.getTimeUnitsPerStep());
+	tapper.tap(36161);
+	printf("--> speed: %u\n",tapper.getTimeUnitsPerStep());
+	tapper.tap(38922);
+	printf("--> speed: %u\n",tapper.getTimeUnitsPerStep());
+
+
+
+
 
 }

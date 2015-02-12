@@ -15,6 +15,7 @@
 
 
 
+
 /* Functionality explained
  *
  * # A tap cycle consists of a number of taps that occur in approximately
@@ -32,6 +33,7 @@ Tapper::Tapper() :		history(0),
 						stepsPerTap_(1),
 						maxStepLengthInTimeUnits(0),
 						maxRelativeDeviation(0),
+						firstOfCycle(true),
 						makeStep_(0) {
 
 }
@@ -44,6 +46,8 @@ void Tapper::init(uint16_t maxStepLengthInTimeUnits, uint8_t averageWidth, uint8
 	this->maxStepLengthInTimeUnits = maxStepLengthInTimeUnits;
 	history = new MovingAverageLinear<uint16_t>(averageWidth);
 	this->maxRelativeDeviation = maxRelativeDeviation;
+	firstOfCycle = true;
+	setStepsPerTap(1);
 }
 
 
@@ -59,9 +63,8 @@ void Tapper::tap(uint16_t tapTime)
 	printf("NEW Tap @ time %u.\n",tapTime);
 	#endif
 
-	static bool firstOfCycle = true;
-
 	uint16_t thisTapDifference = tapTime - lastTapTime;
+
 
 	if (history->getFillCount()>0) {
 
@@ -83,6 +86,7 @@ void Tapper::tap(uint16_t tapTime)
 			printf("  Tap Difference %u out of window (Deviation of %u)\n   -> Restarting cycle\n",thisTapDifference,deviation);
 			#endif
 			history->clear();
+			firstOfCycle = true;
 		}
 
 	} else {
@@ -97,7 +101,6 @@ void Tapper::tap(uint16_t tapTime)
 			#ifdef TESTING
 			printf("  Starting very first tap cyle\n");
 			#endif
-
 			firstOfCycle = false;
 		}
 	}
