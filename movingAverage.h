@@ -93,15 +93,18 @@ type MovingAverageLinear<type>::getAverage() {
 		uint32_t tmpVal = 0;
 		uint16_t tmpWeight = 0;
 		for (uint8_t index=0; index<fillCount; index++) {
-			tmpVal += values[index]*(255-(index*linearDecrease));
+			tmpVal += (uint32_t)values[index]*(255-(index*linearDecrease));
 			tmpWeight += (255-(index*linearDecrease));
 		}
+
 		average = tmpVal/tmpWeight;
 		needUpdate = false;
 	}
 
 	// return current average
 	return average;
+
+
 
 }
 

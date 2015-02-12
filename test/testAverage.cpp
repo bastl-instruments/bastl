@@ -5,7 +5,7 @@
 #include "../movingAverage.h"
 
 
-MovingAverageLinear<uint8_t> average(4);
+MovingAverageLinear<uint16_t> average(4);
 
 
 
@@ -36,6 +36,18 @@ int main( int argc, const char* argv[] ) {
 	printf("Only clear and read\n");
 	average.clear();
 	printf("%u\n",average.getAverage());
+
+	printf("\n");
+	printf("Big Values\n");
+	average.add(2277);
+	printf("%u\n",average.getAverage());
+	average.add(2521);
+	printf("%u\n",average.getAverage());
+	average.add(2317);
+	printf("%u\n",average.getAverage());
+	average.add(2399);
+	printf("%u\n",average.getAverage());
+
 
 
 
