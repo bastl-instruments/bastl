@@ -247,7 +247,6 @@ int main( int argc, const char* argv[] ) {
 	LFOs[0].setBastlCyclesPerPeriod(period);
 	printf("%u ",period);
 
-
 	printf("\n");
 
 	for (uint32_t timeStamp = 1; timeStamp < 4000; timeStamp+=1) {

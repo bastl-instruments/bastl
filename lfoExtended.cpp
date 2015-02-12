@@ -71,7 +71,8 @@ uint8_t lfoExtended::getValue(uint16_t timestamp) {
 	lastTimestamp = timestamp;
 
 	// calculate the current step of LFO waveform
-	currentStep = ((((uint16_t)(timestamp - timestampOffset)<<8)) / bastlCyclesPerPeriod);
+	currentStep = (((((uint32_t)timestamp - timestampOffset)<<8)) / bastlCyclesPerPeriod);
+
 
 	#ifdef VERBOSE
 	printf("%u ",timestampOffset);
