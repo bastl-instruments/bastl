@@ -68,7 +68,7 @@ void Tapper::tap(uint16_t tapTime)
 
 	if (history->getFillCount()>0) {
 
-		uint8_t deviation = abs(thisTapDifference - history->operator[](0))/(history->getAverage()>>5);
+		uint8_t deviation = abs((int32_t)thisTapDifference - history->operator[](0))/(history->getAverage()>>6);
 
 		if (deviation<maxRelativeDeviation) {
 
@@ -81,7 +81,7 @@ void Tapper::tap(uint16_t tapTime)
 
 		} else {
 			// we are inside a cycle but it is reset because tap is not in expected window
-			// set current tempo as average to have a valid value in until next tap
+			// current tempo will be buffered in average
 			#ifdef TESTING
 			printf("  Tap Difference %u out of window (Deviation of %u)\n   -> Restarting cycle\n",thisTapDifference,deviation);
 			#endif
@@ -102,6 +102,7 @@ void Tapper::tap(uint16_t tapTime)
 			printf("  Starting very first tap cyle\n");
 			#endif
 			firstOfCycle = false;
+			if (resetCallback) resetCallback(tapTime);
 		}
 	}
 

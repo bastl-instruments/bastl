@@ -28,6 +28,9 @@ public:
 	// tap it!
 	void tap(uint16_t tapTime);
 
+	// When the tap cycle gets reset, this callback is called
+	void setResetCallback(void (*resetCallback)(uint16_t));
+
 
 	void setStepsPerTap(uint8_t stepsPerTap);
 	uint16_t getTimeUnitsPerStep();
@@ -43,6 +46,7 @@ private:
 	uint16_t maxStepLengthInTimeUnits;
 	uint8_t maxRelativeDeviation;
 	uint8_t firstOfCycle;
+	void (*resetCallback)(uint16_t);
 	void (*makeStep_)();
 };
 
@@ -52,6 +56,10 @@ inline void Tapper::setStepsPerTap(uint8_t stepsPerTap) {
 
 inline uint16_t Tapper::getTimeUnitsPerStep() {
 	return history->getAverage() / stepsPerTap_;
+}
+
+inline void Tapper::setResetCallback(void (*ptr)(uint16_t))  {
+	resetCallback = ptr;
 }
 
 inline void Tapper::setStepCallBack(void (*makeStep)()) {
