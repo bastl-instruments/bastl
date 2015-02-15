@@ -35,7 +35,7 @@ public:
 
 	// associate a step number with a timestamp
 	// this acts like a phase shift
-	void setToStep(uint8_t stepNumber,uint8_t timestamp);
+	void setToStep(uint8_t stepNumber,uint16_t timestamp);
 
 	// set the basic waveform
 	void setWaveform(LFOBasicWaveform waveform);
