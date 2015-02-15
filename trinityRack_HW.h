@@ -156,7 +156,9 @@ class trinityHWR
 
     trinityHWR(); // constructor
 	void initialize(unsigned char _HW_VERSION);
+	void initializeMozzi(unsigned char _HW_VERSION);
 	void update();
+	void mozziUpdate();
 
     void setLed(unsigned char _LED, boolean _STATE);
     void setColor(unsigned char _COLOR);
@@ -209,9 +211,10 @@ class trinityHWR
 	int knobValues[NUMBER_OF_KNOBS];
 	int lastKnobValues[NUMBER_OF_KNOBS];
 	boolean mozziDigitalRead(unsigned char _pin);
-
+	void updateMozziKnobs();
 	void updateKnobs();
 	void updateButtons();
+	void updateMozziButtons();
 	void writeToLeds();
 
 	boolean mozzi;

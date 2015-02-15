@@ -71,9 +71,26 @@ void trinityHWR::initialize(unsigned char _HW_VERSION){
 	update();
 }
 
+void trinityHWR::initializeMozzi(unsigned char _HW_VERSION){
+
+	for(int i=ZERO;i<NUMBER_OF_BUTTONS;i++) pinMode(buttonPinsR[i], INPUT_PULLUP);
+	for(int i=ZERO;i<NUMBER_OF_LEDS;i++) pinMode(ledPinsR[i], OUTPUT);
+
+	freezeAllKnobs();
+	mozziUpdate();
+	mozziUpdate();
+}
+
 void trinityHWR::update(){
 	updateKnobs();
 	updateButtons();
+	writeToLeds();
+}
+
+
+void trinityHWR::mozziUpdate(){
+	updateMozziKnobs();
+	updateMozziButtons();
 	writeToLeds();
 }
 
@@ -99,6 +116,40 @@ void trinityHWR::updateKnobs(){
   for (int i = ZERO; i < NUMBER_OF_KNOBS; i++) {
 
     short newValue = 1023 - analogRead(knobPinsR[i]); //mozzi analog read
+    short distance = abs(newValue - knobValues[i]);
+
+
+    if(!unfreezeExternaly){
+    	if (bitRead(knobFreezedHash, i) == true) {
+    	  if (distance > KNOB_FREEZE_DISTANCE) {
+     	   bitWrite(knobFreezedHash, i, false);
+     	   bitWrite(knobChangedHash, i, true);
+    	  }
+  	  }
+    }
+
+   	if (abs(newValue - knobValues[i]) > KNOB_TOLERANCE) bitWrite(knobChangedHash, i, true), activity=ZERO;
+    else {
+
+    if(activity>ACTIVITY_LIMIT) bitWrite(knobChangedHash, i, false);
+    else activity++;
+
+    }
+
+    lastKnobValues[i]=knobValues[i];
+    knobValues[i] = newValue;
+  }
+
+}
+
+
+//update values and hashes of knobs
+void trinityHWR::updateMozziKnobs(){
+
+ knobChangedHash = ZERO;
+  for (int i = ZERO; i < NUMBER_OF_KNOBS; i++) {
+
+    short newValue = 1023 - mozziAnalogRead(knobPinsR[i]); //mozzi analog read
     short distance = abs(newValue - knobValues[i]);
 
 
@@ -220,13 +271,30 @@ void trinityHWR::setIndependentRGBState(boolean _STATE){
 //############# BUTTON RELATED FUNCTIONS #############
 
 boolean trinityHWR::mozziDigitalRead(unsigned char _pin){
-   //if(_pin>13) return mozziAnalogRead(_pin)>>9;
-   //else
+   if(_pin>13) return mozziAnalogRead(_pin)>>9;
+   else
 	   return digitalRead(_pin);
 }
 
 // updates all button related hashes
 void trinityHWR::updateButtons(){
+
+	for(int i=ZERO;i<NUMBER_OF_BUTTONS;i++){ // first read the buttons and update button states
+
+		//	pinMode(pgm_read_word_near(buttonPinsR + i), INPUT_PULLUP);
+		bitWrite(buttonStateHash,i,!digitalRead(buttonPinsR[i]));
+
+		// and now update all the other hashes
+	 	bitWrite(justPressedHash,i,false);
+		bitWrite(justReleasedHash,i,false);
+    	if(bitRead(buttonStateHash,i)==true && bitRead(lastButtonStateHash,i)==false)  bitWrite(justPressedHash,i,true);
+    	if(bitRead(buttonStateHash,i)==false && bitRead(lastButtonStateHash,i)==true)  bitWrite(justReleasedHash,i,true);
+		bitWrite(lastButtonStateHash,i,bitRead(buttonStateHash,i));
+	}
+
+}
+
+void trinityHWR::updateMozziButtons(){
 
 	for(int i=ZERO;i<NUMBER_OF_BUTTONS;i++){ // first read the buttons and update button states
 
