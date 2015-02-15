@@ -8,23 +8,31 @@
 
 #include "lfoExtended.h"
 
-void lfoExtended::init() {
+//#define VERBOSE
+
+void lfoExtended::init(uint16_t bastlCycleFrequency) {
 	currentWaveform = SAW;
-	numbStepsToSkip = 0;
+	numbPhaseStepsToSkip = 0;
 	threshold = 255;
 	thresholdType = FOLDING;
 	currentStep = 0;
-	lastUnskippedStep=currentStep-128;
-	timestampOffset=0;
-	lastTimestamp=0;
+	lastUnskippedPhase = 0;
 	currentSlope = 0;
 	xorBits = 0;
 	flopBits=0;
+	currentPhase = 0;
+
+	this->bastlCycleFrequency = bastlCycleFrequency;
 
 }
 
 void lfoExtended::setBastlCyclesPerPeriod(uint16_t bastlCyclesPerPeriod) {
-	this->bastlCyclesPerPeriod = bastlCyclesPerPeriod;
+	phaseIncrement = ((uint32_t)65536 + (bastlCyclesPerPeriod>>1))/bastlCyclesPerPeriod;
+	maxAbsoluteSlope = ((uint16_t)phaseIncrement+100)>>6;
+	#ifdef VERBOSE
+	printf("Cycles per Period %u = phaseincrement of %u\n",bastlCyclesPerPeriod,phaseIncrement);
+	printf("Random max Steps betweene slope change: %u \n\n",maxStepsBetweenSlopeChange);
+	#endif
 }
 
 void lfoExtended::setWaveform(LFOBasicWaveform waveform) {
@@ -38,8 +46,11 @@ void lfoExtended::setFlop(uint8_t flopBits) {
 	this->flopBits = flopBits;
 }
 
-void lfoExtended::setResolution(uint8_t numbStepsToSkip) {
-	this->numbStepsToSkip = numbStepsToSkip;
+void lfoExtended::setResolution(uint8_t stepsPerPeriod) {
+	this->numbPhaseStepsToSkip = ((uint32_t)65536/(stepsPerPeriod+1)-2);
+	#ifdef VERBOSE
+		printf("\nPhase steps to skip %u\n",numbPhaseStepsToSkip);
+	#endif
 }
 
 void lfoExtended::setThreshold(uint8_t thres,LFOThresholdType type) {
@@ -47,49 +58,49 @@ void lfoExtended::setThreshold(uint8_t thres,LFOThresholdType type) {
 	thresholdType = type;
 }
 
+void lfoExtended::setToStep(uint8_t step) {
+	currentPhase =  step << 8;
+}
 
-void lfoExtended::setToStep(uint8_t step, uint16_t timestamp) {
-	timestampOffset = timestamp - ((step*bastlCyclesPerPeriod)>>8);
-	#ifdef TESTING
-	//printf("Offset: %u\n",timestampOffset);
-	#endif
+
+uint8_t lfoExtended::getValue(uint16_t timestamp) {
+
+	static uint16_t lastTimeStamp = 0;
+
+	while(lastTimeStamp!=timestamp) {
+		step();
+		lastTimeStamp++;
+	}
+
+	return getValue();
 }
 
 
 
-
-//#define VERBOSE
-
-uint8_t lfoExtended::getValue(uint16_t timestamp) {
-
-	#ifdef VERBOSE
-	printf("%u ",timestamp);
-	printf("%u ",lastTimestamp);
-	#endif
-
-	if (timestamp <= lastTimestamp) setToStep(currentStep,timestamp);
-	lastTimestamp = timestamp;
-
-	// calculate the current step of LFO waveform
-	currentStep = (((((uint32_t)timestamp - timestampOffset)<<8)) / bastlCyclesPerPeriod);
-
-
-	#ifdef VERBOSE
-	printf("%u ",timestampOffset);
-	printf("%u ",currentStep);
-	#endif
-
-
-	uint8_t stepsSinceLast = currentStep-lastUnskippedStep;
+uint8_t lfoExtended::getValue() {
 
 	// check if step will be skipped due to resolution
-	if ((uint8_t)(currentStep-lastUnskippedStep) < numbStepsToSkip) {
+	uint16_t phaseStepsSinceLast = currentPhase-lastUnskippedPhase;
+
+	// check how many whole steps have passed to decided if new random slope must be chosen
+	uint8_t stepsSinceLast = (currentPhase>>8) - (lastUnskippedPhase>>8);
+
+	#ifdef VERBOSE
+	printf("Phase Steps since last Call: %u\n",phaseStepsSinceLast);
+	#endif
+
+	if (phaseStepsSinceLast < numbPhaseStepsToSkip) {
 		return currentOutput;
+	} else {
+		lastUnskippedPhase = currentPhase;
 	}
-	lastUnskippedStep = currentStep;
 
+	currentStep = currentPhase >> 8;
 
-
+	// check if flopping is taken affect
+	if (currentStep & flopBits) {
+		return 0;
+	}
 
 
 	if (currentWaveform == RANDOM) {
@@ -99,25 +110,24 @@ uint8_t lfoExtended::getValue(uint16_t timestamp) {
 
 		// get new slope and its duration if it's time for it
 		if (stepsUntilNextSlopePick <= 0) {
-			currentSlope = (bastlRandom::range(0,2*maxAbsoluteSlope+1)-maxAbsoluteSlope);
-			stepsUntilNextSlopePick = bastlRandom::range(minStepsBetweenSlopeChange,maxStepsBetweenSlopeChange);
+			currentSlope = bastlRandom::range(0,(2*maxAbsoluteSlope))-maxAbsoluteSlope;
+			stepsUntilNextSlopePick = bastlRandom::range(20/2,40);
+			#ifdef VERBOSE
+				printf("\nPick: %i for %i\n",currentSlope,stepsUntilNextSlopePick);
+			#endif
 		}
-
-		#ifdef TESTING
-		//printf("Slope: %i\n",currentSlope);
-		#endif
 
 
 		// check direction of slope if folding
 		if (thresholdType == FOLDING) {
-			int16_t tmpCurrentValue = currentOutput+currentSlope;
+			int16_t tmpCurrentValue = currentOutput+currentSlope*stepsSinceLast;
 			if ((tmpCurrentValue > threshold) || (tmpCurrentValue <0)) {
 				currentSlope = -currentSlope;
 			}
 		}
 
 		// add new slope to current output value
-		currentOutput += currentSlope;
+		currentOutput += currentSlope*stepsSinceLast;
 
 
 	} else {
@@ -127,9 +137,6 @@ uint8_t lfoExtended::getValue(uint16_t timestamp) {
 
 			case SAW: {
 				currentOutput = currentStep;
-				#ifdef TESTING
-				//printf("step: %u -> out: %u",currentStep,currentOutput);
-				#endif
 				break;
 			}
 
@@ -159,10 +166,7 @@ uint8_t lfoExtended::getValue(uint16_t timestamp) {
 	// apply XOR Bits
 	currentOutput ^= xorBits;
 
-	// check if flopping is taken affect
-	if (currentStep & flopBits) {
-		return 0;
-	}
+
 
 
 	return currentOutput;
