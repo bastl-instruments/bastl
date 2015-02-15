@@ -9,7 +9,7 @@ class interpolatingBuffer {
 
 public:
 	void init(uint8_t channel);
-	void setPeriodInSteps(uint16_t _steps){periodInSteps=_steps;};
+	void setBastlCyclesPerPeriod(uint16_t _steps){periodInSteps=_steps;};
 	void loopRandom(bool _loopRandom){ loopState=_loopRandom;};
 	void interpolateMode(bool _interpolateMode){ interpolate=_interpolateMode;};
 	void setInterpolationAmount(uint8_t _interpolationAmount){ interpolateAmount=_interpolationAmount; };
