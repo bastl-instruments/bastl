@@ -258,6 +258,46 @@ int main( int argc, const char* argv[] ) {
 	}
 
 
+	// Set to stepp
+	RedirStdOut::setToConsole();
+	printf("# Set to step\n");
+	RedirStdOut::setToFile("lfoSetStep.csv");
+
+
+	for (uint8_t index=0; index<numbObjects; index++) {
+		LFOs[index].init();
+		LFOs[index].setBastlCyclesPerPeriod(bastlCyclesPerSecond/3);
+	}
+
+	printf("Timestamp ");
+	uint16_t resetTime;
+
+	resetTime = 100;
+	LFOs[0].setToStep(0,resetTime);
+	printf("%u ",resetTime);
+
+	resetTime = 1000;
+	LFOs[1].setToStep(0,resetTime);
+	printf("%u ",resetTime);
+
+	resetTime = 2000;
+	LFOs[2].setToStep(0,resetTime);
+	printf("%u ",resetTime);
+
+	resetTime = 3000;
+	LFOs[3].setToStep(0,resetTime);
+	printf("%u ",resetTime);
+
+	printf("\n");
+
+	for (uint32_t timeStamp = 3000; timeStamp < 7000; timeStamp+=1) {
+		printf("%u ",timeStamp);
+		for (uint8_t index=0; index<numbObjects; index++) {
+			printf("%u ",LFOs[index].getValue(timeStamp));
+		}
+		printf("\n");
+	}
+
 
 #ifdef INTERNAL
 	// Internal parameters
