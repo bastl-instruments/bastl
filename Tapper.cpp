@@ -86,7 +86,7 @@ void Tapper::tap(uint16_t tapTime)
 			printf("  Tap Difference %u out of window (Deviation of %u)\n   -> Restarting cycle\n",thisTapDifference,deviation);
 			#endif
 			history->clear();
-			firstOfCycle = true;
+			if (resetCallback) resetCallback(tapTime);
 		}
 
 	} else {
