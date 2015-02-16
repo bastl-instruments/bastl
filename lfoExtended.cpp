@@ -156,13 +156,14 @@ uint8_t lfoExtended::getValue(uint16_t timestamp) {
 		}
 	}
 
-	// apply XOR Bits
-	currentOutput ^= xorBits;
+
 
 	// check if flopping is taken affect
 	if (currentStep & flopBits) {
 		return 0;
 	}
+	// apply XOR Bits
+	currentOutput ^= xorBits;
 
 
 	return currentOutput;
