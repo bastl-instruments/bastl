@@ -27,6 +27,8 @@ void lfoExtended::init(uint16_t bastlCycleFrequency) {
 }
 
 void lfoExtended::setBastlCyclesPerPeriod(uint16_t bastlCyclesPerPeriod) {
+	if (bastlCyclesPerPeriod==0) return;
+
 	phaseIncrement = ((uint32_t)65536 + (bastlCyclesPerPeriod>>1))/bastlCyclesPerPeriod;
 	maxAbsoluteSlope = ((uint16_t)phaseIncrement+100)>>6;
 	#ifdef VERBOSE
