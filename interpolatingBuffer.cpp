@@ -6,8 +6,16 @@
  *      Author: dasvaclav
  */
 #include "interpolatingBuffer.h"
+#include <Arduino.h>
+//#include <random.h>
 #include <Line.h>
+//#include "mapping.h"
 Line <float> linear[6];
+/*
+interpolatingBuffer::interpolatingBuffer(){
+
+}
+*/
 void interpolatingBuffer::init(uint8_t channel){
 	intCh=channel;
 }
@@ -49,7 +57,7 @@ void interpolatingBuffer::update(){
 
 	smoothSteps++;
 	//if(smoothingAmount>127){
-	uint16_t smoothingSkip=map(smoothingAmount,0,2047,0,periodInSteps);
+	uint16_t smoothingSkip=0;//map(smoothingAmount,0,2047,0,periodInSteps);
 	if(smoothSteps>=smoothingSkip){
 		smoothSteps=0;
 		addSmoothStep(buffer[0]);
@@ -59,7 +67,7 @@ void interpolatingBuffer::update(){
 
 void interpolatingBuffer::setStep(uint8_t _step){
 	interpolateStep=_step;
-	interpolateInSteps=map(interpolateAmount,0,255,1,periodInSteps);
+//	interpolateInSteps=map(interpolateAmount,0,255,1,periodInSteps);
 	if(interpolate){
 		if(_step<31){
 			linear[intCh].set(buffer[_step],buffer[_step+1],interpolateInSteps);
@@ -72,7 +80,7 @@ void interpolatingBuffer::setStep(uint8_t _step){
 }
 void interpolatingBuffer::addRandomStep(){
 	rotateBuffer();
-	int16_t randomNumber=random(0,64)-31+buffer[1];
+	int16_t randomNumber=0;//=random(0,64)-31+buffer[1];
 	if(randomNumber>255) randomNumber=255;
 	if(randomNumber<0) randomNumber=0;
 	buffer[0]=randomNumber;
@@ -105,3 +113,4 @@ uint8_t interpolatingBuffer::calculateSmoothAverage(){
 	}
 	return sum/32;
 }
+

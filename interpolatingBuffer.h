@@ -4,7 +4,7 @@
 
 #include <random.h>
 
-
+#include "basic.h"
 class interpolatingBuffer {
 
 public:
@@ -53,4 +53,4 @@ private:
 
 
 
-#endif /* LFOEXTENDED_H_ */
+#endif

@@ -6,7 +6,7 @@
  */
 
 #include "SimplifiedTapper.h"
-#include <stdlib.h>
+//#include <stdlib.h>
 
 //#define DEBUG
 #ifdef DEBUG
@@ -40,7 +40,7 @@ void SimplifiedTapper::tap(unsigned int tapTime)
 	// Reset values when first tap or tap over defined max tap deviation
     if ((stepsInRow_ == -1) ||
         (lastTapTime_ + maxStepLengthInTimeUnits_ < tapTime) ||
-        ((stepsInRow_ > 0) &&  (abs(lastTapTime_ + currentTapTime_ - tapTime)  > (0.5 * currentTapTime_))))
+        ((stepsInRow_ > 0) &&  ((lastTapTime_ + currentTapTime_ - tapTime)  > (0.5 * currentTapTime_))))
     {
     	lastTapTime_ = tapTime;
     	currentTapTime_ = 0;
