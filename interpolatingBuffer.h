@@ -3,7 +3,7 @@
 #define INTERPOLATING_BUFFER_H_
 
 #include <random.h>
-
+#include "basic.h"
 
 class interpolatingBuffer {
 
@@ -14,7 +14,7 @@ public:
 	void interpolateMode(bool _interpolateMode){ interpolate=_interpolateMode;};
 	void setInterpolationAmount(uint8_t _interpolationAmount){ interpolateAmount=_interpolationAmount; };
 	void setSmootingAmount(uint16_t _smoothingAmount){ smoothingAmount=_smoothingAmount; };
-
+	void setScale(uint8_t __scale){_scale=__scale;};
 	void update();
 	void setStepValue(uint8_t _step,uint8_t _value){ buffer[_step]=_value; };
 	void setStep(uint8_t _step);
@@ -41,6 +41,7 @@ private:
 	uint16_t interpolatedSteps;
 	uint16_t interpolateInSteps;
 	uint8_t interpolateStep;
+	uint8_t _scale;
 	void rotateBuffer();
 	void rotateSmoothBuffer();
 	void incrementPhase();

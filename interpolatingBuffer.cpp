@@ -6,7 +6,10 @@
  *      Author: dasvaclav
  */
 #include "interpolatingBuffer.h"
+#include "basic.h"
 #include <Line.h>
+//#include <quantizer8bit.h>
+//quantizer8bit qnt;
 Line <float> linear[6];
 void interpolatingBuffer::init(uint8_t channel){
 	intCh=channel;
@@ -62,10 +65,10 @@ void interpolatingBuffer::setStep(uint8_t _step){
 	interpolateInSteps=map(interpolateAmount,0,255,1,periodInSteps);
 	if(interpolate){
 		if(_step<31){
-			linear[intCh].set(buffer[_step],buffer[_step+1],interpolateInSteps);
+		//	linear[intCh].set(qnt.quantize(buffer[_step],_scale),qnt.quantize(buffer[_step+1],_scale),interpolateInSteps);
 		}
 		else{
-			linear[intCh].set(buffer[_step],buffer[0],interpolateInSteps);
+			//linear[intCh].set(qnt.quantize(buffer[_step],_scale),qnt.quantize(buffer[0],_scale),interpolateInSteps);
 		}
 	}
 	interpolatedSteps=0;
