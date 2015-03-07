@@ -50,7 +50,9 @@ void lfoExtended::setFlop(uint8_t flopBits) {
 }
 
 void lfoExtended::setResolution(uint8_t stepsPerPeriod) {
-	this->numbPhaseStepsToSkip = ((uint32_t)65536/(stepsPerPeriod+1)-2);
+	if (stepsPerPeriod == 0) stepsPerPeriod = 1; // preventing division by zero
+
+	this->numbPhaseStepsToSkip = ((uint32_t)65536/(stepsPerPeriod)-2);
 	#ifdef VERBOSE
 		printf("\nPhase steps to skip %u\n",numbPhaseStepsToSkip);
 	#endif
