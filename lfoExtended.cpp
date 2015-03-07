@@ -21,6 +21,7 @@ void lfoExtended::init(uint16_t bastlCycleFrequency) {
 	xorBits = 0;
 	flopBits=0;
 	currentPhase = 0;
+	lastTimeStamp = 0;
 
 	this->bastlCycleFrequency = bastlCycleFrequency;
 
@@ -66,8 +67,6 @@ void lfoExtended::setToStep(uint8_t step) {
 
 
 uint8_t lfoExtended::getValue(uint16_t timestamp) {
-
-	static uint16_t lastTimeStamp = 0;
 
 	while(lastTimeStamp!=timestamp) {
 		step();
