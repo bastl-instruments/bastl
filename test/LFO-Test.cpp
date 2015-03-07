@@ -39,14 +39,13 @@ private:
 FILE* RedirStdOut::fp;
 
 
-void render(uint32_t from, uint32_t to, lfoExtended* objects, uint8_t numbObjects) {
-	for (uint32_t timeStamp = from; timeStamp < to; timeStamp++) {
+void render(uint32_t from, uint32_t to, lfoExtended* objects, uint8_t numbObjects, uint8_t stepSize=1) {
+	for (uint32_t timeStamp = from; timeStamp < to; timeStamp+=stepSize) {
 
 		printf("%.2f ",(float)1000*timeStamp/bastlCyclesPerSecond);
 
 		for (uint8_t index=0; index<numbObjects; index++) {
-			objects[index].step();
-			printf("%u ",objects[index].getValue());
+			printf("%u ",objects[index].getValue(timeStamp));
 		}
 
 		printf("\n");
@@ -123,7 +122,7 @@ int main( int argc, const char* argv[] ) {
 	}
 	printf("\n");
 
-	render(1,5000,LFOs,4);
+	render(1,5000,LFOs,4,15);
 
 
 
@@ -158,13 +157,13 @@ int main( int argc, const char* argv[] ) {
 		LFOs[index].setBastlCyclesPerPeriod((float)bastlCyclesPerSecond/3);
 		LFOs[index].setWaveform(TRIANGLE);
 
-		uint8_t FlopBit = 4;
-		LFOs[index].setFlop(1<<FlopBit);
+		uint8_t FlopBit = index*3 + 10;
+		LFOs[index].setFlop(FlopBit);
 		printf("%u ",FlopBit);
 	}
 	printf("\n");
 
-	render(1,7000,LFOs,4);
+	render(1,2000,LFOs,4,7);
 
 
 
