@@ -80,11 +80,12 @@ uint8_t lfoExtended::getValue(uint16_t timestamp) {
 
 uint8_t lfoExtended::getValue() {
 
+	#ifdef VERBOSE
+	printf("Getting output for %u\n",currentPhase);
+	#endif
+
 	// check if step will be skipped due to resolution
 	uint16_t phaseStepsSinceLast = currentPhase-lastUnskippedPhase;
-
-	// check how many whole steps have passed to decided if new random slope must be chosen
-	uint8_t stepsSinceLast = (currentPhase>>8) - (lastUnskippedPhase>>8);
 
 	#ifdef VERBOSE
 	printf("Phase Steps since last Call: %u\n",phaseStepsSinceLast);
@@ -93,15 +94,22 @@ uint8_t lfoExtended::getValue() {
 	if (phaseStepsSinceLast < numbPhaseStepsToSkip) {
 		return currentOutput;
 	} else {
-		lastUnskippedPhase = currentPhase;
+		lastUnskippedPhase += numbPhaseStepsToSkip;
 	}
 
+	//// From here on everything is broken down to the current step ////
 	currentStep = currentPhase >> 8;
 
 	// check if flopping is taken affect
 	if (currentStep & flopBits) {
 		return 0;
 	}
+
+	// check how many whole steps have passed to decided if new random slope must be chosen
+	uint8_t stepsSinceLast = currentStep - lastStep;
+	if (stepsSinceLast) lastStep = currentStep;
+
+
 
 
 	if (currentWaveform == RANDOM) {
@@ -121,14 +129,14 @@ uint8_t lfoExtended::getValue() {
 
 		// check direction of slope if folding
 		if (thresholdType == FOLDING) {
-			int16_t tmpCurrentValue = currentOutput+currentSlope*stepsSinceLast;
+			int16_t tmpCurrentValue = currentOutput+currentSlope;//*stepsSinceLast;
 			if ((tmpCurrentValue > threshold) || (tmpCurrentValue <0)) {
 				currentSlope = -currentSlope;
 			}
 		}
 
 		// add new slope to current output value
-		currentOutput += currentSlope*stepsSinceLast;
+		currentOutput += currentSlope;//*stepsSinceLast;
 
 
 	} else {

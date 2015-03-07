@@ -84,6 +84,7 @@ private:
 	uint8_t currentStep;
 
 	uint16_t lastTimeStamp;
+	uint8_t lastStep;
 
 	uint16_t bastlCycleFrequency;
 	uint16_t phaseIncrement;
