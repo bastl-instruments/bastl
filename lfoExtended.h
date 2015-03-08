@@ -31,26 +31,34 @@ public:
 
 public:
 	// set the base frequency of the LFO by its period length
+	// due to fixed point precision, the actual waveform frequency will be:
+	// f_out = f_in * floor(floor(2^16 + p/2)/p) / 2^16 ~ f_in/p
+	// minimum period: 2
+	// maximum period: 65535
 	void setBastlCyclesPerPeriod(uint16_t bastlCyclesPerPeriod);
 
-	// set to given step number
+	// set waveform to given step number
 	void setToStep(uint8_t stepNumber);
 
-	// set the basic waveform
+	// set the shape basic waveform
+	// TRIANGLE, SAW or RANDOM
 	void setWaveform(LFOBasicWaveform waveform);
 
 	// the output value is XORed with xorBits
 	void setXOR(uint8_t xorBits);
 
-	// set the output to zero of any of the flopBits are set in the current step number
+	// set the output to zero if any of the flopBits are set in the current step number
+	// to create less advanced patterns, set flopBits to (1<<n), giving you 2^(7-n) flops per period
 	void setFlop(uint8_t flopBits);
 
 	// one period is divided into stepsPerPeriod steps during which the output remains constant
+	// TODO: value of 1 is not working as expected
 	void setResolution(uint8_t stepsPerPeriod);
 
 	// when the output reaches zero or thres, it is either folded or oveflows
 	void setThreshold(uint8_t thres, LFOThresholdType type = FOLDING);
 
+	// if you call this function at a frequency f, you will render a waveform of a fixed frequency ~ f/period
 	inline void step() {
 		currentPhase += phaseIncrement;
 	}
