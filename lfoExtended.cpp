@@ -7,6 +7,7 @@
 
 
 #include "lfoExtended.h"
+#include "random.h"
 
 //#define VERBOSE
 
