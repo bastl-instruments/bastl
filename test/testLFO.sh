@@ -1,5 +1,6 @@
 rm *.o
 rm data/*.csv
+rm lfo
 
 g++ -c -DTESTING -Wall -o lfoTest.o   LFO-Test.cpp
 g++ -c -DTESTING -Wall -o random.o   ../random.cpp
