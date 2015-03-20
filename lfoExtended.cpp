@@ -5,9 +5,10 @@
  *      Author: user
  */
 
-
 #include "lfoExtended.h"
 #include "random.h"
+
+
 
 //#define VERBOSE
 
@@ -94,21 +95,24 @@ uint8_t lfoExtended::getValue() {
 	printf("Phase Steps since last Call: %u\n",phaseStepsSinceLast);
 	#endif
 
+	// Break down current Phase to current Step //
+	currentStep = currentPhase >> 8;
+
+
+	// check if flopping is taking affect
+	if ((currentStep & flopBits)) {
+		return 0;
+	}
+
+	// check if resolution is taking affect
 	if (phaseStepsSinceLast < numbPhaseStepsToSkip) {
 		return currentOutput;
 	} else {
 		lastUnskippedPhase += numbPhaseStepsToSkip;
 	}
 
-	//// From here on everything is broken down to the current step ////
-	currentStep = currentPhase >> 8;
 
-	// check if flopping is taken affect
-	if (currentStep & flopBits) {
-		return 0;
-	}
-
-	// check how many whole steps have passed to decided if new random slope must be chosen
+	// check how many whole steps have passed to decide if new random slope must be chosen
 	uint8_t stepsSinceLast = currentStep - lastStep;
 	if (stepsSinceLast) lastStep = currentStep;
 
