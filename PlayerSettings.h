@@ -17,6 +17,7 @@ public:
     PlayerSettings();
 
     QuantizationType getRecordQuantizationType();
+    unsigned char getRecordQuantizationSize();
     void setRecordQuantizationType(QuantizationType quatizationType);
 
     DrumInstrumentEventType getDrumInstrumentEventType(unsigned char instrumentID);
