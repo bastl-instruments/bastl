@@ -8,17 +8,37 @@
 #ifndef MOVINGAVERAGE_H_
 #define MOVINGAVERAGE_H_
 
+// A linear Moving Average Class
+//
+// the size of the buffer is passed in the constructor
+// datatype is set by a template parameter
+//
+// Values are weightened by index*(255-(255/size))
+//
+// works only for uint8_t and uint16_t!
+
 template <typename type>
 class MovingAverageLinear {
 public:
+
+	// construct an object with the given buffer size
 	MovingAverageLinear(uint8_t size);
+
 	~MovingAverageLinear();
 
+	// add another value to the buffer
 	void add(type value);
-	type getAverage();
-	void clear(uint8_t value = 0);
 
+	// calculate current average of all elements in buffer
+	type getAverage();
+
+	// delete all elements from buffer but set a value that is returned as average
+	void clear();
+
+	// returns the number of valid elements in the buffer
 	uint8_t getFillCount() { return fillCount;}
+
+	// individual access to buffer elements
 	type operator[](uint8_t index) {return values[index];}
 
 private:
@@ -45,10 +65,8 @@ MovingAverageLinear<type>::~MovingAverageLinear() {
 }
 
 template <typename type>
-void MovingAverageLinear<type>::clear(uint8_t value) {
-	average = value;
+void MovingAverageLinear<type>::clear() {
 	fillCount = 0;
-	needUpdate = true;
 }
 
 template <typename type>
@@ -75,15 +93,18 @@ type MovingAverageLinear<type>::getAverage() {
 		uint32_t tmpVal = 0;
 		uint16_t tmpWeight = 0;
 		for (uint8_t index=0; index<fillCount; index++) {
-			tmpVal += values[index]*(255-(index*linearDecrease));
+			tmpVal += (uint32_t)values[index]*(255-(index*linearDecrease));
 			tmpWeight += (255-(index*linearDecrease));
 		}
+
 		average = tmpVal/tmpWeight;
 		needUpdate = false;
 	}
 
 	// return current average
 	return average;
+
+
 
 }
 

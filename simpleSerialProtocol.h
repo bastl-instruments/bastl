@@ -19,6 +19,9 @@ class simpleSerialProtocol {
 		bool recieveMessage();
 		uint8_t getMessageType();
 		uint8_t getMessageValue();
+		void sync();
+		void pairMessage();
+		void sendPairMessage();
 		//handshake if necessary
 
 	private:

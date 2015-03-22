@@ -8,8 +8,11 @@
 #ifndef MAPPING_H_
 #define MAPPING_H_
 
-#include <inttypes.h>
+#include "basic.h"
+
+#ifndef TESTING
 #include <avr/pgmspace.h>
+
 
 const uint16_t expByteToWord_Table[256] PROGMEM =
 {
@@ -52,6 +55,20 @@ const uint16_t exp8BitTo12BitTable[256] PROGMEM =
 		3157,3261,3369,3480,3595,3714,3837,3964,4095
 };
 
+const uint8_t exp8BitTo8BitTableRAM[256] =
+{
+		0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,
+		2,2,2,2,2,2,2,2,2,2,2,2,2,2,3,3,3,3,3,3,3,3,3,3,3,3,3,4,4,4,4,4,4,4,4,
+		4,4,5,5,5,5,5,5,5,5,5,6,6,6,6,6,6,6,7,7,7,7,7,7,8,8,8,8,8,9,9,9,9,9,
+		10,10,10,10,11,11,11,11,12,12,12,12,13,13,13,14,14,14,14,15,15,16,16,16,
+		17,17,17,18,18,19,19,19,20,20,21,21,22,22,23,23,24,24,25,25,26,27,27,
+		28,28,29,30,30,31,32,32,33,34,35,35,36,37,38,39,40,40,41,42,43,44,45,46,
+		47,48,49,50,52,53,54,55,56,58,59,60,61,63,64,66,67,69,70,72,73,75,77,78,
+		80,82,84,85,87,89,91,93,95,97,100,102,104,106,109,111,114,116,119,121,124,
+		127,130,132,135,138,141,145,148,151,154,158,161,165,169,172,176,180,184,188,
+		192,196,201,205,210,214,219,224,229,234,239,245,250,255
+};
+
 inline uint8_t mapProgmemU8U8(uint8_t input, const uint8_t table[]) {
 	return pgm_read_byte_near(table + input);
 }
@@ -59,6 +76,46 @@ inline uint8_t mapProgmemU8U8(uint8_t input, const uint8_t table[]) {
 inline uint16_t mapProgmemU8U16(uint8_t input, const uint16_t table[]) {
 	return pgm_read_word_near(table + input);
 }
+
+inline uint8_t mapRAMU8U8(uint8_t input, const uint8_t table[]) {
+	return table[input];
+}
+
+#endif
+
+// General mapping from arduino
+
+int32_t map(int32_t x, int32_t in_min, int32_t in_max, int32_t out_min, int32_t out_max) {
+	return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+
+/********** Do we actually neeed this stuff? ************/
+
+
+// maps the range of a input byte to a given range of an unsigned int
+// this is fast but NOT fully reaching the end value!
+inline uint16_t mapLinearRuntimeFastU8U16(uint8_t input, uint16_t start, uint16_t end) {
+	return (((int32_t)input*(end-start))>>8)+start;
+}
+
+// maps the range of a input byte to a given range of an unsigned int
+// this is slower but reaching the end value
+inline uint16_t mapLinearRuntimePreciseU8U16(uint8_t input, uint16_t start, uint16_t end) {
+	return (((int32_t)input*(end-start))/255)+start;
+}
+
+// maps the range of a input byte to a given range of an signed int
+// this is fast but NOT fully reaching the end value!
+inline int16_t mapLinearRuntimeFastU8S16(uint8_t input, int16_t start, int16_t end) {
+	return (((int32_t)input*(end-start))>>8)+start;
+}
+
+// maps the range of a input byte to a given range of an signed int
+// this is slower but reaching the end value
+inline int16_t mapLinearRuntimePreciseU8S16(uint8_t input, int16_t start, int16_t end) {
+	return (((int32_t)input*(end-start))/255)+start;
+}
+
 
 
 #endif /* MAPPING_H_ */

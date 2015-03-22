@@ -7,13 +7,25 @@
 
 #include "Tapper.h"
 
-//#define DEBUG
-#ifdef DEBUG
+//#define TESTING
+#ifdef TESTING
 #include <stdio.h>
 #endif
 
 
-#include <stdlib.h>
+
+
+
+/* Functionality explained
+ *
+ * # A tap cycle consists of a number of taps that occur in approximately
+ *   equal distances
+ * # Average is taken over the last *averageWidth* tap time DIFFERENCES to calculate tap tempo
+ * # An active cycle is reset when the relative deviation exceeds a given limit.
+ *   This is considered as a desired tempo change
+ * # Also absolute limits are needed when no tempo is known yet
+ *
+ */
 
 
 Tapper::Tapper() :		history(0),
@@ -21,6 +33,7 @@ Tapper::Tapper() :		history(0),
 						stepsPerTap_(1),
 						maxStepLengthInTimeUnits(0),
 						maxRelativeDeviation(0),
+						firstOfCycle(true),
 						makeStep_(0) {
 
 }
@@ -33,6 +46,8 @@ void Tapper::init(uint16_t maxStepLengthInTimeUnits, uint8_t averageWidth, uint8
 	this->maxStepLengthInTimeUnits = maxStepLengthInTimeUnits;
 	history = new MovingAverageLinear<uint16_t>(averageWidth);
 	this->maxRelativeDeviation = maxRelativeDeviation;
+	firstOfCycle = true;
+	setStepsPerTap(1);
 }
 
 
@@ -44,49 +59,50 @@ void Tapper::init(uint16_t maxStepLengthInTimeUnits, uint8_t averageWidth, uint8
 
 void Tapper::tap(uint16_t tapTime)
 {
-	#ifdef DEBUG
-	printf("Tapper::tap received tap with tap time %u.\n",tapTime);
+	#ifdef TESTING
+	printf("NEW Tap @ time %u.\n",tapTime);
 	#endif
 
-	static bool firstOfCycle = true;
+	uint16_t thisTapDifference = tapTime - lastTapTime;
 
-	uint8_t thisTapDifference = tapTime - lastTapTime;
 
 	if (history->getFillCount()>0) {
 
-		uint8_t deviation = abs(thisTapDifference - history->operator[](0))/(history->getAverage()>>5);
+		uint8_t deviation = abs((int32_t)thisTapDifference - history->operator[](0))/(history->getAverage()>>6);
 
 		if (deviation<maxRelativeDeviation) {
 
-			#ifdef DEBUG
-			printf("Speed %u was still in window (Deviation of %u)\n",thisTapDifference,deviation);
+			#ifdef TESTING
+			printf("  Tap Difference %u was still in window (Deviation of %u)\n",thisTapDifference,deviation);
 			#endif
 			// tap is inside window
-			// calculate current difference and add it to history
+			// add difference to moving average
 			history->add(thisTapDifference);
 
 		} else {
 			// we are inside a cycle but it is reset because tap is not in expected window
-			#ifdef DEBUG
-			printf("Out of window (%u) -> Restarting cycle\n",thisTapDifference);
+			// current tempo will be buffered in average
+			#ifdef TESTING
+			printf("  Tap Difference %u out of window (Deviation of %u)\n   -> Restarting cycle\n",thisTapDifference,deviation);
 			#endif
-			history->clear(history->getAverage());
+			history->clear();
+			if (resetCallback) resetCallback(tapTime);
 		}
 
 	} else {
-		if (!firstOfCycle) {
+		if ((!firstOfCycle) && (thisTapDifference < maxStepLengthInTimeUnits)) {
 			// insert first tempo
-			#ifdef DEBUG
-			printf("Second tap -> adding first tempo to history: %u\n",thisTapDifference);
+			#ifdef TESTING
+			printf("  Second tap -> adding first tempo to history: %u\n",thisTapDifference);
 			#endif
 			history->add(thisTapDifference);
 		} else {
 
-			#ifdef DEBUG
-			printf("Starting very first tap cyle\n");
+			#ifdef TESTING
+			printf("  Starting very first tap cyle\n");
 			#endif
-
 			firstOfCycle = false;
+			if (resetCallback) resetCallback(tapTime);
 		}
 	}
 
@@ -96,7 +112,7 @@ void Tapper::tap(uint16_t tapTime)
 
 	// call callback
     if (makeStep_ != 0) {
-		#ifdef DEBUG
+		#ifdef TESTING
     	printf("Tapper::tap Sending step command.\n");
 		#endif
     	makeStep_();
