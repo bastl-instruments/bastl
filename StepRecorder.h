@@ -31,9 +31,10 @@ private:
 
 	bool record_;
 	bool recordInstrumentStatuses_[6];
+	unsigned char lastQuantizedSteps_[6];
 
 	unsigned char getCurrentQuantizedSubstep(unsigned char instrumentIndex);
-	void recordSubstep(unsigned char instrumentIndex, unsigned char subStepIndex);
+	void recordSubsteps(unsigned char instrumentIndex, unsigned char subStepStartIndex);
 
 
 };

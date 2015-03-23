@@ -51,3 +51,12 @@ void PlayerSettings::loadFromByteArray(unsigned char * data) {
 	bpm_ +=						(((unsigned int)data[7]) << 8);
 	resetManipulatedPatterns();
 }
+
+unsigned char PlayerSettings::getRecordQuantizationSize() {
+	unsigned char quantizationRate = 1;
+	for (unsigned char powNumber = 0; powNumber < (unsigned char)recordQunatizationType_; powNumber++) {
+		quantizationRate *= 2;
+	}
+	return quantizationRate;
+
+}
