@@ -32,7 +32,7 @@ STATEFUNCS
 
 		ON_EVENT
 
-			EVENTCHECK(BTN_DOWN,ShiftButton)
+			EVENTCHECK(BTN_UP,ShiftButton)
 				CHANGE_STATE(START);
 			END_EVENTCHECK
 
@@ -49,20 +49,27 @@ END_STATEFUNCS
 ////// Marcos for implicitly defining run() which
 ////// processes the current state
 ////////////////////////////////////////////////
-#define STATEFUNCS void states::run() {\
-					switch (activeState) {
+#define STATEFUNCS void states::run() {
+
+#define ANYSTATE
+#define ANYSTATE_ENTER if(newState) {
+#define ANYSTATE_EVENT } if (!eventProcessed) {
+#define END_ANYSTATE } switch (activeState) {
 
 #define STATE(N) case N:
-#define ON_ENTER if (newState) {
-#define ALWAYS   newState = false;}
-#define ON_EVENT if (!eventProcessed) {
-#define ON_EXIT  eventProcessed = true;}\
-					if (newState) {
+#define ON_ENTER if (newState) {							// code that is executed everytime this state is run for the first time
+#define ALWAYS   newState = false;}							// code that is executed everytime this state is active
+#define ON_EVENT if (!eventProcessed) {						// code that is executed when there is a new event
+#define ON_EXIT  eventProcessed = true;}if (newState) { 	// code that is executed when this state is run for the last time
+
 #define END_STATE }break;
 #define END_STATEFUNCS default: break;	}}\
 						states stateObj;
 
-#define CHANGE_STATE(N) activeState = N; newState = true;
+#define CHANGE_STATE(N) activeState = N; newState = true; 					// switch to different state in next run
+#define RERUN_STATE newState = true;	eventProcessed = true; return;		// re-renter the current state in next run.
+																			// In ANYSTATE, this will NOT enter the real state!
+
 
 
 ////// Macros for analysing the last read event
@@ -122,6 +129,9 @@ private:
 
 };
 
+// forward declaration so instance is known right after including this header file
+// this way, ADD_EVENT can be used before STATFUNCS
+extern states stateObj;
 
 
 
