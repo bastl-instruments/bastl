@@ -68,8 +68,9 @@ void lfoExtended::setThreshold(uint8_t thres,LFOThresholdType type) {
 	thresholdType = type;
 }
 
-void lfoExtended::setToStep(uint8_t step) {
+void lfoExtended::setToStep(uint8_t step, uint16_t time) {
 	currentPhase =  step << 8;
+	lastTimeStamp = time;
 }
 
 

@@ -37,8 +37,8 @@ public:
 	// maximum period: 65535
 	void setBastlCyclesPerPeriod(uint16_t bastlCyclesPerPeriod);
 
-	// set waveform to given step number
-	void setToStep(uint8_t stepNumber);
+	// set waveform to given step number at a given time
+	void setToStep(uint8_t stepNumber, uint16_t time);
 
 	// set the shape basic waveform
 	// TRIANGLE, SAW or RANDOM
