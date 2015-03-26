@@ -49,7 +49,11 @@ END_STATEFUNCS
 ////// Marcos for implicitly defining run() which
 ////// processes the current state
 ////////////////////////////////////////////////
-#define STATEFUNCS void states::run() {
+#define STATEFUNCS 	uint8_t states::activeState = 0;\
+					bool states::newState = true;\
+					bool states::eventProcessed = true;\
+					hardwareEvent states::lastEvent;\
+					void states::run() {
 
 #define ANYSTATE
 #define ANYSTATE_ENTER if(newState) {
@@ -63,8 +67,7 @@ END_STATEFUNCS
 #define ON_EXIT  eventProcessed = true;}if (newState) { 	// code that is executed when this state is run for the last time
 
 #define END_STATE }break;
-#define END_STATEFUNCS default: break;	}}\
-						states stateObj;
+#define END_STATEFUNCS default: break;	}}
 
 #define CHANGE_STATE(N) activeState = N; newState = true; 					// switch to different state in next run
 #define RERUN_STATE newState = true;	eventProcessed = true; return;		// re-renter the current state in next run.
@@ -94,44 +97,38 @@ END_STATEFUNCS
 ////////////////////////////////////////////////
 
 // where to run current state
-#define RUN_ACTIVE_STATE stateObj.run();
+#define RUN_ACTIVE_STATE states::run();
 
 // add a new event to be processed during next run of state
-#define ADD_EVENT(E) stateObj.queueEvent(E);
+#define ADD_EVENT(E) states::queueEvent(E);
 
+// for use as event receiver of hardware layer
+#define STATEHANDLER states::queueEvent
 
 
 
 class states {
 public:
 
-	states() :
-		activeState(0),
-		newState(true),
-		eventProcessed(true)
-	{}
-
-	void queueEvent(hardwareEvent event) {
+	static void queueEvent(hardwareEvent event) {
 		if (eventProcessed) {
 			lastEvent = event;
 			eventProcessed = false;
 		}
 	}
-	void run();
+	static void run();
 
 
 
 private:
-	uint8_t activeState;
-	bool newState;
-	bool eventProcessed;
-	hardwareEvent lastEvent;
+	static uint8_t activeState;
+	static bool newState;
+	static bool eventProcessed;
+	static hardwareEvent lastEvent;
 
 };
 
-// forward declaration so instance is known right after including this header file
-// this way, ADD_EVENT can be used before STATFUNCS
-extern states stateObj;
+
 
 
 
