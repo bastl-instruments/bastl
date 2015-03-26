@@ -1,3 +1,7 @@
+#ifndef STATEHANDLER_H
+#define STATEHANDLER_H
+
+
 #include <IHWLayer.h>
 
 
@@ -128,7 +132,7 @@ private:
 
 };
 
-
+#endif
 
 
 
