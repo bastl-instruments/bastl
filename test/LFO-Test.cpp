@@ -155,15 +155,15 @@ int main( int argc, const char* argv[] ) {
 	for (uint8_t index=0; index<numbObjects; index++) {
 		LFOs[index].init(bastlCyclesPerSecond);
 		LFOs[index].setBastlCyclesPerPeriod((float)bastlCyclesPerSecond/3);
-		LFOs[index].setWaveform(TRIANGLE);
+		LFOs[index].setWaveform(SAW);
 
-		uint8_t FlopBit = index*3 + 10;
+		uint8_t FlopBit = 1<<6;
 		LFOs[index].setFlop(FlopBit);
 		printf("%u ",FlopBit);
 	}
 	printf("\n");
 
-	render(1,2000,LFOs,4,7);
+	render(1,2000,LFOs,4,1);
 
 
 
