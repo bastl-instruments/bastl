@@ -65,7 +65,7 @@ private:
 	}
 
 	uint8_t numbSteps;
-	uint8_t stepLength;
+	uint16_t stepLength;
 
 	uint16_t timeFromLastStep;
 	uint16_t lastTime;
