@@ -55,6 +55,9 @@ int main( int argc, const char* argv[] ) {
 
 	for (uint32_t realTime=time; realTime<1000; realTime+=inc,time+=inc) {
 		printf("%u %u %u \n",realTime,step.getCurrentStep(time), step.getClosestStep(time));
+		if (realTime == 300) {
+			step.setToStep(time,0);
+		}
 	}
 
 	printf("done\n");
