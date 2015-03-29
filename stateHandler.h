@@ -1,3 +1,7 @@
+#ifndef STATEHANDLER_H
+#define STATEHANDLER_H
+
+
 #include <IHWLayer.h>
 
 
@@ -32,7 +36,7 @@ STATEFUNCS
 
 		ON_EVENT
 
-			EVENTCHECK(BTN_DOWN,ShiftButton)
+			EVENTCHECK(BTN_UP,ShiftButton)
 				CHANGE_STATE(START);
 			END_EVENTCHECK
 
@@ -49,20 +53,30 @@ END_STATEFUNCS
 ////// Marcos for implicitly defining run() which
 ////// processes the current state
 ////////////////////////////////////////////////
-#define STATEFUNCS void states::run() {\
-					switch (activeState) {
+#define STATEFUNCS 	uint8_t states::activeState = 0;\
+					bool states::newState = true;\
+					bool states::eventProcessed = true;\
+					hardwareEvent states::lastEvent;\
+					void states::run() {
+
+#define ANYSTATE
+#define ANYSTATE_ENTER if(newState) {
+#define ANYSTATE_EVENT } if (!eventProcessed) {
+#define END_ANYSTATE } switch (activeState) {
 
 #define STATE(N) case N:
-#define ON_ENTER if (newState) {
-#define ALWAYS   newState = false;}
-#define ON_EVENT if (!eventProcessed) {
-#define ON_EXIT  eventProcessed = true;}\
-					if (newState) {
-#define END_STATE }break;
-#define END_STATEFUNCS default: break;	}}\
-						states stateObj;
+#define ON_ENTER if (newState) {							// code that is executed everytime this state is run for the first time
+#define ALWAYS   newState = false;}							// code that is executed everytime this state is active
+#define ON_EVENT if (!eventProcessed) {						// code that is executed when there is a new event
+#define ON_EXIT  eventProcessed = true;}if (newState) { 	// code that is executed when this state is run for the last time
 
-#define CHANGE_STATE(N) activeState = N; newState = true;
+#define END_STATE }break;
+#define END_STATEFUNCS default: break;	}}
+
+#define CHANGE_STATE(N) activeState = N; newState = true; 					// switch to different state in next run
+#define RERUN_STATE newState = true;	eventProcessed = true; return;		// re-renter the current state in next run.
+																			// In ANYSTATE, this will NOT enter the real state!
+
 
 
 ////// Macros for analysing the last read event
@@ -87,41 +101,38 @@ END_STATEFUNCS
 ////////////////////////////////////////////////
 
 // where to run current state
-#define RUN_ACTIVE_STATE stateObj.run();
+#define RUN_ACTIVE_STATE states::run();
 
 // add a new event to be processed during next run of state
-#define ADD_EVENT(E) stateObj.queueEvent(E);
+#define ADD_EVENT(E) states::queueEvent(E);
 
+// for use as event receiver of hardware layer
+#define STATEHANDLER states::queueEvent
 
 
 
 class states {
 public:
 
-	states() :
-		activeState(0),
-		newState(true),
-		eventProcessed(true)
-	{}
-
-	void queueEvent(hardwareEvent event) {
+	static void queueEvent(hardwareEvent event) {
 		if (eventProcessed) {
 			lastEvent = event;
 			eventProcessed = false;
 		}
 	}
-	void run();
+	static void run();
 
 
 
 private:
-	uint8_t activeState;
-	bool newState;
-	bool eventProcessed;
-	hardwareEvent lastEvent;
+	static uint8_t activeState;
+	static bool newState;
+	static bool eventProcessed;
+	static hardwareEvent lastEvent;
 
 };
 
+#endif
 
 
 

@@ -10,7 +10,7 @@
 class ILEDHW {
 public:
 
-	enum LedState{ON,OFF, BLINK, BLINK_INVERT, DULLON};
+	enum LedState{ON=255,OFF=0, BLINK, BLINK_INVERT, DULLON};
 	
     // LEDs //
     virtual void setLED(uint8_t index, LedState state) = 0;
