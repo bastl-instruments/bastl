@@ -18,6 +18,7 @@ public:
 private:
 	unsigned int cycleLength_;
 	unsigned char currentStepNumber_;
+	bool waiting_;
 };
 
 inline void StepSynchronizer::setCycleLength(unsigned int cycleLength) {
@@ -25,7 +26,11 @@ inline void StepSynchronizer::setCycleLength(unsigned int cycleLength) {
 }
 
 inline void StepSynchronizer::doStep() {
-	currentStepNumber_ = (currentStepNumber_ + 1) % cycleLength_;
+	if (waiting_) {
+		waiting_ = false;
+	} else {
+		currentStepNumber_ = (currentStepNumber_ + 1) % cycleLength_;
+	}
 }
 
 inline unsigned char StepSynchronizer::getCurrentStepNumber() {
@@ -34,6 +39,7 @@ inline unsigned char StepSynchronizer::getCurrentStepNumber() {
 
 inline void StepSynchronizer::reset() {
 	currentStepNumber_ = 0;
+	waiting_ = true;
 }
 
 #endif /* STEPSYNCHRONIZER_H_ */
