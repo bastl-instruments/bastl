@@ -3,6 +3,7 @@
 #define STEPPER_H_
 
 #include <inttypes.h>
+#define minimum(a,b) ((a)<(b)?(a):(b))
 
 // This object quantizes time in uints of stepLength and returns the step number modulo numbsteps
 // 	((time (- offset)) / stepLength) % numbSteps
@@ -10,6 +11,7 @@
 // 		for it to keep a memory of the current step time
 // This has the disadvantage (over 'direct formula') that you cannot jump back in time but the advantage that
 // 		tempo changes are being handled correctly with no effort
+// The maximum inaccuracy defines how many time units before a step a call to getClosestStep() may map to that step
 
 
 
@@ -17,9 +19,10 @@ class Stepper {
 public:
 
 	// initialize an instance, setting its essential properties
-	void init(uint16_t stepLength, uint8_t numbSteps) {
+	void init(uint16_t stepLength, uint8_t numbSteps, uint8_t maxInaccuracy = 255) {
 		setStepLength(stepLength);
 		setNumbSteps(numbSteps);
+		this-> maxInaccuracy = maxInaccuracy;
 	}
 
 	// change the time difference between two steps
@@ -62,7 +65,7 @@ public:
 		movePosition(time);
 
 		uint8_t returnVal = lastStep;
-		if (timeFromLastStep > stepLength/2) {
+		if ((stepLength-timeFromLastStep) < minimum(stepLength/2,maxInaccuracy)) {
 			incStep(returnVal);
 		}
 
@@ -91,6 +94,8 @@ private:
 		val++;
 		if (val >= numbSteps) val=0;
 	}
+
+	uint8_t maxInaccuracy;		// the maximum number of time units a call to getClosestStep() maps forward in time
 
 	uint8_t numbSteps; 			// the number of steps after which the step number wraps to zero
 	uint16_t stepLength;		// the number of time units between two steps
