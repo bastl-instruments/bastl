@@ -3,7 +3,7 @@
 #define INTERPOLATING_BUFFER_H_
 
 #include <random.h>
-
+#include <Arduino.h>
 
 class interpolatingBuffer {
 

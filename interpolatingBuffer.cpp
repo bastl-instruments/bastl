@@ -6,6 +6,7 @@
  *      Author: dasvaclav
  */
 #include "interpolatingBuffer.h"
+#include <Arduino.h>
 #include <Line.h>
 Line <float> linear[6];
 void interpolatingBuffer::init(uint8_t channel){
