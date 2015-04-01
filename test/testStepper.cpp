@@ -48,7 +48,7 @@ int main( int argc, const char* argv[] ) {
 
 	uint16_t time = 0;
 	uint8_t inc = 1;
-	step.init(15,32);
+	step.init(15,32,3);
 	step.setToStep(time,0);
 
 	printf("Timestamp currentStep closestStep\n");
