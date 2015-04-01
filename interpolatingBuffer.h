@@ -3,8 +3,13 @@
 #define INTERPOLATING_BUFFER_H_
 
 #include <random.h>
+<<<<<<< HEAD
 
 //#include "basic.h"
+=======
+#include <Arduino.h>
+
+>>>>>>> lfoInterrupt
 class interpolatingBuffer {
 
 public:

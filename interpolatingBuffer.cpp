@@ -7,7 +7,10 @@
  */
 #include "interpolatingBuffer.h"
 #include <Arduino.h>
+<<<<<<< HEAD
 //#include <random.h>
+=======
+>>>>>>> lfoInterrupt
 #include <Line.h>
 //#include "mapping.h"
 Line <float> linear[6];
