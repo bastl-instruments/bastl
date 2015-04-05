@@ -4,7 +4,11 @@
 
 #include <random.h>
 
+
 //#include "basic.h"
+
+#include <Arduino.h>
+
 class interpolatingBuffer {
 
 public:
