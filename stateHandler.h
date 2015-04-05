@@ -82,6 +82,7 @@ END_STATEFUNCS
 ////// Macros for analysing the last read event
 ////////////////////////////////////////////////
 #define DONT_CARE_NUMBER lastEvent.number
+#define THIS_NUMBER		 lastEvent.number
 
 // check for type and number
 #define EVENTCHECK(...) EVENTCHECK_(__VA_ARGS__)
@@ -109,6 +110,12 @@ END_STATEFUNCS
 // for use as event receiver of hardware layer
 #define STATEHANDLER states::queueEvent
 
+// use active state outside of this object
+#define ACTIVESTATE states::getActiveState()
+
+// re-trigger ON_ENTER on active state
+#define RETRIGGER_ACTIVE_STATE states::rerunState();
+
 
 
 class states {
@@ -121,6 +128,14 @@ public:
 		}
 	}
 	static void run();
+
+	static uint8_t getActiveState() {
+		return activeState;
+	}
+
+	static void rerunState() {
+		newState = true;
+	}
 
 
 
