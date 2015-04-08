@@ -13,20 +13,24 @@
 class LFOSimple : public LFO {
 public:
 
-	enum Waveform {SAW,TRIANGLE};
-
-	LFOSimple() : waveform(SAW) {}
+	LFOSimple() : waveform(SAW) {
+		setNumbStepsToSkip(0);
+	}
 	virtual ~LFOSimple() {};
 
+	enum Waveform {SAW,TRIANGLE};
 	void setWaveform(Waveform);
 
-	void setStepsPerPeriod(uint8_t StepsPerPeriod);
+	void setNumbStepsToSkip(uint8_t stepsToSkip);
 
 	virtual uint8_t calcOutput();
 
 private:
 
 	Waveform waveform;
+
+	uint16_t lastUnskippedPhase;
+	uint16_t numbPhaseStepsToSkip;
 };
 
 

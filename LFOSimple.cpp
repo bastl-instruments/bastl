@@ -13,12 +13,34 @@ void LFOSimple::setWaveform(Waveform val) {
 	waveform = val;
 }
 
+
+void LFOSimple::setNumbStepsToSkip(uint8_t stepsToSkip) {
+
+	uint16_t val = 257-stepsToSkip;
+
+	numbPhaseStepsToSkip = uint32_t(65536)/val;
+}
+
+
+
 uint8_t LFOSimple::calcOutput() {
+
+	// check if step will be skipped due to resolution
+	uint16_t phaseStepsSinceLast = currentPhase-lastUnskippedPhase;
+
 
 	// Apply Flopping
 	if ((currentStep & flopVector) != 0) {
 		return 0;
 	}
+
+	// check if resolution is taking affect
+	if (phaseStepsSinceLast < numbPhaseStepsToSkip) {
+		return currentOutput;
+	} else {
+		lastUnskippedPhase += numbPhaseStepsToSkip;
+	}
+
 
 	// Calculate Basic Waveform
 	switch (waveform) {
