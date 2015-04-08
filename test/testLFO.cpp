@@ -38,10 +38,10 @@ private:
 FILE* RedirStdOut::fp;
 
 
-void render(const std::string& name,uint32_t from, uint32_t to, uint8_t stepSize=1) {
+void render(const std::string& name, const std::string& title, uint32_t from, uint32_t to, uint8_t stepSize=1) {
 
 	RedirStdOut::setToFile(name);
-	printf("Timestamp %s\n",name.c_str());
+	printf("Timestamp %s\n",title.c_str());
 
 	for (uint32_t timeStamp = from; timeStamp < to; timeStamp+=stepSize) {
 		printf("%u ",timeStamp);
@@ -50,6 +50,12 @@ void render(const std::string& name,uint32_t from, uint32_t to, uint8_t stepSize
 	}
 
 	RedirStdOut::setToConsole();
+}
+
+void render(const std::string& name, uint16_t titleVal, uint32_t from, uint32_t to, uint8_t stepSize=1) {
+	char title[10];
+	sprintf(title,"%u",titleVal);
+	render(name,title,from,to,stepSize);
 }
 
 
@@ -67,17 +73,17 @@ int main( int argc, const char* argv[] ) {
 
 	lfoPtr = new LFOSimple();
 	lfoPtr->setFrequency(200);
-	render("Freq1",0,400,1);
+	render("Freq1","200",0,400,1);
 	delete lfoPtr;
 
 	lfoPtr = new LFOSimple();
 	lfoPtr->setFrequency(100);
-	render("Freq2",0,400,1);
+	render("Freq2","100",0,400,1);
 	delete lfoPtr;
 
 	lfoPtr = new LFOSimple();
 	lfoPtr->setFrequency(300);
-	render("Freq3",0,400,1);
+	render("Freq3","300",0,400,1);
 	delete lfoPtr;
 
 	printf("# Waveforms\n");
@@ -87,62 +93,155 @@ int main( int argc, const char* argv[] ) {
 
 	lfo.setFrequency(100);
 	lfo.setWaveform(LFOSimple::SAW);
-	render("Waveform1",0,300,1);
+	render("Waveform1","Saw",0,500,1);
 
 
 	lfo.setFrequency(100);
-	lfo.setWaveform(LFOSimple::TRIANGLE);;
-	render("Waveform2",0,400,1);
+	lfo.setWaveform(LFOSimple::TRIANGLE);
+	render("Waveform2","Triangle",0,500,1);
 
 
 	LFORandom rand;
 	lfoPtr = &rand;
 	rand.setFrequency(100);
-	render("Waveform3",0,1000,1);
+	render("Waveform3","Random",0,500,1);
+
+
+	printf("# Resolution\n");
+	for (uint8_t index=0; index<8; index++) {
+
+		const uint8_t map[8] = {0,200,220,240,250,253,254,255};
+
+		uint8_t val = map[index];
+		lfo.setNumbStepsToSkip(val);
+		lfoPtr = &lfo;
+		char name[15];
+		sprintf(name,"Res%u",index);
+		render(name,val,index*100,(index+1)*100,1);
+	}
 
 
 	printf("# Smoothness\n");
-
-	rand.setFrequency(100);
-	rand.setSmoothness(0);
-	render("Smooth0",0,1000,1);
-
-	rand.setSmoothness(50);
-	render("Smooth50",0,1000,1);
-
-	rand.setSmoothness(100);
-	render("Smooth100",0,1000,1);
-
-	rand.setSmoothness(150);
-	render("Smooth150",0,1000,1);
-
-	rand.setSmoothness(200);
-	render("Smooth200",0,1000,1);
-
-	rand.setSmoothness(250);
-	render("Smooth250",0,1000,1);
+	for (uint8_t index=0; index<6; index++) {
+		lfoPtr = &rand;
+		rand.setFrequency(100);
+		rand.setSmoothness(50*index);
+		char name[15];
+		sprintf(name,"Smooth%u",50*index);
+		render(name,50*index,0,1000,1);
+	}
 
 
 	printf("# Smoothness Low\n");
+	for (uint8_t index=0; index<6; index++) {
+		rand.setFrequency(100);
+		rand.setSmoothness(5*index);
+		char name[15];
+		sprintf(name,"Smooth%u",5*index);
+		render(name,5*index,0,1000,1);
+	}
 
-	rand.setFrequency(100);
-	rand.setSmoothness(0);
-	render("Smooth0",0,1000,1);
 
-	rand.setSmoothness(5);
-	render("Smooth5",0,1000,1);
+	printf("# Flopping\n");
+	for (uint8_t index=0; index<8; index++) {
+		uint8_t val = 1<<index;
+		lfo.setFlop(val);
+		lfo.setNumbStepsToSkip(0);
+		lfoPtr = &lfo;
+		char name[15];
+		sprintf(name,"Flop%u",index);
+		render(name,val,index*100,(index+1)*100,1);
+	}
 
-	rand.setSmoothness(10);
-	render("Smooth10",0,1000,1);
+	printf("# Flopping Rand\n");
+	for (uint8_t index=0; index<8; index++) {
+		uint16_t val = 1<<index;
+		rand.setFlop(val);
+		rand.setSmoothness(0);
+		lfoPtr = &rand;
+		char name[15];
+		sprintf(name,"FlopRand%u",index);
+		render(name,val,index*100,(index+1)*100,1);
+	}
 
-	rand.setSmoothness(15);
-	render("Smooth15",0,1000,1);
 
-	rand.setSmoothness(20);
-	render("Smooth20",0,1000,1);
+	printf("# XOR\n");
+	for (uint8_t index=0; index<8; index++) {
+		uint16_t val = 1<<index;
+		lfo.setFlop(0);
+		lfo.setXOR(val);
+		lfoPtr = &lfo;
+		char name[15];
+		sprintf(name,"Xor%u",index);
+		render(name,val,index*100,(index+1)*100,1);
+	}
 
-	rand.setSmoothness(25);
-	render("Smooth25",0,1000,1);
+	printf("# XOR Rand\n");
+	for (uint8_t index=0; index<8; index++) {
+		uint16_t val = 1<<index;
+		rand.setFlop(0);
+		rand.setXOR(val);
+		rand.setSmoothness(100);
+		lfoPtr = &rand;
+		char name[15];
+		sprintf(name,"XorRand%u",index);
+		render(name,val,index*100,(index+1)*100,1);
+	}
+
+	printf("# Folding \n");
+	for (uint8_t index=0; index<8; index++) {
+		lfo.setFlop(0);
+		lfo.setXOR(0);
+		uint16_t val = 255-index*30;
+		lfo.setFolding(val);
+		lfoPtr = &lfo;
+		char name[15];
+		sprintf(name,"Fold%u",index);
+		render(name,val,index*100,(index+1)*100,1);
+	}
+
+	printf("# Folding Rand\n");
+	for (uint8_t index=0; index<8; index++) {
+		rand.setFrequency(20);
+		rand.setFlop(0);
+		rand.setXOR(0);
+		rand.setSmoothness(100);
+		uint16_t val = 255-index*30;
+		rand.setFolding(val);
+		lfoPtr = &rand;
+		char name[15];
+		sprintf(name,"FoldRand%u",index);
+		render(name,val,index*100,(index+1)*100,1);
+	}
+
+
+	printf("# Overflow \n");
+	for (uint8_t index=0; index<8; index++) {
+		lfo.setFlop(0);
+		lfo.setXOR(0);
+		uint16_t val = 255-index*30;
+		lfo.setOverflow(val);
+		lfoPtr = &lfo;
+		char name[15];
+		sprintf(name,"Overflow%u",index);
+		render(name,val,index*100,(index+1)*100,1);
+	}
+
+	printf("# Overflow Rand\n");
+	for (uint8_t index=0; index<8; index++) {
+		rand.setFrequency(20);
+		rand.setFlop(0);
+		rand.setXOR(0);
+		rand.setSmoothness(100);
+		uint16_t val = 255-index*30;
+		rand.setOverflow(val);
+		lfoPtr = &rand;
+		char name[15];
+		sprintf(name,"OverflowRand%u",index);
+		render(name,val,index*100,(index+1)*100,1);
+	}
+
+
 
 /*
 
