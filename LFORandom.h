@@ -14,7 +14,7 @@
 
 class LFORandom : public LFO {
 public:
-	LFORandom() {};
+	LFORandom() :  bufferPos(0), smoothness(0) {};
 	virtual ~LFORandom() {}
 
 	void setSmoothness(uint8_t val);
@@ -24,21 +24,15 @@ public:
 
 private:
 
-	void randomStep();
-
-
-	static const uint8_t bufferSize = 32;
+	uint16_t thisStepDetailed;
 
 	void addToBuffer(uint16_t val);
 	uint16_t getBufferAverage();
-
+	static const uint8_t bufferSize = 32;
 	uint16_t buffer[bufferSize];
-	uint8_t bufferPos=0;
+	uint8_t bufferPos;
 
 	uint8_t smoothness;
-
-	uint16_t thisStepDetailed;
-	uint16_t nextStepDetailed;
 
 
 };
