@@ -28,7 +28,7 @@
  */
 
 
-Tapper::Tapper() :		history(0),
+Tapper::Tapper() :		historyFillCount(0),
 						lastTapTime(0),
 						stepsPerTap_(1),
 						maxStepLengthInTimeUnits(0),
@@ -41,14 +41,49 @@ Tapper::~Tapper() {
 	delete history;
 }
 
-void Tapper::init(uint16_t maxStepLengthInTimeUnits, uint8_t averageWidth, uint8_t maxRelativeDeviation)
+void Tapper::init(uint16_t maxStepLengthInTimeUnits, uint8_t maxRelativeDeviation)
 {
 	this->maxStepLengthInTimeUnits = maxStepLengthInTimeUnits;
-	history = new MovingAverageLinear<uint16_t>(averageWidth);
 	this->maxRelativeDeviation = maxRelativeDeviation;
 	firstOfCycle = true;
 	setStepsPerTap(1);
 }
+
+void Tapper::addToHistory(uint16_t val) {
+	historyHead++;
+	if (historyHead == historyLen) historyHead=0;
+
+	history[historyHead] = val;
+
+	if (historyFillCount < historyLen) historyFillCount++;
+
+
+}
+uint16_t Tapper::getAverage() {
+
+	if (historyFillCount == 0) return getLast();
+
+	uint32_t sum = 0;
+
+	uint8_t pos = historyHead;
+
+	for (uint8_t index=0; index<historyFillCount; index++) {
+		sum += history[pos];
+		pos--;
+		if (pos == 255) pos = historyLen-1;
+
+	}
+
+	return (sum + historyFillCount/2) / historyFillCount;
+
+
+}
+uint16_t Tapper::getLast() {
+	return history[historyHead];
+}
+
+
+
 
 
 
@@ -66,9 +101,9 @@ void Tapper::tap(uint16_t tapTime)
 	uint16_t thisTapDifference = tapTime - lastTapTime;
 
 
-	if (history->getFillCount()>0) {
+	if (anyStepDetected()) {
 
-		uint8_t deviation = abs((int32_t)thisTapDifference - history->operator[](0))/(history->getAverage()>>6);
+		uint8_t deviation = abs((int32_t)thisTapDifference - getLast())/(getAverage()>>6);
 
 		if (deviation<maxRelativeDeviation) {
 
@@ -77,7 +112,7 @@ void Tapper::tap(uint16_t tapTime)
 			#endif
 			// tap is inside window
 			// add difference to moving average
-			history->add(thisTapDifference);
+			addToHistory(thisTapDifference);
 
 		} else {
 			// we are inside a cycle but it is reset because tap is not in expected window
@@ -85,7 +120,7 @@ void Tapper::tap(uint16_t tapTime)
 			#ifdef TESTING
 			printf("  Tap Difference %u out of window (Deviation of %u)\n   -> Restarting cycle\n",thisTapDifference,deviation);
 			#endif
-			history->clear();
+			historyFillCount = 0;
 			if (resetCallback) resetCallback(tapTime);
 		}
 
@@ -95,7 +130,7 @@ void Tapper::tap(uint16_t tapTime)
 			#ifdef TESTING
 			printf("  Second tap -> adding first tempo to history: %u\n",thisTapDifference);
 			#endif
-			history->add(thisTapDifference);
+			addToHistory(thisTapDifference);
 		} else {
 
 			#ifdef TESTING
