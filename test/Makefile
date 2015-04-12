@@ -3,7 +3,7 @@
 CPP_FILES = tst.cpp 
 #OBJ_FILES = tst_step.o
 #LD_FLAGS=
-CC_FLAGS=-c -Wall -g
+CC_FLAGS=-c -Wall -g -O0
 
 #test: $(OBJ_FILES) $(OBJ_FILES_CLASS)
 #	g++ $(LD_FLAGS) -o $@ $^
@@ -22,6 +22,19 @@ test : obj/tst.o obj/Tapper.o obj/StepDivider.o obj/StepMultiplier.o obj/StepGen
 switchesTest : obj/switchesTest.o obj/Switches.o obj/HWLayerMock.o
 	g++ -o $@ $^
 	./switchesTest
+
+obj/Arpeggiator_Test.o : Arpeggiator_test.cpp
+	g++ $(CC_FLAGS) -o $@ $<
+	
+obj/Arpeggiator.o : ../Arpeggiator.cpp
+	g++ $(CC_FLAGS) -o $@ $<
+	
+obj/random.o : ../random.cpp
+	g++ $(CC_FLAGS) -o $@ $<
+
+arpeggiatorTest : obj/Arpeggiator_Test.o obj/Arpeggiator.o obj/random.o
+	g++ -O0 -o $@ $^
+	./arpeggiatorTest
 
 obj/switchesTest.o : tstSwitches.cpp
 	g++ $(CC_FLAGS) -o $@ $<
