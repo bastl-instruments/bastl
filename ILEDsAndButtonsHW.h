@@ -8,10 +8,10 @@
 class ILEDsAndButtonsHW : public ILEDHW, public IButtonHW {
 public:
 
-	enum TriggerState{ON, OFF, TRIGGER};
+	enum TriggerState{GATE_ON, GATE_OFF, TRIGGER_ON};
 
 	virtual unsigned int getElapsedBastlCycles() = 0;
-	virtual void setTrigger(uint8_t number, TriggerState state) = 0;
+	virtual void setTrigger(uint8_t number, bool state,uint8_t length) = 0;
 };
 
 #endif // ILEDSANDBUTTONSHW_H

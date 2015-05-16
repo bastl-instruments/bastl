@@ -12,12 +12,16 @@ public:
 	bool removeNoteFromBuffer(uint8_t note);
 	void orderBuffer();
 	void setPolyphony(uint8_t _polyphony);
+	uint8_t getNoteForVoice(uint8_t _voice);
+
 	uint8_t getNoteToBePlayedAgain();
 	uint8_t getVelocityOfNoteToBePlayedAgain();
 	uint8_t getNumberOfNotesInBuffer();
 	uint8_t getNoteFromBuffer(uint8_t _note);
 	uint8_t getVelocityFromBuffer(uint8_t _note);
 	uint8_t getNoteFromOrderedBuffer(uint8_t _note);
+
+	//
 	void clearBuffers();
 
 
