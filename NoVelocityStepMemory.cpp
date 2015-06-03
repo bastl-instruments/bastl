@@ -54,16 +54,27 @@ DrumStep NoVelocityStepMemory::getDrumStep(unsigned char instrumentID, unsigned 
 
 bool NoVelocityStepMemory::getNextActiveDrumStep(unsigned char instrumentID, unsigned char &step, DrumStep &drumStep)
 {
-	unsigned char originalStep = step;
 	drumStep = getDrumStep(instrumentID, step);
-	while (!drumStep.isActive()) {
-		step = (step + 1) % 64;
-		if (step == originalStep) {
-			return false;
-		}
-		drumStep = getDrumStep(instrumentID, step);
+	if (drumStep.isActive()) {
+		return true;
 	}
-	return true;
+	unsigned char pan = step / 16;
+	unsigned int offset  = getDataOffset(instrumentID, pan);
+	unsigned int panActiveData = (((unsigned int)data_[offset + 1]) << 8) + data_[offset];
+	for (unsigned char stepIndex = 0; stepIndex < 64; stepIndex++) {
+		unsigned char realStepIndex = (stepIndex + step) % 64;
+		if (realStepIndex / 16 != pan) {
+			pan = realStepIndex / 16;
+			offset  = getDataOffset(instrumentID, pan);
+			panActiveData = (((unsigned int)data_[offset + 1]) << 8) + (unsigned int)data_[offset];
+		}
+		if ((panActiveData & ((unsigned int)1 << (realStepIndex % 16))) != 0) {
+			drumStep = getDrumStep(instrumentID, realStepIndex);
+			step = realStepIndex;
+			return true;
+		}
+	}
+	return false;
 }
 
 bool NoVelocityStepMemory::setDrumStep(unsigned char instrumentID, unsigned char step, DrumStep stepData)
