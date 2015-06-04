@@ -17,8 +17,8 @@ SimplifiedTapper::SimplifiedTapper() : stepsInRow_(-1),
 									   lastTapTime_(0),
 									   currentTapTime_(0),
 									   stepsPerTap_(16),
-									   maxStepLengthInTimeUnits_(3000),
-									   maxStepDeviationInTImeUnits_(100),
+									   maxStepLengthInTimeUnits_(2000),
+									   maxStepDeviationInTImeUnits_(400),
 									   makeStep_(0) {
 
 }
@@ -57,7 +57,7 @@ void SimplifiedTapper::tap(unsigned int tapTime)
         unsigned int lastTapLength = tapTime - lastTapTime_;
         lastTapTime = lastTapLength;
         currentTapTime_ = (unsigned int)((((unsigned long)currentTapTime_ * (unsigned long)stepsInRow_) + (unsigned long)lastTapLength) / (unsigned long)(stepsInRow_ + 1));
-        if (stepsInRow_ < 4) {
+        if (stepsInRow_ < 4) { //novinka
         	stepsInRow_++;
         }
         lastTapTime_ = tapTime;
