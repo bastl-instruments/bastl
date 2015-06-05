@@ -71,6 +71,9 @@ public:
 	// get the current output value but step() before to catch up with current timestamp
 	uint8_t getValue(uint16_t timestamp);
 
+	//might be usefull for phase shifting
+	uint8_t getPhase();
+
 
 private:
 

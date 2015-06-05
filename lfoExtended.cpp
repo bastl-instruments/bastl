@@ -83,9 +83,9 @@ uint8_t lfoExtended::getValue(uint16_t timestamp) {
 
 	return getValue();
 }
-
-
-
+uint8_t lfoExtended::getPhase(){
+	return currentPhase >> 8;
+}
 uint8_t lfoExtended::getValue() {
 
 	#ifdef VERBOSE

@@ -17,8 +17,8 @@ SimplifiedTapper::SimplifiedTapper() : stepsInRow_(-1),
 									   lastTapTime_(0),
 									   currentTapTime_(0),
 									   stepsPerTap_(16),
-									   maxStepLengthInTimeUnits_(2000),
-									   maxStepDeviationInTImeUnits_(400),
+									   maxStepLengthInTimeUnits_(2500),
+									   maxStepDeviationInTImeUnits_(700),
 									   makeStep_(0) {
 
 }
