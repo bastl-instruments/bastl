@@ -70,7 +70,7 @@ void lfoExtended::setThreshold(uint8_t thres,LFOThresholdType type) {
 
 void lfoExtended::setToStep(uint8_t step, uint16_t time) {
 	currentPhase =  step << 8;
-	lastTimeStamp = time;
+	//lastTimeStamp = time;
 }
 
 
@@ -83,9 +83,9 @@ uint8_t lfoExtended::getValue(uint16_t timestamp) {
 
 	return getValue();
 }
-
-
-
+uint8_t lfoExtended::getPhase(){
+	return currentPhase >> 8;
+}
 uint8_t lfoExtended::getValue() {
 
 	#ifdef VERBOSE
