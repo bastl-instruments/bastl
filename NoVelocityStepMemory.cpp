@@ -145,10 +145,23 @@ void NoVelocityStepMemory::getAllInstrumentsActiveWindowBitArray(bool * result) 
 }
 
 void NoVelocityStepMemory::makeActiveUpTo(unsigned char instrument, unsigned char indexUpTo) {
-	for (int stepIndex = 0; stepIndex < 64; stepIndex++) {
-		DrumStep step = getDrumStep(instrument, stepIndex);
-		step.setActive(stepIndex <= indexUpTo);
-		setDrumStep(instrument, stepIndex, step);
+	unsigned char stepIndex = 0;
+	while (stepIndex + 7 <= indexUpTo) {
+		data_[getDataOffset(instrument, stepIndex / 16) + ((stepIndex / 8) % 2)] = 255;
+		stepIndex += 8;
+	}
+	if ((indexUpTo + 1) % 8 != 0) {
+		for (unsigned char step; step < 8; step++) {
+			BitArrayOperations::setBit(
+					data_[getDataOffset(instrument, stepIndex / 16) + ((stepIndex / 8) % 2)],
+					stepIndex % 8,
+					stepIndex <= indexUpTo);
+			stepIndex++;
+		}
+	}
+	while (stepIndex < 64) {
+		data_[getDataOffset(instrument, stepIndex / 16) + ((stepIndex / 8) % 2)] = 0;
+		stepIndex += 8;
 	}
 }
 
