@@ -25,6 +25,7 @@ public:
 
     bool isInstrumentOn(unsigned char instrumentID);
     void setInstrumentOn(unsigned char instrumentID, bool isOn);
+    unsigned char getInstrumentMuteByte();
 
     void setCurrentPattern(unsigned char pattern);
     unsigned char getCurrentPattern();
@@ -81,6 +82,10 @@ inline void PlayerSettings::setInstrumentOn(unsigned char instrumentID, bool isO
 inline bool PlayerSettings::isInstrumentOn(unsigned char instrumentID)
 {
 	return BitArrayOperations::getBit(instrumentStatuses_, instrumentID);
+}
+
+inline unsigned char PlayerSettings::getInstrumentMuteByte() {
+	return instrumentStatuses_;
 }
 
 inline PlayerSettings::DrumInstrumentEventType PlayerSettings::getDrumInstrumentEventType(unsigned char instrumentID)
