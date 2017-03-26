@@ -49,7 +49,7 @@ DrumStep NoVelocityStepMemory::getDrumStep(unsigned char instrumentID, unsigned 
 
 unsigned char NoVelocityStepMemory::getNumberOfActives(unsigned char instrument) {
 	unsigned char numberOfActives = 0;
-	unsigned char instrumentOffset = (unsigned int)instrument * 42;
+	unsigned char instrumentOffset = (unsigned int)instrument * 48;
 	for (unsigned char i = 0; i < 8; i++) {
 		unsigned char offset = ((i / 2) * 12) + (i % 2);
 		unsigned char data = data_[instrumentOffset + offset];
@@ -121,7 +121,7 @@ void NoVelocityStepMemory::getAllInstrumentActivesFor16Steps(unsigned char fromI
 
 void NoVelocityStepMemory::makeActiveUpTo(unsigned char instrument, unsigned char indexUpTo) {
 	indexUpTo++;
-	unsigned char instrumentOffset = (unsigned int)instrument * 42;
+	unsigned char instrumentOffset = (unsigned int)instrument * 48;
 	for (unsigned char i = 0; i < 8; i++) {
 		unsigned char offset = instrumentOffset + (((i / 2) * 12) + (i % 2));
 		data_[offset] = 0;
