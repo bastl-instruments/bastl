@@ -7,8 +7,7 @@
 class RadioButtons
 {
 public:
-    RadioButtons(IButtonHW * hwLayer, unsigned char * buttonIndexes, unsigned char count);
-    virtual ~RadioButtons() {}
+    virtual void init(IButtonHW * hwLayer, unsigned char * buttonIndexes, unsigned char count);
     bool getSelectedButton(unsigned char & selectedButton);
     virtual void setSelectedButton(unsigned char selectedButton);
     void update();

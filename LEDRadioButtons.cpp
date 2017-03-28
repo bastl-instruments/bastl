@@ -1,8 +1,9 @@
 #include "LEDRadioButtons.h"
 
-LEDRadioButtons::LEDRadioButtons(ILEDsAndButtonsHW *hwLayer, unsigned char * buttonIndexes, unsigned char count) :
-	RadioButtons::RadioButtons(hwLayer, buttonIndexes, count), ledHWLayer_(hwLayer)
-{}
+void LEDRadioButtons::init(ILEDsAndButtonsHW *hwLayer, unsigned char * buttonIndexes, unsigned char count) {
+	RadioButtons::init(hwLayer, buttonIndexes, count);
+	ledHWLayer_ = hwLayer;
+}
 
 void LEDRadioButtons::setSelectedButton(unsigned char selectedButton) {
 	RadioButtons::setSelectedButton(selectedButton);

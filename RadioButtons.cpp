@@ -6,10 +6,13 @@
 #include <iostream>
 #endif
 
-RadioButtons::RadioButtons(IButtonHW *hwLayer, unsigned char * buttonIndexes, unsigned char count) :
-    hwLayer_(hwLayer), buttonIndexes_(buttonIndexes), buttonCount_(count), selectedButton_(0), lastDownButton_(255), buttonSelected_(false)
-{
-
+void RadioButtons::init(IButtonHW *hwLayer, unsigned char * buttonIndexes, unsigned char count) {
+	hwLayer_ = hwLayer;
+	buttonIndexes_ = buttonIndexes;
+	buttonCount_ = count;
+	selectedButton_ = 0;
+	lastDownButton_ = 255;
+	buttonSelected_ = false;
 }
 
 void RadioButtons::update() {

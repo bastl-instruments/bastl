@@ -8,9 +8,8 @@
 class LEDRadioButtons : public RadioButtons
 {
 public:
-    LEDRadioButtons(ILEDsAndButtonsHW * hwLayer, unsigned char * buttonIndexes, unsigned char count);
-    virtual ~LEDRadioButtons() {}
-    virtual void setSelectedButton(unsigned char selectedButton);
+	virtual void init(ILEDsAndButtonsHW * hwLayer, unsigned char * buttonIndexes, unsigned char count);
+	virtual void setSelectedButton(unsigned char selectedButton);
     virtual void resetSelection();
 
 protected:
