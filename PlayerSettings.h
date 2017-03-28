@@ -50,6 +50,9 @@ public:
     void setSettingsChangedCallback(void (*settingsChangedCallback)());
     unsigned int * getManipulatedPatternsBitArray();
     void resetManipulatedPatterns();
+    unsigned char getTriggerLength();
+    void setTriggerLength(unsigned char triggerLength);
+
 private:
     unsigned char drumInstrumentEventTypes_;
     unsigned char instrumentStatuses_;
@@ -64,6 +67,7 @@ private:
     void (*playerModeChangedCallback_)(PlayerMode playerMode);
     void (*settingsChangedCallback_)();
     unsigned int manipulatedPatterns_[4];
+    unsigned char triggerLength_;
 
 };
 
@@ -173,4 +177,12 @@ inline void PlayerSettings::setPlayerModeChangedCallback(void (*playerModeChange
 inline void PlayerSettings::setSettingsChangedCallback(void (*settingsChangedCallback)()) {
 	settingsChangedCallback_ = settingsChangedCallback;
 }
+inline unsigned char PlayerSettings::getTriggerLength() {
+	return triggerLength_;
+}
+inline void PlayerSettings::setTriggerLength(unsigned char triggerLength) {
+	triggerLength_ = triggerLength;
+	settingsChangedCallback_();
+}
+
 #endif // PLAYERSETTINGS_H
