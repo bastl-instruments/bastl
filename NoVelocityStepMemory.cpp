@@ -109,9 +109,9 @@ void NoVelocityStepMemory::getAllInstrumentActivesFor16Steps(unsigned char fromI
 
 void NoVelocityStepMemory::makeActiveUpTo(unsigned char instrument, unsigned char indexUpTo) {
 	indexUpTo++;
-	unsigned char instrumentOffset = (unsigned int)instrument * 48;
+	unsigned int instrumentOffset = (unsigned int)instrument * (unsigned int)48;
 	for (unsigned char i = 0; i < 8; i++) {
-		unsigned char offset = instrumentOffset + (((i / 2) * 12) + (i % 2));
+		unsigned int offset = instrumentOffset + (((i / 2) * 12) + (i % 2));
 		data_[offset] = 0;
 		for (unsigned char j = 0; j < 8; j++) {
 			if (indexUpTo > 0) {
@@ -148,7 +148,7 @@ void NoVelocityStepMemory::clearStepsForAllInstruments() {
 
 unsigned char NoVelocityStepMemory::getNumberOfActives(unsigned char instrument) {
 	unsigned char numberOfActives = 0;
-	unsigned int instrumentOffset = (unsigned int)instrument * (unsigned int)42;
+	unsigned int instrumentOffset = (unsigned int)instrument * (unsigned int)48;
 	for (unsigned char i = 0; i < 8; i++) {
 		unsigned int offset = ((i / 2) * 12) + (i % 2);
 		unsigned char data = data_[instrumentOffset + offset];
