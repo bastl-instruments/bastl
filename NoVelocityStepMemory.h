@@ -23,7 +23,6 @@ public:
 	NoVelocityStepMemory();
 	virtual ~NoVelocityStepMemory();
     virtual DrumStep getDrumStep( unsigned char instrumentID, unsigned char step);
-    virtual unsigned char getNumberOfActives(unsigned char instrumentID);
     virtual bool getNextActiveDrumStep( unsigned char instrumentID, unsigned char & step, DrumStep & drumStep);
     virtual bool setDrumStep(unsigned char instrumentID, unsigned char step, DrumStep stepData);
     virtual void getMutesForNote(unsigned char instrumentID, unsigned char windowIndex, unsigned char *& data);
@@ -34,7 +33,7 @@ public:
     virtual void makeAllInstrumentsActiveUpTo(unsigned char indexUpTo);
     virtual void clearStepsForInstrument(unsigned char instrument);
     virtual void clearStepsForAllInstruments();
-    unsigned char getNumberOfActives(unsigned char instrument);
+    virtual unsigned char getNumberOfActives(unsigned char instrument);
 private:
     unsigned char * data_;
     void getDrumStepDataPointers(unsigned char instrumentID, unsigned char step,

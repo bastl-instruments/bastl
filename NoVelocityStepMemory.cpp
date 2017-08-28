@@ -47,18 +47,6 @@ DrumStep NoVelocityStepMemory::getDrumStep(unsigned char instrumentID, unsigned 
     return DrumStep(BitArrayOperations::getBit(* mutes, bitIndex), subSteps);
 }
 
-unsigned char NoVelocityStepMemory::getNumberOfActives(unsigned char instrument) {
-	unsigned char numberOfActives = 0;
-	unsigned char instrumentOffset = (unsigned int)instrument * 48;
-	for (unsigned char i = 0; i < 8; i++) {
-		unsigned char offset = ((i / 2) * 12) + (i % 2);
-		unsigned char data = data_[instrumentOffset + offset];
-		for (numberOfActives; data; numberOfActives++) data &= data - 1;
-	}
-	return numberOfActives;
-
-}
-
 bool NoVelocityStepMemory::getNextActiveDrumStep(unsigned char instrumentID, unsigned char &step, DrumStep &drumStep)
 {
 	unsigned char activeSteps = getNumberOfActives(instrumentID);
