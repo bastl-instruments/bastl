@@ -35,6 +35,7 @@ public:
     virtual void makeAllInstrumentsActiveUpTo(unsigned char indexUpTo);
     virtual void clearStepsForInstrument(unsigned char instrument);
     virtual void clearStepsForAllInstruments();
+    unsigned char getNumberOfActives(unsigned char instrument);
 private:
     unsigned char * data_;
     void getDrumStepDataPointers(unsigned char instrumentID, unsigned char step,

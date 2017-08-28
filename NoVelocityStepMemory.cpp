@@ -189,6 +189,19 @@ void NoVelocityStepMemory::clearStepsForAllInstruments() {
 	}
 }
 
+unsigned char NoVelocityStepMemory::getNumberOfActives(unsigned char instrument) {
+	unsigned char numberOfActives = 0;
+	unsigned int instrumentOffset = (unsigned int)instrument * (unsigned int)42;
+	for (unsigned char i = 0; i < 8; i++) {
+		unsigned int offset = ((i / 2) * 12) + (i % 2);
+		unsigned char data = data_[instrumentOffset + offset];
+		for (unsigned char dataIndex = 0; dataIndex < 8; dataIndex++) {
+			numberOfActives += (data & (1 << dataIndex)) != 0 ? 1 : 0;
+		}
+	}
+	return numberOfActives;
+}
+
 unsigned int NoVelocityStepMemory::getDataOffset(unsigned char instrumentID, unsigned char pan) {
 	// 64 steps, 6 bits per step = 384 bits = 48 bytes
 	return (unsigned int)instrumentID * 48 + (unsigned int)pan * 12;
