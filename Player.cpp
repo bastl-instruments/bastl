@@ -86,16 +86,15 @@ void Player::stepDrumInstruments()
         }
     	sendNoteOffIfPlaying(i);
         if (nextStepExists) {
-            if (settings_->isInstrumentOn(i) && !nextStep.isMuted() && nextStep.isActive()) {
+            if (!nextStep.isMuted()) {
                 DrumStep::DrumVelocityType type = nextStep.getSubStep(nextSubStepIndex % 4);
                 if (type != DrumStep::OFF) {
                 	playNote(i, type) ;
                 }
-
             }
             currentSteps_[i] = nextSubStepIndex;
         }
-        //printf("\n");
+
     }
     isStopped_ = false;
 }

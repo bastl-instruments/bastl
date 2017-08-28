@@ -25,6 +25,7 @@ public:
 
     bool isInstrumentOn(unsigned char instrumentID);
     void setInstrumentOn(unsigned char instrumentID, bool isOn);
+    unsigned char getInstrumentMuteByte();
 
     void setCurrentPattern(unsigned char pattern);
     unsigned char getCurrentPattern();
@@ -49,6 +50,9 @@ public:
     void setSettingsChangedCallback(void (*settingsChangedCallback)());
     unsigned int * getManipulatedPatternsBitArray();
     void resetManipulatedPatterns();
+    unsigned char getTriggerLength();
+    void setTriggerLength(unsigned char triggerLength);
+
 private:
     unsigned char drumInstrumentEventTypes_;
     unsigned char instrumentStatuses_;
@@ -63,6 +67,7 @@ private:
     void (*playerModeChangedCallback_)(PlayerMode playerMode);
     void (*settingsChangedCallback_)();
     unsigned int manipulatedPatterns_[4];
+    unsigned char triggerLength_;
 
 };
 
@@ -81,6 +86,10 @@ inline void PlayerSettings::setInstrumentOn(unsigned char instrumentID, bool isO
 inline bool PlayerSettings::isInstrumentOn(unsigned char instrumentID)
 {
 	return BitArrayOperations::getBit(instrumentStatuses_, instrumentID);
+}
+
+inline unsigned char PlayerSettings::getInstrumentMuteByte() {
+	return instrumentStatuses_;
 }
 
 inline PlayerSettings::DrumInstrumentEventType PlayerSettings::getDrumInstrumentEventType(unsigned char instrumentID)
@@ -168,4 +177,12 @@ inline void PlayerSettings::setPlayerModeChangedCallback(void (*playerModeChange
 inline void PlayerSettings::setSettingsChangedCallback(void (*settingsChangedCallback)()) {
 	settingsChangedCallback_ = settingsChangedCallback;
 }
+inline unsigned char PlayerSettings::getTriggerLength() {
+	return triggerLength_;
+}
+inline void PlayerSettings::setTriggerLength(unsigned char triggerLength) {
+	triggerLength_ = triggerLength;
+	settingsChangedCallback_();
+}
+
 #endif // PLAYERSETTINGS_H

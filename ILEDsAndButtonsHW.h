@@ -11,7 +11,7 @@ public:
 	enum TriggerState{GATE_ON, GATE_OFF, TRIGGER_ON};
 
 	virtual uint32_t getElapsedBastlCycles() = 0;
-	virtual void setTrigger(uint8_t number, bool state,uint8_t length) = 0;
+	virtual void setTrigger(uint8_t number, bool state,bool autoOff) = 0;
 };
 
 #endif // ILEDSANDBUTTONSHW_H

@@ -10,11 +10,10 @@ public:
     DrumStep();
     /**
      * @brief DrumStep
-     * @param active
      * @param mute
      * @param substeps
      */
-    DrumStep(bool active, bool mute, DrumVelocityType substeps[]);
+    DrumStep(bool mute, DrumVelocityType substeps[]);
 
     DrumVelocityType getSubStep(unsigned char index);
     void setSubStep(unsigned char index, DrumVelocityType type);

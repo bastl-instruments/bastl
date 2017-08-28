@@ -33,7 +33,7 @@ DrumStep FlashStepMemory::getDrumStep(unsigned char instrumentID, unsigned char 
     for (unsigned char i = 0; i < 4; i++) {
         subSteps[i] = (DrumStep::DrumVelocityType)(((3 << (i * 2)) & data) >> (i * 2));
     }
-    return DrumStep(active, mute, subSteps);
+    return DrumStep(mute, subSteps);
 }
 
 
@@ -84,7 +84,7 @@ bool FlashStepMemory::getNextActiveDrumStep(unsigned char instrumentID, unsigned
         subSteps[i] = (DrumStep::DrumVelocityType)(((3 << (i * 2)) & data) >> (i * 2));
     }
 
-    drumStep = DrumStep(active, mute, subSteps);
+    drumStep = DrumStep(mute, subSteps);
     return true;
 }
 
@@ -99,12 +99,6 @@ bool FlashStepMemory::setDrumStep(unsigned char instrumentID, unsigned char patt
     unsigned char actives = hwLayer_->readSRAM(instrumentOffset + byteIndex);
     unsigned char mutes = hwLayer_->readSRAM(instrumentOffset + byteIndex + 8);
     unsigned char data = 0;
-
-    if (stepData.isActive()) {
-        actives = actives | 1 << bitIndex;
-    } else {
-        actives = actives & ~(1 << bitIndex);
-    }
 
     if (stepData.isMuted()) {
         mutes = mutes | 1 << bitIndex;

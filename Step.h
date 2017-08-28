@@ -5,26 +5,15 @@ class Step {
 public:
     enum InstrumentType {DRUM, MONO, POLY};
 
-    Step( bool active, bool mute);
-    bool isActive();
+    Step( bool mute);
     bool isMuted();
-    void setActive(bool active);
     void setMuted(bool muted);
 private:
-    bool _active;
     bool _mute;
 };
 
-inline bool Step::isActive() {
-    return _active;
-}
-
 inline bool Step::isMuted() {
     return _mute;
-}
-
-inline void Step::setActive(bool active) {
-    _active = active;
 }
 
 inline void Step::setMuted(bool mute) {
