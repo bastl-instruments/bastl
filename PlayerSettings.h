@@ -52,6 +52,8 @@ public:
     void resetManipulatedPatterns();
     unsigned char getTriggerLength();
     void setTriggerLength(unsigned char triggerLength);
+    unsigned char getSwing();
+    void setSwing(unsigned char _swingValue);
 
 private:
     unsigned char drumInstrumentEventTypes_;
@@ -68,6 +70,7 @@ private:
     void (*settingsChangedCallback_)();
     unsigned int manipulatedPatterns_[4];
     unsigned char triggerLength_;
+    unsigned char swingValue_;
 
 };
 
@@ -182,6 +185,13 @@ inline unsigned char PlayerSettings::getTriggerLength() {
 }
 inline void PlayerSettings::setTriggerLength(unsigned char triggerLength) {
 	triggerLength_ = triggerLength;
+	settingsChangedCallback_();
+}
+inline unsigned char PlayerSettings::getSwing() {
+	return swingValue_;
+}
+inline void PlayerSettings::setSwing(unsigned char _swingValue) {
+	swingValue_ = _swingValue;
 	settingsChangedCallback_();
 }
 

@@ -10,7 +10,8 @@ PlayerSettings::PlayerSettings() : drumInstrumentEventTypes_(0),
 								   bpm_(120),
 								   playerMode_ (MASTER),
 								   playerModeChangedCallback_(0),
-								   triggerLength_(0)//,
+								   triggerLength_(0),
+								   swingValue_(0)
 {}
 
 void PlayerSettings::resetManipulatedPatterns() {
