@@ -54,6 +54,8 @@ public:
     void setTriggerLength(unsigned char triggerLength);
     unsigned char getSwing();
     void setSwing(unsigned char _swingValue);
+    bool isPatternMomentary();
+    void setPatternMomentary(bool _momentaryValue);
 
 private:
     unsigned char drumInstrumentEventTypes_;
@@ -71,6 +73,7 @@ private:
     unsigned int manipulatedPatterns_[4];
     unsigned char triggerLength_;
     unsigned char swingValue_;
+    bool patternMomentary_;
 
 };
 
@@ -193,6 +196,15 @@ inline unsigned char PlayerSettings::getSwing() {
 inline void PlayerSettings::setSwing(unsigned char _swingValue) {
 	swingValue_ = _swingValue;
 	settingsChangedCallback_();
+}
+
+inline bool PlayerSettings::isPatternMomentary() {
+	return patternMomentary_;
+}
+inline void PlayerSettings::setPatternMomentary(bool _momentaryValue) {
+	patternMomentary_ = _momentaryValue;
+	// No need to call settings changed callback since this does not need
+	//instant feedback
 }
 
 #endif // PLAYERSETTINGS_H

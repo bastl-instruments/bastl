@@ -11,7 +11,8 @@ PlayerSettings::PlayerSettings() : drumInstrumentEventTypes_(0),
 								   playerMode_ (MASTER),
 								   playerModeChangedCallback_(0),
 								   triggerLength_(0),
-								   swingValue_(0)
+								   swingValue_(0),
+								   patternMomentary_(false)
 {}
 
 void PlayerSettings::resetManipulatedPatterns() {
@@ -41,6 +42,8 @@ void PlayerSettings::getInByteArray(unsigned char * data) {
 	data[6] = (unsigned char)bpm_;
 	data[7] = (unsigned char)(bpm_ >> 8);
 	data[8] = triggerLength_;
+	data[9] =  patternMomentary_ ? 1 : 0;
+	data[10] = swingValue_;
 }
 
 void PlayerSettings::loadFromByteArray(unsigned char * data) {
@@ -53,6 +56,8 @@ void PlayerSettings::loadFromByteArray(unsigned char * data) {
 	bpm_ = 						data[6];
 	bpm_ +=						(((unsigned int)data[7]) << 8);
 	triggerLength_ = 			data[8];
+	patternMomentary_ = 		data[9]& 1 != 0;
+	swingValue_ = 				data[10];
 	resetManipulatedPatterns();
 }
 
