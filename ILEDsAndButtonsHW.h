@@ -10,7 +10,7 @@ public:
 
 	enum TriggerState{GATE_ON, GATE_OFF, TRIGGER_ON};
 
-	virtual uint32_t getElapsedBastlCycles() = 0;
+	virtual uint16_t getElapsedBastlCycles() = 0;
 	virtual void setTrigger(uint8_t number, bool state,bool autoOff) = 0;
 };
 
