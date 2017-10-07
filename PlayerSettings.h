@@ -187,15 +187,19 @@ inline unsigned char PlayerSettings::getTriggerLength() {
 	return triggerLength_;
 }
 inline void PlayerSettings::setTriggerLength(unsigned char triggerLength) {
-	triggerLength_ = triggerLength;
-	settingsChangedCallback_();
+	if (triggerLength_ != triggerLength) {
+		triggerLength_ = triggerLength;
+		settingsChangedCallback_();
+	}
 }
 inline unsigned char PlayerSettings::getSwing() {
 	return swingValue_;
 }
 inline void PlayerSettings::setSwing(unsigned char _swingValue) {
-	swingValue_ = _swingValue;
-	settingsChangedCallback_();
+	if (swingValue_ != _swingValue) {
+		swingValue_ = _swingValue;
+		settingsChangedCallback_();
+	}
 }
 
 inline bool PlayerSettings::isPatternMomentary() {
