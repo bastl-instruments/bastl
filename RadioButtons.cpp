@@ -12,6 +12,11 @@ void RadioButtons::init(IButtonHW *hwLayer, unsigned char * buttonIndexes, unsig
 	buttonCount_ = count;
 	selectedButton_ = 0;
 	lastDownButton_ = 255;
+	for (unsigned char i = 0; i < buttonCount_; i++) {
+		if (hwLayer_->isButtonDown(buttonIndexes_[i])) {
+			lastDownButton_ = i;
+		}
+	}
 	buttonSelected_ = false;
 }
 
