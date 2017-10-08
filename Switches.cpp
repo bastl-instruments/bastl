@@ -28,17 +28,30 @@ void Switches::init(ILEDsAndButtonsHW *hwLayer,
 	buttonCount_ = count;
 	changeOnEvent_ = changeOnEvent;
 	useLEDs_ = useLEDs;
+	ignoreButton_ = count;
+}
+
+void Switches::computeIgnoreButton() {
+	for (unsigned char i = 0; i < buttonCount_; i++) {
+		if (hwLayer_->getButtonState(buttonIndexes_[i]) == IButtonHW::DOWN) {
+			ignoreButton_ = i;
+		}
+	}
 }
 
 void Switches::update() {
 	for (unsigned char i = 0; i < buttonCount_; i++) {
-    	bool buttonDown = hwLayer_->getButtonState(buttonIndexes_[i]) == IButtonHW::DOWN;
+		bool buttonDown = hwLayer_->getButtonState(buttonIndexes_[i]) == IButtonHW::DOWN;
 		#ifdef DEBUG
 		printf("Button %d(%d) %s\n", i, buttonIndexes_[i], buttonDown ? "down" : "up");
         #endif
         if (((changeOnEvent_ == IButtonHW::DOWN) && !GETBIT(lastStates_, i) && buttonDown) ||
         	((changeOnEvent_ == IButtonHW::UP) && GETBIT(lastStates_, i) && !buttonDown)	) {
-            setStatus(i, !GETBIT(statuses_, i));
+            if (ignoreButton_ == i) {
+            		ignoreButton_ = buttonCount_ + 1;
+            } else {
+        			setStatus(i, !GETBIT(statuses_, i));
+            }
         }
         BitArrayOperations::setBit(lastStates_, i, buttonDown);
     }

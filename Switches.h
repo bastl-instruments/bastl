@@ -50,6 +50,13 @@ public:
      */
     void update();
 
+    /**
+      * Detects already pressed buttons and ignore changes on them
+      */
+    void computeIgnoreButton();
+
+
+
 private:
     ILEDsAndButtonsHW * hwLayer_;
     unsigned char * buttonIndexes_;
@@ -57,6 +64,7 @@ private:
     unsigned int lastStates_;
     unsigned int statuses_;
     unsigned char changeOnEvent_;
+    unsigned char ignoreButton_;
     bool useLEDs_;
 };
 
