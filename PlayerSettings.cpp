@@ -50,14 +50,24 @@ void PlayerSettings::loadFromByteArray(unsigned char * data) {
 	drumInstrumentEventTypes_ = data[0];
 	instrumentStatuses_ = 		data[1];
 	currentPattern_ = 			data[2];
-	recordQunatizationType_ = 	(QuantizationType)(data[3]);
-	multiplication_ = 			(MultiplicationType)(data[4]);
-	playerMode_ = 				(PlayerMode)(data[5]);
+	recordQunatizationType_ = 	(data[3] > 4) ? _1_64 :(QuantizationType)(data[3]);
+	multiplication_ = 			(data[4] > 4) ? _8 :(MultiplicationType)(data[4]);
+	playerMode_ = 				(data[5] > 1) ? MASTER : (PlayerMode)(data[5]);
 	bpm_ = 						data[6];
 	bpm_ +=						(((unsigned int)data[7]) << 8);
 	triggerLength_ = 			data[8];
 	patternMomentary_ = 		data[9]& 1 != 0;
 	swingValue_ = 				data[10];
+
+	// Here comes the value validation:
+	swingValue_ = (swingValue_ > 55) ? 0 : swingValue_;
+	triggerLength_ = (triggerLength_ > 7) ? 0 : triggerLength_;
+	bpm_ = (bpm_ > 500) ? 120 : bpm_;
+	currentPattern_ = (currentPattern_ > 64) ? 0 : currentPattern_;
+	instrumentStatuses_ = (instrumentStatuses_ > 64) ? 0 : instrumentStatuses_;
+	drumInstrumentEventTypes_ = (drumInstrumentEventTypes_ > 64) ? 0 : drumInstrumentEventTypes_;
+
+
 	resetManipulatedPatterns();
 }
 
