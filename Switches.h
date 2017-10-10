@@ -2,7 +2,7 @@
 #ifndef SWITCHES_H
 #define SWITCHES_H
 
-#include "ILEDsAndButtonsHW.h"
+#include "LEDsAndButtonsHWWrapper.h"
 
 /**
  * This class handles maximum 8 independent switches
@@ -25,8 +25,7 @@ public:
 	 * @param useLEDs set whether the LED shall reflect the state of the switch
 	 * @param changeOnEvent event to change state on (Default is on button down)
 	 */
-    void init(ILEDsAndButtonsHW *hwLayer,
-    		  unsigned char * buttonIndexes,
+    void init(unsigned char * buttonIndexes,
     		  unsigned char count,
     		  bool useLEDs = false,
     		  IButtonHW::ButtonState changeOnEvent = IButtonHW::DOWN);
@@ -58,7 +57,6 @@ public:
 
 
 private:
-    ILEDsAndButtonsHW * hwLayer_;
     unsigned char * buttonIndexes_;
     unsigned char buttonCount_;
     unsigned int lastStates_;

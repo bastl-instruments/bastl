@@ -8,7 +8,6 @@
 #endif
 
 Switches::Switches() :
-    hwLayer_(0),
     buttonIndexes_(0),
     buttonCount_(0),
     lastStates_(0),
@@ -18,12 +17,10 @@ Switches::Switches() :
 {
 }
 
-void Switches::init(ILEDsAndButtonsHW *hwLayer,
-					unsigned char * buttonIndexes,
+void Switches::init(unsigned char * buttonIndexes,
 					unsigned char count,
 					bool useLEDs,
 					IButtonHW::ButtonState changeOnEvent) {
-	hwLayer_ = hwLayer;
 	buttonIndexes_ = buttonIndexes;
 	buttonCount_ = count;
 	changeOnEvent_ = changeOnEvent;
@@ -33,7 +30,7 @@ void Switches::init(ILEDsAndButtonsHW *hwLayer,
 
 void Switches::computeIgnoreButton() {
 	for (unsigned char i = 0; i < buttonCount_; i++) {
-		if (hwLayer_->getButtonState(buttonIndexes_[i]) == IButtonHW::DOWN) {
+		if (LEDsAndButtonsHWWrapper::isButtonDown(buttonIndexes_[i])) {
 			ignoreButton_ = i;
 		}
 	}
@@ -41,7 +38,7 @@ void Switches::computeIgnoreButton() {
 
 void Switches::update() {
 	for (unsigned char i = 0; i < buttonCount_; i++) {
-		bool buttonDown = hwLayer_->getButtonState(buttonIndexes_[i]) == IButtonHW::DOWN;
+		bool buttonDown = LEDsAndButtonsHWWrapper::isButtonDown(buttonIndexes_[i]);
 		#ifdef DEBUG
 		printf("Button %d(%d) %s\n", i, buttonIndexes_[i], buttonDown ? "down" : "up");
         #endif
@@ -70,6 +67,6 @@ void Switches::setStatus(unsigned char buttonIndex, bool value)
         SETBITFALSE(statuses_, buttonIndex);
     }
     if (useLEDs_) {
-    	hwLayer_->setLED(buttonIndexes_[buttonIndex], value ? ILEDHW::ON : ILEDHW::OFF);
+    		LEDsAndButtonsHWWrapper::setLED(buttonIndexes_[buttonIndex], value ? ILEDHW::ON : ILEDHW::OFF);
     }
 }

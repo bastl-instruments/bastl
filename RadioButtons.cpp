@@ -6,14 +6,13 @@
 #include <iostream>
 #endif
 
-void RadioButtons::init(IButtonHW *hwLayer, unsigned char * buttonIndexes, unsigned char count) {
-	hwLayer_ = hwLayer;
+void RadioButtons::init(unsigned char * buttonIndexes, unsigned char count) {
 	buttonIndexes_ = buttonIndexes;
 	buttonCount_ = count;
 	selectedButton_ = 0;
 	lastDownButton_ = 255;
 	for (unsigned char i = 0; i < buttonCount_; i++) {
-		if (hwLayer_->isButtonDown(buttonIndexes_[i])) {
+		if (LEDsAndButtonsHWWrapper::isButtonDown(buttonIndexes_[i])) {
 			lastDownButton_ = i;
 		}
 	}
@@ -22,7 +21,7 @@ void RadioButtons::init(IButtonHW *hwLayer, unsigned char * buttonIndexes, unsig
 
 void RadioButtons::update() {
     for (unsigned char i = 0; i < buttonCount_; i++) {
-        bool buttonDown = hwLayer_->isButtonDown(buttonIndexes_[i]);
+        bool buttonDown = LEDsAndButtonsHWWrapper::isButtonDown(buttonIndexes_[i]);
 #ifdef DEBUG
         printf("Button: %i %s Last button down: %i\n", buttonIndexes_[i], buttonDown ? "DOWN" : "UP", lastDownButton_);
 #endif
