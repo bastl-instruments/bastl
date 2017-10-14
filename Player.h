@@ -35,7 +35,7 @@ public:
     void changeActivesForCurrentStepInAllInstrunents(unsigned char numberOfActiveSteps);
 
     unsigned char getCurrentInstrumentSubStep(unsigned char instrumentID);
-    void playNote(unsigned char instrumentID, DrumStep::DrumVelocityType velocityType);
+    void playNote(unsigned char instrumentID, DrumStep::DrumVelocityType velocityType, bool sendNoteOffBefore = true);
     void resetAllInstruments();
     void startLoop(unsigned char step);
     void stopLoop();

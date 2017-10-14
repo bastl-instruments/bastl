@@ -35,8 +35,9 @@ void Player::update(unsigned int elapsedTimeUnits) {
 	lastElapsedTimeUnits_ = elapsedTimeUnits;
 }
 
-void Player::playNote(unsigned char instrumentID, DrumStep::DrumVelocityType velocityType) {
-	sendNoteOffIfPlaying(instrumentID);
+void Player::playNote(unsigned char instrumentID, DrumStep::DrumVelocityType velocityType, bool sendNoteOffBefore) {
+	if (sendNoteOffBefore)
+		sendNoteOffIfPlaying(instrumentID);
 	if (isStopped_) {
 		instrumentEventCallback_(instrumentID, velocityType, true);
 		setInstrumentPlaying(instrumentID, true);
@@ -64,7 +65,7 @@ void Player::stepDrumInstruments()
         DrumStep nextStep;
         unsigned char nextSubStepIndex = (currentSteps_[i] + 1) % 256;
         if (isStopped_ ) {
-        	nextSubStepIndex = currentSteps_[i];
+        		nextSubStepIndex = currentSteps_[i];
         }
         bool nextStepExists = true;
         // when in the substep sequence dont ask for the next step otherwise ask for newxt available
@@ -73,26 +74,28 @@ void Player::stepDrumInstruments()
             //printf("calling currentStep on for %i index is %i \n", i, nextStepIndex);
             nextStep = memory_->getDrumStep(i, nextStepIndex);
         } else {
-        	if (inLoop_) {
-        		nextStep = memory_->getDrumStep(i, loopedStep_);
-        		nextSubStepIndex = 4 * loopedStep_;
-        	} else {
-        		unsigned char currentStepIndex = nextSubStepIndex / 4;
-        		//printf("calling nextStep on for %i index is %i \n", i, currentStepIndex);
-        		nextStepExists = memory_->getNextActiveDrumStep(i, currentStepIndex, nextStep);
-        		//if (nextStepExists) printf("NextStepExists index %i\n", currentStepIndex);
-        		nextSubStepIndex = 4 * currentStepIndex;
-        	}
+        		if (inLoop_) {
+        			nextStep = memory_->getDrumStep(i, loopedStep_);
+        			nextSubStepIndex = 4 * loopedStep_;
+        		} else {
+        			unsigned char currentStepIndex = nextSubStepIndex / 4;
+        			//printf("calling nextStep on for %i index is %i \n", i, currentStepIndex);
+        			nextStepExists = memory_->getNextActiveDrumStep(i, currentStepIndex, nextStep);
+        			//if (nextStepExists) printf("NextStepExists index %i\n", currentStepIndex);
+        			nextSubStepIndex = 4 * currentStepIndex;
+        		}
         }
-    	sendNoteOffIfPlaying(i);
+        bool nextStepIsOn = nextStepExists && !nextStep.isMuted() && (nextStep.getSubStep(nextSubStepIndex % 4) != DrumStep::OFF);
+
+        // In case this next step is on we do not have to send offs since we have hw
+        // trigger buffer and it will take care of things
+        if (nextStepIsOn) {
+            playNote(i, DrumStep::NORMAL, false);
+        } else {
+        		sendNoteOffIfPlaying(i);
+        }
         if (nextStepExists) {
-            if (!nextStep.isMuted()) {
-                DrumStep::DrumVelocityType type = nextStep.getSubStep(nextSubStepIndex % 4);
-                if (type != DrumStep::OFF) {
-                	playNote(i, type) ;
-                }
-            }
-            currentSteps_[i] = nextSubStepIndex;
+        		currentSteps_[i] = nextSubStepIndex;
         }
 
     }
