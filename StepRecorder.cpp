@@ -57,30 +57,30 @@ void StepRecorder::update() {
 					recordSubsteps(instrument, lastQuantizedSteps_[instrument]);
 					lastQuantizedSteps_[instrument] = currentQuantizedStep;
 				}
-				player_->playNote(instrument, DrumStep::NORMAL);
+				player_->playNote(instrument, DrumStep::NORMAL, false);
 			}
 		}
 	}
 }
 
 void StepRecorder::recordSubsteps(unsigned char instrumentIndex, unsigned char subStepStartIndex) {
-
-	unsigned char size = playerSettings_->getDrumInstrumentEventType(instrumentIndex) == PlayerSettings::GATE ?
-			playerSettings_->getRecordQuantizationSize() :
-			1;
-	for (unsigned char subStepIndex = 0; subStepIndex < size; subStepIndex++) {
-		unsigned char currentStep = (unsigned char)((subStepIndex + subStepStartIndex) / 4);
-		unsigned char currentSubStep = (unsigned char)((subStepIndex + subStepStartIndex) % 4);
-		//End of quantization evaluation
-		DrumStep manipulatedDrumStep = memory_->getDrumStep(instrumentIndex, currentStep);
-		if (manipulatedDrumStep.isMuted()) {
-			manipulatedDrumStep.setMuted(false);
-			for (unsigned char subStep = 0; subStep < 4; subStep++) {
-				manipulatedDrumStep.setSubStep(subStep, DrumStep::OFF);
+	if (record_) {
+		unsigned char size = playerSettings_->getDrumInstrumentEventType(instrumentIndex) == PlayerSettings::GATE ?
+				playerSettings_->getRecordQuantizationSize() : 1;
+		for (unsigned char subStepIndex = 0; subStepIndex < size; subStepIndex++) {
+			unsigned char currentStep = (unsigned char)((subStepIndex + subStepStartIndex) / 4);
+			unsigned char currentSubStep = (unsigned char)((subStepIndex + subStepStartIndex) % 4);
+			//End of quantization evaluation
+			DrumStep manipulatedDrumStep = memory_->getDrumStep(instrumentIndex, currentStep);
+			if (manipulatedDrumStep.isMuted()) {
+				manipulatedDrumStep.setMuted(false);
+				for (unsigned char subStep = 0; subStep < 4; subStep++) {
+					manipulatedDrumStep.setSubStep(subStep, DrumStep::OFF);
+				}
 			}
+			manipulatedDrumStep.setSubStep(currentSubStep, DrumStep::NORMAL);
+			memory_->setDrumStep(instrumentIndex, currentStep, manipulatedDrumStep);
 		}
-		manipulatedDrumStep.setSubStep(currentSubStep, DrumStep::NORMAL);
-		memory_->setDrumStep(instrumentIndex, currentStep, manipulatedDrumStep);
 	}
 }
 
@@ -89,7 +89,7 @@ void StepRecorder::stopRecordNote(unsigned char instrumentIndex) {
 	if (recordInstrumentStatuses_[instrumentIndex]) {
 		recordInstrumentStatuses_[instrumentIndex] = false;
 		recordSubsteps(instrumentIndex, lastQuantizedSteps_[instrumentIndex]);
-		player_->playNote(instrumentIndex, DrumStep::NORMAL);
+		player_->playNote(instrumentIndex, DrumStep::NORMAL, false);
 	}
 }
 
