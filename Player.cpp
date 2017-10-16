@@ -13,7 +13,8 @@ Player::Player(IStepMemory * memory,
 			   	   isStopped_(true),
 			   	   inLoop_(false),
 			   	   loopedStep_(6),
-			   	   instrumentEventCallback_(instrumentEventCallback)
+			   	   instrumentEventCallback_(instrumentEventCallback),
+				   noteOffDisabledInstruments_(0)
 {
     for (unsigned char i = 0; i < INSTRUMENTS; i++) {
         currentSteps_[i] = 0;
@@ -51,7 +52,7 @@ void Player::playNote(unsigned char instrumentID, DrumStep::DrumVelocityType vel
 }
 
 void Player::sendNoteOffIfPlaying(unsigned char instrumentID) {
-	if (isInstrumentPlaying(instrumentID)) {
+	if (isInstrumentPlaying(instrumentID) && !getBit(noteOffDisabledInstruments_, instrumentID)) {
 		if (instrumentEventCallback_) {
 			instrumentEventCallback_(instrumentID, DrumStep::OFF , false);
 		}

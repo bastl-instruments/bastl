@@ -41,6 +41,7 @@ unsigned int StepRecorder::startRecordNote(unsigned char instrumentIndex) {
 	if (playerSettings_->getDrumInstrumentEventType(instrumentIndex) == PlayerSettings::TRIGGER) {
 		stopRecordNote(instrumentIndex);
 	} else {
+		player_->setNoteOffDisalbedState(instrumentIndex, true);
 		recordSubsteps(instrumentIndex, lastQuantizedSteps_[instrumentIndex]);
 	}
 	player_->playNote(instrumentIndex, DrumStep::NORMAL);
@@ -90,6 +91,7 @@ void StepRecorder::stopRecordNote(unsigned char instrumentIndex) {
 		recordInstrumentStatuses_[instrumentIndex] = false;
 		recordSubsteps(instrumentIndex, lastQuantizedSteps_[instrumentIndex]);
 		player_->playNote(instrumentIndex, DrumStep::NORMAL, false);
+		player_->setNoteOffDisalbedState(instrumentIndex, false);
 	}
 }
 

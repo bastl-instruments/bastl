@@ -41,6 +41,8 @@ public:
     void stopLoop();
     bool isPlaying();
     void update(unsigned int elapsedTimeUnits);
+    void setNoteOffDisalbedState(unsigned char instrument, bool disabled);
+
 private:
     IStepMemory * memory_;
     PlayerSettings * settings_;
@@ -53,6 +55,7 @@ private:
     void (*instrumentEventCallback_)(unsigned char instrumentID, DrumStep::DrumVelocityType velocityType, bool isOn);
     unsigned int lastElapsedTimeUnits_;
     unsigned int lastDummyPlayInstrumentTimeUnits_;
+    unsigned char noteOffDisabledInstruments_;
     void stepDrumInstruments();
     bool isInstrumentPlaying(unsigned char instrumentID);
     void setInstrumentPlaying(unsigned char instrumentID, bool isPlaying);
@@ -107,5 +110,9 @@ inline void Player::setInstrumentPlaying(unsigned char instrumentID, bool isPlay
 
 inline bool Player::isPlaying() {
 	return !isStopped_;
+}
+
+inline void Player::setNoteOffDisalbedState(unsigned char instrument, bool disabled) {
+	setBit(noteOffDisabledInstruments_, instrument, disabled);
 }
 #endif // PLAYER_H
