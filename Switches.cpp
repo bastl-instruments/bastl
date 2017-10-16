@@ -50,7 +50,7 @@ void Switches::update() {
         			setStatus(i, !GETBIT(statuses_, i));
             }
         }
-        BitArrayOperations::setBit(lastStates_, i, buttonDown);
+        setBit(lastStates_, i, buttonDown);
     }
 }
 

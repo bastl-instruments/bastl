@@ -42,9 +42,9 @@ DrumStep NoVelocityStepMemory::getDrumStep(unsigned char instrumentID, unsigned 
     	bool bitAtPosition = BitArrayOperations::getBit(* data, offset);
     	printf("Getting bit at index %d to value %s \n", offset, bitAtPosition ? "True": "False");
 		#endif
-        subSteps[i] = BitArrayOperations::getBit(* data, offset) ? DrumStep::NORMAL : DrumStep::OFF;
+        subSteps[i] = getBit(* data, offset) ? DrumStep::NORMAL : DrumStep::OFF;
     }
-    return DrumStep(BitArrayOperations::getBit(* mutes, bitIndex), subSteps);
+    return DrumStep(getBit(* mutes, bitIndex), subSteps);
 }
 
 bool NoVelocityStepMemory::getNextActiveDrumStep(unsigned char instrumentID, unsigned char &step, DrumStep &drumStep)
@@ -69,10 +69,10 @@ bool NoVelocityStepMemory::setDrumStep(unsigned char instrumentID, unsigned char
 
 	getDrumStepDataPointers(instrumentID, step, mutes, data);
 
-	BitArrayOperations::setBit(*mutes, bitIndex, stepData.isMuted());
+	setBit(*mutes, bitIndex, stepData.isMuted());
 	unsigned char offset = ((step % 2) * 4);
     for (int i = 0; i < 4 ; i++) {
-    	BitArrayOperations::setBit(*data, offset + i, stepData.getSubStep(i) == DrumStep::NORMAL);
+    	setBit(*data, offset + i, stepData.getSubStep(i) == DrumStep::NORMAL);
 		#ifdef DEBUG
     	//printf("Setting bit at index %d to value %s \n", offset, stepData.getSubStep(i) == DrumStep::NORMAL ? "True": "False");
 		#endif

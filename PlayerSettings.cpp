@@ -19,14 +19,14 @@ void PlayerSettings::resetManipulatedPatterns() {
 	for (unsigned char pattern = 0; pattern < 4; pattern++) {
 		manipulatedPatterns_[pattern] = 0;
 	}
-	SETBIT(manipulatedPatterns_[currentPattern_ / 16], currentPattern_ % 16, true);
+	setBit(manipulatedPatterns_[currentPattern_ / 16], currentPattern_ % 16, true);
 }
 
 void PlayerSettings::setCurrentPattern(unsigned char pattern) {
 	unsigned char originalPattern = currentPattern_;
 	if (currentPattern_ != pattern) {
 		currentPattern_ = pattern;
-		SETBIT(manipulatedPatterns_[pattern / 16], pattern % 16, true);
+		setBit(manipulatedPatterns_[pattern / 16], pattern % 16, true);
 		patternChangedCallback_(originalPattern, currentPattern_);
 		settingsChangedCallback_();
 	}

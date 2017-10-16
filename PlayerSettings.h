@@ -84,14 +84,14 @@ inline unsigned int * PlayerSettings::getManipulatedPatternsBitArray() {
 inline void PlayerSettings::setInstrumentOn(unsigned char instrumentID, bool isOn)
 {
 	if (isInstrumentOn(instrumentID) != isOn) {
-		BitArrayOperations::setBit(instrumentStatuses_, instrumentID, isOn);
+		setBit(instrumentStatuses_, instrumentID, isOn);
 		settingsChangedCallback_();
 	}
 }
 
 inline bool PlayerSettings::isInstrumentOn(unsigned char instrumentID)
 {
-	return BitArrayOperations::getBit(instrumentStatuses_, instrumentID);
+	return getBit(instrumentStatuses_, instrumentID);
 }
 
 inline unsigned char PlayerSettings::getInstrumentMuteByte() {
@@ -106,7 +106,7 @@ inline PlayerSettings::DrumInstrumentEventType PlayerSettings::getDrumInstrument
 inline void PlayerSettings::setDrumInstrumentEventType(unsigned char instrumentID, DrumInstrumentEventType eventType)
 {
 	if (getDrumInstrumentEventType(instrumentID) != eventType) {
-		SETBIT(drumInstrumentEventTypes_, instrumentID, eventType == GATE);
+		setBit(drumInstrumentEventTypes_, instrumentID, eventType == GATE);
 		settingsChangedCallback_();
 	}
 }

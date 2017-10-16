@@ -14,28 +14,11 @@
 #define SETBITFALSE(X, Y) ((X) = ((X) & ~(1 << (Y))))
 #define SETBIT(X, Y, Z) (Z ? ((X) = ((X) | (1 << (Y)))) : ((X) = ((X) & ~(1 << (Y)))))
 
-class BitArrayOperations {
+//namespace BitArrayOperations {
 
-public:
-	static void setBit(unsigned int & bitArray, unsigned char bitIndex, bool value) {
-		if (value) {
-			bitArray = bitArray | (1 << bitIndex);
-		} else {
-			bitArray = bitArray & ~(1 << bitIndex);
-		}
-	}
-
-	static void setBit(unsigned char & bitArray, unsigned char bitIndex, bool value) {
-		if (value) {
-			bitArray = bitArray | (1 << bitIndex);
-		} else {
-			bitArray = bitArray & ~(1 << bitIndex);
-		}
-	}
-
-	static bool getBit(unsigned char bitArray, unsigned char bitIndex) {
-		return (bitArray & (1 << bitIndex)) != 0;
-	}
-};
+void setBit(unsigned int & bitArray, unsigned char bitIndex, bool value);
+void setBit(unsigned char & bitArray, unsigned char bitIndex, bool value);
+bool getBit(unsigned char bitArray, unsigned char bitIndex);
+//}
 
 #endif /* BITARRAYOPERATIONS_H_ */
